@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>所有服務 | 軸心線工作室</title>
+  <meta name="description" content="軸心線工作室所有服務，涵蓋 ACSP 溝通風格測驗、工作坊與線上課程。" />
+  <link rel="icon" type="image/png" href="./Logo/logo_64x64.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #E8E2D4;
+      --bg-light: #F2EDE3;
+      --bg-dark:  #1E1C1A;
+      --white:    #FDFAF5;
+      --text:     #2B2825;
+      --text-mid: #5A5550;
+      --text-soft:#8C8680;
+      --border:   #D0C9BC;
+      --gold:     #B09A72;
+      --radius:   8px;
+      --tr:       0.2s ease;
+      --max-w:    1100px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── Header ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--bg-dark);
+      padding: 0 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .logo-link {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none;
+    }
+    .logo-link img { width: 32px; height: 32px; border-radius: 50%; }
+    .logo-link span {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 0.92rem; color: #fff; letter-spacing: 0.06em;
+    }
+    nav.main-nav { display: flex; align-items: center; gap: 28px; }
+    nav.main-nav a {
+      font-size: 0.82rem; color: rgba(255,255,255,0.6);
+      text-decoration: none; transition: color var(--tr);
+    }
+    nav.main-nav a:hover,
+    nav.main-nav a.active { color: #fff; }
+    .btn-enroll-nav {
+      padding: 8px 20px;
+      background: var(--gold); color: #fff;
+      border: none; border-radius: 4px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 0.82rem; cursor: pointer;
+      text-decoration: none;
+      transition: opacity var(--tr);
+    }
+    .btn-enroll-nav:hover { opacity: 0.85; }
+
+    /* ── Page title bar ── */
+    .page-hero {
+      background: var(--bg-dark);
+      padding: 48px 32px 40px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .page-hero h1 {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.6rem; font-weight: 400;
+      color: #fff; letter-spacing: 0.08em;
+    }
+    .page-hero p {
+      margin-top: 8px;
+      font-size: 0.85rem; color: rgba(255,255,255,0.4);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Main content ── */
+    main { flex: 1; padding: 60px 32px; }
+    .container { max-width: var(--max-w); margin: 0 auto; }
+
+    /* ── Course grid ── */
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 318px);
+      justify-content: center;
+      gap: 28px;
+    }
+
+    /* ── Course card ── */
+    .course-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: box-shadow var(--tr), transform var(--tr);
+      display: flex; flex-direction: column;
+    }
+    .course-card:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      transform: translateY(-3px);
+    }
+    .card-thumb {
+      width: 100%; aspect-ratio: 1/1;
+      overflow: hidden;
+      background: #ccc;
+    }
+    .card-thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .course-card:hover .card-thumb img { transform: scale(1.03); }
+
+    .card-body {
+      padding: 20px 20px 16px;
+      flex: 1; display: flex; flex-direction: column;
+    }
+    .card-badge {
+      display: inline-block;
+      font-size: 0.68rem; letter-spacing: 0.1em;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      padding: 2px 8px; border-radius: 3px;
+      margin-bottom: 10px;
+    }
+    .card-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.02rem; font-weight: 500;
+      color: var(--text); line-height: 1.55;
+      margin-bottom: 14px; flex: 1;
+    }
+    .card-instructor {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 16px;
+    }
+    .card-instructor img {
+      width: 28px; height: 28px;
+      border-radius: 50%; object-fit: cover;
+      border: 1px solid var(--border);
+    }
+    .card-instructor span {
+      font-size: 0.8rem; color: var(--text-mid);
+    }
+    .card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .card-price { }
+    .card-price-label {
+      font-size: 0.68rem; color: var(--text-soft);
+      margin-bottom: 2px;
+    }
+    .card-price-current {
+      font-size: 1.15rem; font-weight: 500;
+      color: var(--text);
+    }
+    .card-price-original {
+      font-size: 0.75rem; color: var(--text-soft);
+      text-decoration: line-through;
+      margin-top: 1px;
+    }
+    .btn-detail {
+      padding: 9px 20px;
+      background: #b09a72;
+      color: #fff;
+      border: none; border-radius: 4px;
+      font-size: 0.82rem; font-family: 'Noto Sans TC', sans-serif;
+      cursor: pointer; text-decoration: none;
+      transition: background var(--tr);
+      white-space: nowrap;
+    }
+    .btn-detail:hover { background: #9a8460; }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center; padding: 80px 20px;
+      color: var(--text-soft); font-size: 0.9rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--bg-dark);
+      padding: 28px 32px;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .footer-email {
+      font-size: 0.82rem; color: rgba(255,255,255,0.45);
+      margin-bottom: 12px;
+    }
+    .footer-email a { color: var(--gold); text-decoration: none; }
+    .footer-bottom {
+      font-size: 0.75rem; color: rgba(255,255,255,0.25);
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      header { padding: 0 20px; }
+      nav.main-nav { display: none; }
+      .page-hero { padding: 36px 20px 28px; }
+      main { padding: 36px 20px; }
+      .course-grid { grid-template-columns: minmax(0, 318px); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <a class="logo-link" href="index.html">
+    <img src="./Logo/logo_64x64.png" alt="軸心線工作室" />
+    <span>軸心線工作室</span>
+  </a>
+  <nav class="main-nav">
+    <a href="index.html">首頁</a>
+    <a href="courses.html" class="active">所有服務</a>
+    <a href="index.html#faq">常見問題</a>
+    <a href="index.html#about">關於我們</a>
+  </nav>
+  <a class="btn-enroll-nav" href="course.html#enroll">立即報名</a>
+</header>
+
+<!-- ── Page title ── -->
+<div class="page-hero">
+  <h1>所有服務</h1>
+  <p>AXIS LINE STUDIO</p>
+</div>
+
+<!-- ── Course listing ── -->
+<main>
+  <div class="container">
+    <div class="course-grid" id="course-grid">
+      <!-- Rendered by JS from Supabase -->
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
+<script>
+  // ── Supabase client ──
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  // ── Fallback images / data ──
+  const DEFAULT_COVER  = './ACSP 16型風格應用-20260424T040741Z-3-001/ACSP 16型風格應用/ACSP_16型溝通風格_0607_課程封面.jpg';
+  const INSTRUCTOR_IMG = './鄭瀞儀講師照片/WUC_9648.jpg';
+
+  const FALLBACK_COURSES = [
+    {
+      id:'default', status:'已上架',
+      name:'ACSP溝通風格工作坊｜16型精準定位與立體溝通',
+      type:'實體課程', price:'NT$3,480', orig_price:'NT$7,000',
+      date:'2026-06-07T14:00',
+      cover_img:'./ACSP 16型風格應用-20260424T040741Z-3-001/ACSP 16型風格應用/ACSP_16型溝通風格_0607_課程封面.jpg'
+    },
+    {
+      id:'default2', status:'已上架',
+      name:'ACSP溝通風格工作坊｜四型基礎與應用',
+      type:'實體課程', price:'NT$2,800', orig_price:'NT$5,800',
+      date:'2026-04-13T14:00',
+      cover_img:'./ACSP_四型溝通風格-20260424T040742Z-3-001/ACSP_四型溝通風格/ACSP_四型溝通風格_0413_課程封面.jpg'
+    },
+    {
+      id:'default3', status:'已上架',
+      name:'ACSP溝通風格｜一對一諮詢陪跑',
+      type:'線上諮詢', price:'洽談',
+      cover_img:'./《ACSP溝通風格 一對一諮詢陪跑》/課程封面圖_318x318.jpg'
+    }
+  ];
+
+  async function renderCoursesPage() {
+    let list = [];
+    try {
+      const { data, error } = await sb.from('acsp_courses')
+        .select('*')
+        .eq('status', '已上架')
+        .order('sort_order', { ascending: true })
+        .order('id', { ascending: true });
+      if (error) throw error;
+      list = (data && data.length) ? data : FALLBACK_COURSES;
+    } catch(e) {
+      console.error('courses fetch:', e);
+      list = FALLBACK_COURSES;
+    }
+    const grid = document.getElementById('course-grid');
+    grid.innerHTML = list.map(c => buildCard(c)).join('');
+  }
+
+  function buildCard(c) {
+    // Support both DB snake_case and fallback camelCase fields
+    const imgSrc  = c.cover_img || c.coverImg || DEFAULT_COVER;
+    const origP   = c.orig_price || c.origPrice || '';
+    const hasOrig = origP && origP !== c.price;
+    const dateStr = c.date ? formatDate(c.date) : '';
+    return `
+      <div class="course-card">
+        <div class="card-thumb">
+          <img src="${imgSrc}" alt="${c.name}" onerror="this.src='${DEFAULT_COVER}'" />
+        </div>
+        <div class="card-body">
+          <div class="card-badge">${c.type || '課程'}</div>
+          <div class="card-title">${c.name}</div>
+          ${dateStr ? `<div style="font-size:0.75rem;color:var(--text-soft);margin-bottom:8px;">📅 ${dateStr}</div>` : ''}
+          <div class="card-instructor">
+            <img src="${INSTRUCTOR_IMG}" alt="鄭瀞儀" onerror="this.style.display='none'" />
+            <span>鄭瀞儀</span>
+          </div>
+          <div class="card-footer">
+            <div class="card-price">
+              ${hasOrig ? '<div class="card-price-label">優惠價</div>' : ''}
+              <div class="card-price-current">${c.price}</div>
+              ${hasOrig ? `<div class="card-price-original">${origP}</div>` : ''}
+            </div>
+            <a href="course.html" class="btn-detail">詳細資訊</a>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function formatDate(dt) {
+    if (!dt) return '';
+    const d = new Date(dt);
+    if (isNaN(d)) return dt;
+    return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  renderCoursesPage();
+</script>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-email">
+    ✉ 客服信箱：<a href="mailto:axislinestudio@gmail.com">axislinestudio@gmail.com</a>
+  </div>
+  <div class="footer-bottom">© 2026 軸心線工作室 All Rights Reserved.</div>
+</footer>
+
+</body>
+</html>

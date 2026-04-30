@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ACSP 四型溝通風格測驗 | 軸心線工作室</title>
+  <meta name="description" content="透過 ACSP 四型溝通風格測驗，深度認識自己的溝通模式，提升人際連結與職場效能。" />
+  <link rel="icon" type="image/png" href="./Logo/logo_64x64.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── CSS Variables ── */
+    :root {
+      --bg-cream:   #E8E2D4;
+      --bg-light:   #F2EDE3;
+      --bg-dark:    #1E1C1A;
+      --bg-darker:  #161412;
+      --text-dark:  #2B2825;
+      --text-mid:   #5A5550;
+      --text-muted: #8C8680;
+      --border:     #D0C9BC;
+      --border-dark:#3A3632;
+      --white:      #FDFAF5;
+      --gold:       #B09A72;
+      --radius:     4px;
+      --transition: 0.3s ease;
+      --max-w:      1160px;
+      --nav-h:      72px;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: var(--bg-cream);
+      color: var(--text-dark);
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+
+    /* ── Utility ── */
+    .container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+    .serif { font-family: 'Noto Serif TC', serif; }
+    .text-center { text-align: center; }
+    .mt-sm { margin-top: 12px; }
+    .mt-md { margin-top: 24px; }
+    .mt-lg { margin-top: 48px; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 36px;
+      font-size: 0.95rem;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: var(--transition);
+      border-radius: var(--radius);
+      white-space: nowrap;
+    }
+    .btn-dark {
+      background: var(--text-dark);
+      color: var(--white);
+      border-color: var(--text-dark);
+    }
+    .btn-dark:hover { background: #3d3830; border-color: #3d3830; }
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border-color: rgba(255,255,255,0.5);
+    }
+    .btn-outline:hover { border-color: var(--white); background: rgba(255,255,255,0.08); }
+    .btn-gold {
+      background: var(--gold);
+      color: var(--white);
+      border-color: var(--gold);
+    }
+    .btn-gold:hover { background: #9a855c; border-color: #9a855c; }
+
+    /* ── Section Headings ── */
+    .sec-tag {
+      font-size: 0.78rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .sec-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 500;
+      line-height: 1.4;
+      color: var(--text-dark);
+    }
+    .sec-title.light { color: var(--white); }
+    .sec-subtitle {
+      margin-top: 16px;
+      font-size: 1rem;
+      color: var(--text-mid);
+      max-width: 600px;
+      line-height: 1.9;
+    }
+    .sec-subtitle.light { color: rgba(255,255,255,0.65); }
+    .divider {
+      width: 40px;
+      height: 1.5px;
+      background: var(--gold);
+      margin: 20px 0;
+    }
+    .divider.center { margin: 20px auto; }
+
+    /* ── Navbar ── */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      transition: background var(--transition), box-shadow var(--transition);
+    }
+    #navbar.scrolled {
+      background: rgba(30, 28, 26, 0.96);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 var(--border-dark);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-logo img { width: 40px; height: 40px; border-radius: 50%; }
+    .nav-logo-text {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--white);
+      letter-spacing: 0.04em;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+    }
+    .nav-links a {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 0.06em;
+      transition: color var(--transition);
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--gold);
+      transition: width var(--transition);
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta { margin-left: 12px; padding: 10px 24px; font-size: 0.85rem; }
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 8px;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 24px; height: 1.5px;
+      background: var(--white);
+      transition: var(--transition);
+    }
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: var(--nav-h); left: 0; right: 0;
+      background: rgba(22, 20, 18, 0.98);
+      backdrop-filter: blur(16px);
+      padding: 24px;
+      z-index: 999;
+      flex-direction: column;
+      gap: 0;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      color: rgba(255,255,255,0.8);
+      font-size: 1rem;
+      letter-spacing: 0.06em;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border-dark);
+      transition: color var(--transition);
+    }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a:hover { color: var(--white); }
+
+    /* ── Hero ── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      background: var(--bg-dark);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 60% 50%, rgba(176,154,114,0.12) 0%, transparent 65%),
+                  radial-gradient(ellipse at 20% 80%, rgba(176,154,114,0.06) 0%, transparent 50%);
+    }
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(176,154,114,0.15);
+      border: 1px solid rgba(176,154,114,0.3);
+      color: var(--gold);
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      padding: 6px 16px;
+      border-radius: 2px;
+      margin-bottom: 28px;
+    }
+    .hero-badge::before { content: '★ ★ ★ ★'; font-size: 0.65rem; }
+    .hero-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 500;
+      color: var(--white);
+      line-height: 1.25;
+      letter-spacing: 0.02em;
+    }
+    .hero-title span { color: var(--gold); }
+    .hero-sub {
+      margin-top: 20px;
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: rgba(255,255,255,0.6);
+      line-height: 1.9;
+      max-width: 560px;
+    }
+    .hero-actions {
+      margin-top: 40px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .hero-scroll {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.35);
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      animation: bounce 2s infinite;
+    }
+    .hero-scroll::after {
+      content: '';
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+    .hero-deco {
+      position: absolute;
+      right: -60px; top: 50%;
+      transform: translateY(-50%);
+      width: 480px; height: 480px;
+      border: 1px solid rgba(176,154,114,0.12);
+      border-radius: 50%;
+    }
+    .hero-deco::before {
+      content: '';
+      position: absolute;
+      inset: 40px;
+      border: 1px solid rgba(176,154,114,0.08);
+      border-radius: 50%;
+    }
+
+    /* ── What is ACSP ── */
+    #what {
+      padding: 100px 0;
+      background: var(--bg-light);
+    }
+    .what-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .what-visual {
+      position: relative;
+      padding: 48px;
+    }
+    .what-circle {
+      width: 100%;
+      aspect-ratio: 1;
+      max-width: 300px;
+      margin: 0 auto;
+      border-radius: 50%;
+      background: var(--bg-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .what-circle img { width: 48%; opacity: 0.92; }
+    .what-circle-ring {
+      position: absolute;
+      inset: -20px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+    }
+    .what-circle-ring2 {
+      position: absolute;
+      inset: -40px;
+      border: 1px dashed var(--border);
+      border-radius: 50%;
+      opacity: 0.5;
+    }
+    .what-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      margin-top: 64px;
+      border: 1px solid var(--border);
+      background: var(--border);
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .what-stat {
+      background: var(--bg-light);
+      padding: 14px 10px;
+      text-align: center;
+    }
+    .what-stat strong {
+      display: block;
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.35rem;
+      font-weight: 300;
+      color: var(--text-dark);
+    }
+    .what-stat span {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+    .what-text { }
+    .what-quote {
+      margin-top: 28px;
+      padding: 20px 24px;
+      border-left: 2px solid var(--gold);
+      background: rgba(176,154,114,0.06);
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.02rem;
+      color: var(--text-mid);
+      line-height: 1.9;
+    }
+
+    /* ── Four Styles ── */
+    #styles {
+      padding: 100px 0;
+      background: var(--bg-dark);
+    }
+    .styles-header { text-align: center; margin-bottom: 64px; }
+    .styles-header .divider { margin: 20px auto; }
+    .styles-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border-dark);
+    }
+    .style-card {
+      background: var(--bg-darker);
+      padding: 40px 28px;
+      position: relative;
+      transition: var(--transition);
+      overflow: hidden;
+    }
+    .style-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .style-card:hover::before { transform: scaleX(1); }
+    .style-card:hover { background: #1a1815; }
+    .style-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 1.5px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      color: var(--gold);
+      transition: background var(--transition);
+    }
+    .style-card:hover .style-icon {
+      background: rgba(176,154,114,0.12);
+    }
+    .style-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--gold);
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .style-letter {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 16px;
+      opacity: 0.15;
+      position: absolute;
+      top: 28px; right: 28px;
+    }
+    .style-name {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    .style-en {
+      font-size: 0.75rem;
+      color: var(--gold);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .style-desc {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.85;
+    }
+    .style-traits {
+      margin-top: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .style-trait {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.45);
+      border: 1px solid var(--border-dark);
+      padding: 3px 10px;
+      border-radius: 2px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Curriculum ── */
+    #curriculum {
+      padding: 100px 0;
+      background: var(--bg-cream);
+    }
+    .curriculum-layout {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 80px;
+    }
+    .curriculum-sticky {
+      position: sticky;
+      top: calc(var(--nav-h) + 24px);
+      align-self: start;
+    }
+    .module-list { margin-top: 16px; }
+    .module-item {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .module-item:first-child { border-top: 1px solid var(--border); }
+    .module-num {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+      margin-bottom: 6px;
+    }
+    .module-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.05rem;
+      color: var(--text-dark);
+      transition: color var(--transition);
+    }
+    .module-item:hover .module-title { color: var(--gold); }
+    .module-lessons {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .module-expand {
+      margin-top: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .module-expand.open { max-height: 500px; }
+    .lesson-list { padding: 12px 0 4px; }
+    .lesson-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      font-size: 0.85rem;
+      color: var(--text-mid);
+    }
+    .lesson-item::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    .curriculum-cta-box {
+      background: var(--bg-dark);
+      padding: 40px;
+      border-radius: var(--radius);
+      margin-top: 32px;
+    }
+    .curriculum-cta-box .sec-title.light { font-size: 1.3rem; }
+    .curriculum-cta-box p {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.55);
+      margin: 16px 0 24px;
+      line-height: 1.8;
+    }
+
+    /* ── For Whom ── */
+    #forwhom {
+      padding: 100px 0;
+      background: var(--bg-light);
+    }
+    .forwhom-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 56px;
+    }
+    .forwhom-card {
+      background: var(--white);
+      padding: 36px 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: var(--transition);
+    }
+    .forwhom-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 36px rgba(43,40,37,0.08);
+    }
+    .forwhom-icon {
+      width: 48px; height: 48px;
+      background: rgba(176,154,114,0.12);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+    }
+    .forwhom-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--text-dark);
+      margin-bottom: 10px;
+    }
+    .forwhom-desc {
+      font-size: 0.88rem;
+      color: var(--text-mid);
+      line-height: 1.85;
+    }
+
+    /* ── About ── */
+    #about {
+      padding: 100px 0;
+      background: var(--bg-dark);
+    }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .about-logo-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+    }
+    .about-logo-circle {
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      background: var(--bg-cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .about-logo-circle img { width: 70%; }
+    .about-logo-ring {
+      position: absolute;
+      inset: -16px;
+      border: 1px solid rgba(176,154,114,0.2);
+      border-radius: 50%;
+    }
+    .about-studio-name {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.5rem;
+      color: var(--white);
+      letter-spacing: 0.06em;
+      text-align: center;
+    }
+    .about-studio-en {
+      font-size: 0.8rem;
+      color: var(--gold);
+      letter-spacing: 0.2em;
+      text-align: center;
+    }
+    .about-text .sec-subtitle.light { max-width: none; }
+    .about-values {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 32px;
+    }
+    .about-value {
+      padding: 16px;
+      border: 1px solid var(--border-dark);
+      border-radius: var(--radius);
+    }
+    .about-value-title {
+      font-size: 0.82rem;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+    }
+    .about-value-desc {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.7;
+    }
+
+    /* ── Testimonials ── */
+    #testimonials {
+      padding: 100px 0;
+      background: var(--bg-cream);
+      overflow: hidden;
+    }
+    .testimonials-header { text-align: center; margin-bottom: 56px; }
+    .testimonials-header .divider { margin: 20px auto; }
+    .testi-track {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .testi-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      padding: 32px 28px;
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+    }
+    .testi-stars { color: var(--gold); font-size: 0.85rem; letter-spacing: 3px; margin-bottom: 16px; }
+    .testi-text {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 0.95rem;
+      color: var(--text-mid);
+      line-height: 1.9;
+      flex: 1;
+      margin-bottom: 24px;
+    }
+    .testi-author { display: flex; align-items: center; gap: 12px; margin-top: auto; }
+    .testi-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--bg-cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1rem;
+      color: var(--text-mid);
+      border: 1px solid var(--border);
+    }
+    .testi-name { font-size: 0.88rem; font-weight: 500; color: var(--text-dark); }
+    .testi-role { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* ── FAQ ── */
+    #faq {
+      padding: 100px 0;
+      background: var(--bg-light);
+    }
+    .faq-layout {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 80px;
+    }
+    .faq-list { margin-top: 8px; }
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 24px 0;
+    }
+    .faq-item:first-child { border-top: 1px solid var(--border); }
+    .faq-q {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      gap: 16px;
+    }
+    .faq-q-text {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.02rem;
+      color: var(--text-dark);
+      transition: color var(--transition);
+    }
+    .faq-q:hover .faq-q-text { color: var(--gold); }
+    .faq-icon {
+      width: 24px; height: 24px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); background: var(--gold); border-color: var(--gold); color: white; }
+    .faq-a {
+      font-size: 0.9rem;
+      color: var(--text-mid);
+      line-height: 1.9;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s;
+      padding-top: 0;
+    }
+    .faq-item.open .faq-a { max-height: 300px; padding-top: 16px; }
+
+    /* ── CTA ── */
+    #cta {
+      padding: 120px 0;
+      background: var(--bg-dark);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 50%, rgba(176,154,114,0.1) 0%, transparent 70%);
+    }
+    .cta-inner { position: relative; z-index: 1; }
+    .cta-badge {
+      display: inline-block;
+      background: rgba(176,154,114,0.15);
+      border: 1px solid rgba(176,154,114,0.3);
+      color: var(--gold);
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      padding: 6px 18px;
+      border-radius: 2px;
+      margin-bottom: 24px;
+    }
+    .cta-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 400;
+      color: var(--white);
+      line-height: 1.4;
+    }
+    .cta-sub {
+      margin: 20px auto 40px;
+      max-width: 500px;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.9;
+    }
+    .cta-actions { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+    .cta-note {
+      margin-top: 24px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--bg-darker);
+      padding: 60px 0 36px;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    .footer-brand { }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .footer-logo img { width: 36px; height: 36px; border-radius: 50%; }
+    .footer-logo-name {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1rem;
+      color: var(--white);
+    }
+    .footer-desc {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.35);
+      line-height: 1.8;
+      max-width: 300px;
+    }
+    .footer-col-title {
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+    .footer-col a {
+      display: block;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 10px;
+      transition: color var(--transition);
+    }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom {
+      border-top: 1px solid var(--border-dark);
+      padding-top: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.25);
+    }
+    .footer-social {
+      display: flex;
+      gap: 16px;
+    }
+    .footer-social a {
+      color: rgba(255,255,255,0.3);
+      font-size: 0.85rem;
+      transition: color var(--transition);
+    }
+    .footer-social a:hover { color: var(--white); }
+
+    /* ── Animations ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      .styles-grid { grid-template-columns: repeat(2, 1fr); }
+      .what-grid { grid-template-columns: 1fr; gap: 48px; }
+      .what-visual { max-width: 340px; margin: 0 auto; }
+      .about-grid { grid-template-columns: 1fr; gap: 48px; }
+      .about-logo-block { flex-direction: row; justify-content: flex-start; }
+      .curriculum-layout { grid-template-columns: 1fr; }
+      .curriculum-sticky { position: static; }
+      .faq-layout { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .course-slide { min-width: 85% !important; flex-direction: column !important; }
+      .course-slide > div:first-child { max-width: 100% !important; height: 180px; }
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .hero-deco { display: none; }
+      .styles-grid { grid-template-columns: 1fr; }
+      .forwhom-grid { grid-template-columns: 1fr; }
+      .testi-track { grid-template-columns: 1fr; }
+      .about-values { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+      .cta-actions { flex-direction: column; align-items: center; }
+      .what-stats { grid-template-columns: 1fr 1fr; }
+      .hero-actions { flex-direction: column; }
+      .hero-actions .btn { width: fit-content; }
+      section { padding: 72px 0 !important; }
+    }
+    @media (max-width: 480px) {
+      .container { padding: 0 18px; }
+      .what-stats { grid-template-columns: 1fr; }
+      .testi-card { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navbar ── -->
+  <nav id="navbar">
+    <div class="container nav-inner">
+      <a href="#" class="nav-logo">
+        <img src="./Logo/logo_64x64.png" alt="軸心線工作室 Logo" />
+        <span class="nav-logo-text">軸心線工作室</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#acsp">關於 ACSP</a></li>
+        <li><a href="courses.html">服務內容</a></li>
+        <li><a href="#instructor">講師介紹</a></li>
+        <li><a href="#about">關於我們</a></li>
+        <li><a href="#faq">常見問題</a></li>
+      </ul>
+      <a href="quiz.html" class="btn btn-gold nav-cta">免費測驗</a>
+      <div class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="選單">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#acsp" onclick="toggleMenu()">關於 ACSP</a>
+    <a href="courses.html" onclick="toggleMenu()">服務內容</a>
+    <a href="#instructor" onclick="toggleMenu()">講師介紹</a>
+    <a href="#about" onclick="toggleMenu()">關於我們</a>
+    <a href="#faq" onclick="toggleMenu()">常見問題</a>
+    <a href="#cta" onclick="toggleMenu()" style="color:var(--gold);">立即報名</a>
+  </div>
+
+  <!-- ── Hero ── -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-deco"></div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">ACSP 溝通風格測驗</div>
+        <h1 class="hero-title serif">
+          了解你的<span>溝通風格</span><br />
+          開啟高效人際連結
+        </h1>
+        <p class="hero-sub">
+          ACSP 四型溝通風格測驗，幫助你精準辨識自身溝通模式，<br />
+          突破職場瓶頸，建立深度信任關係。
+        </p>
+        <div class="hero-actions">
+          <a href="quiz.html" class="btn btn-gold">免費開始測驗 →</a>
+          <a href="#what" class="btn btn-outline">了解更多</a>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll">SCROLL</div>
+  </section>
+
+  <!-- ── Active Courses Carousel (Banner 1440×500) ── -->
+  <section id="active-courses" style="background:var(--bg-dark);overflow:hidden;">
+    <!-- Header -->
+    <div class="container" style="padding-top:56px;padding-bottom:28px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-size:0.72rem;letter-spacing:0.2em;color:var(--gold);margin-bottom:8px;">UPCOMING COURSES</div>
+          <h2 style="font-family:'Noto Serif TC',serif;font-size:1.6rem;font-weight:400;color:#fff;">正在開課</h2>
+        </div>
+        <a href="courses.html" style="font-size:0.82rem;color:rgba(255,255,255,0.45);text-decoration:none;border:1px solid rgba(255,255,255,0.15);padding:7px 18px;border-radius:4px;transition:all 0.2s;" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,0.4)'" onmouseout="this.style.color='rgba(255,255,255,0.45)';this.style.borderColor='rgba(255,255,255,0.15)'">查看所有服務 →</a>
+      </div>
+    </div>
+
+    <!-- Banner Carousel — full container width -->
+    <div class="container">
+      <div style="position:relative;border-radius:10px;overflow:hidden;">
+        <!-- Track: transform-based slide, no scrollTo -->
+        <div id="course-carousel-wrap" style="overflow:hidden;border-radius:10px;">
+          <div id="course-carousel" style="display:flex;width:100%;transition:transform 0.5s ease;">
+            <!-- slides rendered by JS -->
+          </div>
+        </div>
+        <!-- Prev / Next -->
+        <button onclick="carouselMove(-1)" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.18);color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;z-index:2;" onmouseover="this.style.background='rgba(0,0,0,0.6)'" onmouseout="this.style.background='rgba(0,0,0,0.35)'">‹</button>
+        <button onclick="carouselMove(1)"  style="position:absolute;right:16px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.18);color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;z-index:2;" onmouseover="this.style.background='rgba(0,0,0,0.6)'" onmouseout="this.style.background='rgba(0,0,0,0.35)'">›</button>
+      </div>
+      <!-- Dots -->
+      <div style="display:flex;justify-content:center;gap:8px;padding:16px 0 0;" id="carousel-dots"></div>
+    </div>
+    <div style="padding-bottom:48px;"></div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
+  <script>
+  (async function(){
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    /* ── Banner image paths (fallback only) ── */
+    const BANNER_IMG_16  = './ACSP 16型風格應用-20260424T040741Z-3-001/ACSP 16型風格應用/ACSP_16型溝通風格_0607_輪播.jpg';
+    const COVER_IMG_16   = './ACSP 16型風格應用-20260424T040741Z-3-001/ACSP 16型風格應用/ACSP_16型溝通風格_0607_課程封面.jpg';
+    const BANNER_IMG_4   = './ACSP_四型溝通風格-20260424T040742Z-3-001/ACSP_四型溝通風格/ACSP_四型溝通風格_0413_輪播.jpg';
+    const COVER_IMG_4    = './ACSP_四型溝通風格-20260424T040742Z-3-001/ACSP_四型溝通風格/ACSP_四型溝通風格_0413_課程封面.jpg';
+    const BANNER_IMG_1V1 = './《ACSP溝通風格 一對一諮詢陪跑》/輪播 Banner 圖_1112x520.jpg';
+    const COVER_IMG_1V1  = './《ACSP溝通風格 一對一諮詢陪跑》/課程封面圖_318x318.jpg';
+    const FALLBACK_IMG   = BANNER_IMG_16;
+
+    const FALLBACK_COURSES = [{
+      id:'default', name:'ACSP溝通風格工作坊｜16型精準定位與立體溝通',
+      banner_img: BANNER_IMG_16, cover_img: COVER_IMG_16, link:'course.html'
+    },{
+      id:'default2', name:'ACSP溝通風格工作坊｜四型基礎與應用',
+      banner_img: BANNER_IMG_4, cover_img: COVER_IMG_4, link:'course.html'
+    },{
+      id:'default3', name:'ACSP溝通風格｜一對一諮詢陪跑',
+      banner_img: BANNER_IMG_1V1, cover_img: COVER_IMG_1V1, link:'course.html'
+    }];
+
+    /* ── Build slide ── */
+    function buildSlide(c) {
+      const img  = c.img_url || c.banner_img || c.bannerImg || c.cover_img || c.coverImg || FALLBACK_IMG;
+      const link = c.link || 'course.html';
+      const name = c.title || c.name || '';
+      return `
+        <a class="course-slide" href="${link}"
+           style="min-width:100%;flex-shrink:0;display:block;overflow:hidden;cursor:pointer;aspect-ratio:1112/520;background:#1a1815;text-decoration:none;transition:opacity 0.2s;"
+           onmouseover="this.style.opacity=0.92" onmouseout="this.style.opacity=1">
+          <img src="${img}" alt="${name}"
+               onerror="this.src='${FALLBACK_IMG}'"
+               style="width:100%;height:100%;object-fit:cover;display:block;" />
+        </a>`;
+    }
+
+    /* ── Load banners: acsp_banners → acsp_courses → fallback ── */
+    let courses = [];
+    try {
+      const { data: banners, error: bErr } = await sb.from('acsp_banners')
+        .select('*').eq('is_visible', true)
+        .order('sort_order', { ascending: true }).order('id', { ascending: true });
+      if (!bErr && banners && banners.length) {
+        courses = banners;
+      }
+    } catch(e) {}
+    if (!courses.length) {
+      try {
+        const { data: published } = await sb.from('acsp_courses')
+          .select('*').eq('status', '已上架')
+          .order('sort_order', { ascending: true }).order('id', { ascending: true });
+        if (published && published.length) courses = published;
+      } catch(e) {}
+    }
+    if (!courses.length) courses = FALLBACK_COURSES;
+
+    /* ── Render ── */
+    const carousel = document.getElementById('course-carousel');
+    const dotsEl   = document.getElementById('carousel-dots');
+    carousel.innerHTML = courses.map(c => buildSlide(c)).join('');
+
+    const slides = carousel.querySelectorAll('.course-slide');
+    const n = slides.length;
+
+    dotsEl.innerHTML = Array.from({length:n}, (_,i) =>
+      `<div onclick="carouselGoTo(${i})" style="width:${i===0?'24':'8'}px;height:4px;border-radius:2px;background:${i===0?'var(--gold)':'rgba(255,255,255,0.2)'};cursor:pointer;transition:all 0.3s;"></div>`
+    ).join('');
+
+    let cur = 0;
+    const allDots = () => dotsEl.querySelectorAll('div');
+
+    function updateDots(){
+      allDots().forEach((d,i)=>{
+        d.style.width      = i===cur ? '24px' : '8px';
+        d.style.background = i===cur ? 'var(--gold)' : 'rgba(255,255,255,0.2)';
+      });
+    }
+
+    window.carouselGoTo = function(idx){
+      cur = ((idx % n) + n) % n;
+      carousel.style.transform = `translateX(-${cur * 100}%)`;
+      updateDots();
+    };
+    window.carouselMove = function(dir){ carouselGoTo(cur + dir); };
+    setInterval(() => carouselMove(1), 5000);
+  })();
+  </script>
+
+  <!-- ── About ACSP (merged: 關於測驗 + 四種風格) ── -->
+  <section id="acsp" style="padding:100px 0;overflow:hidden;">
+    <div class="container">
+      <!-- Intro -->
+      <div class="what-grid">
+        <div class="what-visual fade-up">
+          <div class="what-circle">
+            <img src="./Logo/logo_64x64.png" alt="軸心線工作室" />
+            <div class="what-circle-ring"></div>
+            <div class="what-circle-ring2"></div>
+          </div>
+          <div class="what-stats">
+            <div class="what-stat"><strong>4</strong><span>溝通風格類型</span></div>
+            <div class="what-stat"><strong>4</strong><span>種課程形式</span></div>
+            <div class="what-stat"><strong>500+</strong><span>學員已完成測驗</span></div>
+            <div class="what-stat"><strong>95%</strong><span>學員好評推薦</span></div>
+          </div>
+        </div>
+        <div class="what-text fade-up">
+          <div class="sec-tag">WHAT IS ACSP</div>
+          <h2 class="sec-title">什麼是<br />ACSP 四型溝通風格？</h2>
+          <div class="divider"></div>
+          <p class="sec-subtitle">
+            ACSP 是一套以行為科學為基礎的溝通風格評估框架，
+            透過系統化的自我觀察與測驗，將個人溝通傾向歸納為
+            四種核心風格類型，協助你在不同情境中做出更有意識的溝通選擇。
+          </p>
+          <div class="what-quote">
+            「溝通——它是一門可以學習的藝術。<br />
+            ACSP 讓你從認識自己開始。」
+          </div>
+          <a href="quiz.html" class="btn btn-dark mt-lg">立即免費測驗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Four Styles -->
+    <div style="background:var(--bg-dark);margin-top:80px;">
+      <div class="container" style="padding-top:64px;padding-bottom:72px;">
+        <div class="styles-header fade-up">
+          <div class="sec-tag" style="color: var(--gold);">THE FOUR TYPES</div>
+          <h2 class="sec-title light">四型溝通風格</h2>
+          <div class="divider center"></div>
+          <p class="sec-subtitle light" style="margin: 0 auto;">
+            每個人都有其主導的溝通模式，了解自己屬於哪一種，<br />
+            是提升人際關係效能的第一步。
+          </p>
+        </div>
+        <div class="styles-grid">
+          <div class="style-card fade-up">
+            <div class="style-icon">
+              <!-- 放大鏡：分析、精準 -->
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <div class="style-letter">A</div>
+            <div class="style-name">分析型</div>
+            <div class="style-en">ANALYZER</div>
+            <p class="style-desc">邏輯嚴謹、重視細節，習慣以數據與事實為溝通基礎，追求精準與完整性。</p>
+            <div class="style-traits">
+              <span class="style-trait">邏輯思考</span>
+              <span class="style-trait">重視數據</span>
+              <span class="style-trait">謹慎決策</span>
+            </div>
+          </div>
+          <div class="style-card fade-up">
+            <div class="style-icon">
+              <!-- 閃電：果斷、執行力 -->
+              <svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <div class="style-letter">C</div>
+            <div class="style-name">控制型</div>
+            <div class="style-en">CONTROLLER</div>
+            <p class="style-desc">果斷直接、目標導向，以結果為優先，善於在壓力下快速做出決策與領導。</p>
+            <div class="style-traits">
+              <span class="style-trait">果斷行動</span>
+              <span class="style-trait">目標明確</span>
+              <span class="style-trait">領導力強</span>
+            </div>
+          </div>
+          <div class="style-card fade-up">
+            <div class="style-icon">
+              <!-- 愛心：溫暖、關懷 -->
+              <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div class="style-letter">S</div>
+            <div class="style-name">支持型</div>
+            <div class="style-en">SUPPORTER</div>
+            <p class="style-desc">溫暖真誠、善於傾聽，重視人際和諧與情感連結，是團隊中的穩定力量。</p>
+            <div class="style-traits">
+              <span class="style-trait">善於傾聽</span>
+              <span class="style-trait">重視關係</span>
+              <span class="style-trait">耐心穩定</span>
+            </div>
+          </div>
+          <div class="style-card fade-up">
+            <div class="style-icon">
+              <!-- 擴音器：影響力、表達 -->
+              <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            </div>
+            <div class="style-letter">P</div>
+            <div class="style-name">推廣型</div>
+            <div class="style-en">PROMOTER</div>
+            <p class="style-desc">熱情感染、富有創意，善於影響他人、建立信任，是天生的溝通與推廣者。</p>
+            <div class="style-traits">
+              <span class="style-trait">感染力強</span>
+              <span class="style-trait">富有創意</span>
+              <span class="style-trait">善於表達</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Instructor Introduction ── -->
+  <section id="instructor" style="background:var(--bg-light);padding:96px 0;">
+    <div class="container">
+      <!-- Section header -->
+      <div style="text-align:center;margin-bottom:64px;">
+        <div class="sec-tag">MEET THE INSTRUCTOR</div>
+        <h2 class="sec-title">講師介紹</h2>
+        <div class="divider center"></div>
+      </div>
+
+      <!-- Layout: photo left, bio right -->
+      <div style="display:grid;grid-template-columns:280px 1fr;gap:64px;align-items:start;">
+
+        <!-- Left: circular photo + name -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:20px;position:sticky;top:100px;">
+          <div style="width:220px;height:220px;border-radius:50%;overflow:hidden;border:3px solid var(--gold);flex-shrink:0;box-shadow:0 8px 32px rgba(176,154,114,0.2);">
+            <img src="./鄭瀞儀講師照片/WUC_9648.jpg" alt="鄭瀞儀 溝通風格表達教練"
+                 style="width:100%;height:100%;object-fit:cover;object-position:top;"
+                 onerror="this.src='./鄭瀞儀講師照片/WUC_9632.jpg'" />
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'Noto Serif TC',serif;font-size:1.2rem;font-weight:500;color:var(--text-dark);margin-bottom:4px;">鄭瀞儀</div>
+            <div style="font-size:0.82rem;color:var(--gold);letter-spacing:0.06em;">溝通風格表達教練</div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:16px 20px;width:100%;">
+            <div style="font-size:0.75rem;color:var(--text-muted);letter-spacing:0.08em;margin-bottom:10px;font-weight:500;">學歷 ／ 經歷</div>
+            <div style="font-size:0.82rem;color:var(--text-mid);line-height:1.8;">
+              東吳大學社會學系 學士<br>
+              <span style="font-size:0.75rem;color:var(--text-muted);">傳誠動力國際股份有限公司 總經理</span><br>
+              <span style="font-size:0.75rem;color:var(--text-muted);">躍動生命文創股份有限公司 總經理</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: bio text -->
+        <div style="color:var(--text-dark);line-height:1.9;">
+
+          <!-- Short intro -->
+          <div style="background:var(--white);border-left:3px solid var(--gold);padding:20px 24px;border-radius:0 8px 8px 0;margin-bottom:32px;">
+            <p style="font-size:0.95rem;color:var(--text-mid);">
+              具備<strong>十五年培訓與管理經驗</strong>，曾從基層職員一路走到培訓公司總經理，
+              長期投入職場溝通、團隊協作與衝突處理。
+              擅長將複雜的人際狀況整理成可理解、可操作的結構，
+              協助個人與團隊在有限時間內，做出更有效的溝通選擇。
+            </p>
+          </div>
+
+          <!-- Program intro -->
+          <h3 style="font-family:'Noto Serif TC',serif;font-size:1.15rem;font-weight:500;color:var(--text-dark);margin-bottom:16px;">
+            【ACSP 溝通表達一對一深度陪跑計畫】
+          </h3>
+          <p style="font-size:0.92rem;color:var(--text-mid);margin-bottom:20px;">
+            你明明很替人著想，溝通起來還是有點卡？我當然知道該做什麼，但心裡就是過不去？
+          </p>
+
+          <!-- Pain points -->
+          <div style="background:rgba(176,154,114,0.06);border:1px solid rgba(176,154,114,0.18);border-radius:8px;padding:24px;margin-bottom:28px;">
+            <p style="font-size:0.88rem;color:var(--text-mid);line-height:2;margin-bottom:0;">
+              你是不是也常有這種感覺？<br>
+              多問了幾句細節，被老闆嫌動作慢、太囉嗦？<br>
+              才開口講兩句，另一半就覺得你在碎念、給壓力？<br>
+              遇到強勢的人，你習慣先把話忍下去⋯<br><br>
+              <strong>跟口才與努力，完全無關。</strong><br>
+              你只是還沒找到那本「彼此溝通風格的使用說明書」。
+            </p>
+          </div>
+
+          <!-- Four types -->
+          <h4 style="font-size:0.88rem;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:16px;font-weight:500;">ACSP 四型溝通工具</h4>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:32px;">
+            <div style="background:var(--white);border:1px solid var(--border);border-radius:6px;padding:14px 16px;">
+              <div style="font-size:0.78rem;color:var(--gold);font-weight:600;margin-bottom:4px;">A — Analyzer 分析型</div>
+              <div style="font-size:0.8rem;color:var(--text-mid);">給他邏輯與安全感，他就不會刁難你。</div>
+            </div>
+            <div style="background:var(--white);border:1px solid var(--border);border-radius:6px;padding:14px 16px;">
+              <div style="font-size:0.78rem;color:#4A72B0;font-weight:600;margin-bottom:4px;">C — Controller 控制型</div>
+              <div style="font-size:0.8rem;color:var(--text-mid);">給他結論與控制權，他就會信任你。</div>
+            </div>
+            <div style="background:var(--white);border:1px solid var(--border);border-radius:6px;padding:14px 16px;">
+              <div style="font-size:0.78rem;color:#4A9B6F;font-weight:600;margin-bottom:4px;">S — Supporter 支持型</div>
+              <div style="font-size:0.8rem;color:var(--text-mid);">給他陪伴與穩定感，他就會挺你。</div>
+            </div>
+            <div style="background:var(--white);border:1px solid var(--border);border-radius:6px;padding:14px 16px;">
+              <div style="font-size:0.78rem;color:#C08A3A;font-weight:600;margin-bottom:4px;">P — Promoter 推廣型</div>
+              <div style="font-size:0.8rem;color:var(--text-mid);">給他舞台與未來感，他就會聽你。</div>
+            </div>
+          </div>
+
+          <!-- 4-week plan -->
+          <h4 style="font-size:0.88rem;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:16px;font-weight:500;">四週陪跑計劃</h4>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:32px;">
+            <div style="display:flex;gap:12px;align-items:flex-start;padding:14px 16px;background:var(--white);border:1px solid var(--border);border-radius:6px;">
+              <div style="min-width:32px;height:32px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:600;flex-shrink:0;">W1</div>
+              <div><div style="font-size:0.85rem;font-weight:500;color:var(--text-dark);margin-bottom:2px;">原廠設定校正</div><div style="font-size:0.8rem;color:var(--text-mid);">從 ACSP 讀懂你的內耗根源，讓你轉得動。</div></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;padding:14px 16px;background:var(--white);border:1px solid var(--border);border-radius:6px;">
+              <div style="min-width:32px;height:32px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:600;flex-shrink:0;">W2</div>
+              <div><div style="font-size:0.85rem;font-weight:500;color:var(--text-dark);margin-bottom:2px;">對象深度解碼</div><div style="font-size:0.8rem;color:var(--text-mid);">拆解那個讓你最困擾的對象，找出他的溝通攻略地圖。</div></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;padding:14px 16px;background:var(--white);border:1px solid var(--border);border-radius:6px;">
+              <div style="min-width:32px;height:32px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:600;flex-shrink:0;">W3</div>
+              <div><div style="font-size:0.85rem;font-weight:500;color:var(--text-dark);margin-bottom:2px;">語言轉譯實戰</div><div style="font-size:0.8rem;color:var(--text-mid);">一句一句修改劇本，把你想說的話，翻譯成「他聽得懂」的語言。</div></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;padding:14px 16px;background:var(--white);border:1px solid var(--border);border-radius:6px;">
+              <div style="min-width:32px;height:32px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:600;flex-shrink:0;">W4</div>
+              <div><div style="font-size:0.85rem;font-weight:500;color:var(--text-dark);margin-bottom:2px;">界線與能量防護</div><div style="font-size:0.8rem;color:var(--text-mid);">建立防護罩，溫柔而堅定地說「不」，滿足且喜悅地說「好」。</div></div>
+            </div>
+          </div>
+
+          <!-- Suitable for -->
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:28px;">
+            <h4 style="font-size:0.88rem;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:14px;font-weight:500;">適合這樣的你</h4>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="font-size:0.88rem;color:var(--text-mid);">✅ 擔心關係搞僵，而選擇委屈自己的人</div>
+              <div style="font-size:0.88rem;color:var(--text-mid);">✅ 工作能力強，但面對「人」的問題，有時感到無措的人</div>
+              <div style="font-size:0.88rem;color:var(--text-mid);">✅ 想改善某段特定關係（職場 ／ 親密關係 ／ 家人），但找不到切入點的人</div>
+              <div style="font-size:0.88rem;color:var(--text-mid);">✅ 想準備自己提升溝通品質的人</div>
+            </div>
+          </div>
+
+          <!-- Program details -->
+          <div style="background:rgba(176,154,114,0.08);border:1px solid rgba(176,154,114,0.22);border-radius:8px;padding:20px 24px;margin-bottom:32px;">
+            <div style="font-size:0.82rem;color:var(--text-mid);line-height:2;">
+              <strong style="color:var(--text-dark);">形式：</strong>線上 1 對 1 視訊 ／ 電話諮詢<br>
+              <strong style="color:var(--text-dark);">時間：</strong>每次 90 分鐘，共 4 次（每週 1 次）
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+            <a href="course.html#enroll" class="btn btn-gold">預約諮詢 →</a>
+            <a href="mailto:axislinestudio@gmail.com" style="font-size:0.85rem;color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(176,154,114,0.4);">✉ Email 預約時間</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile style -->
+    <style>
+      @media (max-width: 768px) {
+        #instructor > .container > div:last-child {
+          grid-template-columns: 1fr !important;
+          gap: 40px !important;
+        }
+        #instructor > .container > div:last-child > div:first-child {
+          position: static !important;
+        }
+      }
+    </style>
+  </section>
+
+  <!-- ── About ── -->
+  <section id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-logo-block fade-up">
+          <div class="about-logo-circle">
+            <img src="./Logo/logo_64x64.png" alt="軸心線工作室" />
+            <div class="about-logo-ring"></div>
+          </div>
+          <div>
+            <div class="about-studio-name">軸心線工作室</div>
+            <div class="about-studio-en mt-sm">AXIS LINE STUDIO</div>
+          </div>
+        </div>
+        <div class="about-text fade-up">
+          <div class="sec-tag" style="color: rgba(255,255,255,0.4);">ABOUT US</div>
+          <h2 class="sec-title light">以心為軸　引線成路</h2>
+          <div class="divider"></div>
+          <p class="sec-subtitle light">
+            「軸心」是穩定運轉的關鍵，「線」是引領我們前行的方向。<br>
+            協助你找到生活與事業的重心，穩定發揮。<br>
+            生活美學、生命目標與溝通風格，並非裝飾——<br>
+            我們一起找到內在穩定的軸心，<br>
+            軸心穩了，自在與世界對話，踏步綻放光芒的路線。
+          </p>
+          <p class="sec-subtitle light mt-md" style="font-style:italic;opacity:0.7;">
+            【願景】說得輕鬆，聽得自在，想得通透，做得踏實，<br>
+            自然擁有身心健康、平衡豐富的人生。
+          </p>
+          <div class="about-values">
+            <div class="about-value">
+              <div class="about-value-title">✅ 認真</div>
+              <div class="about-value-desc">每一個溝通議題，提供具體、可執行且能轉動現況的行動方案</div>
+            </div>
+            <div class="about-value">
+              <div class="about-value-title">✅ 專注</div>
+              <div class="about-value-desc">在充滿雜音的環境中抓出重點，專注於「能產生長期效益」的本質</div>
+            </div>
+            <div class="about-value">
+              <div class="about-value-title">✅ 真誠</div>
+              <div class="about-value-desc">影響力來自有理有據的真誠，以成熟、專業、不卑不亢的姿態向上管理</div>
+            </div>
+            <div class="about-value">
+              <div class="about-value-title">✅ 堅持</div>
+              <div class="about-value-desc">長期主義的信仰——陪伴你走得穩、走得遠的篤定踏實</div>
+            </div>
+          </div>
+          <p class="sec-subtitle light mt-md" style="font-size:0.88rem;opacity:0.6;font-style:italic;">
+            人人都有自己專屬獨有的智慧與能力，不需要仰望他人，<br>
+            只要伸展活用自己本來就有的力量。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FAQ ── -->
+  <section id="faq">
+    <div class="container">
+      <div class="faq-layout">
+        <div class="fade-up">
+          <div class="sec-tag">FREQUENTLY ASKED</div>
+          <h2 class="sec-title">常見問題</h2>
+          <div class="divider"></div>
+          <p class="sec-subtitle">找不到想要的答案？歡迎透過頁面下方的聯絡資訊與我們聯繫。</p>
+          <a href="#cta" class="btn btn-dark mt-lg">立即報名</a>
+        </div>
+        <div class="faq-list fade-up" id="faq-list-render"></div>
+      </div>
+    </div>
+  </section>
+  <script>
+  (async function(){
+    const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    const DEFAULT_FAQS = [
+      { question:'這個測驗和 MBTI 或 DISC 有什麼不同？', answer:'ACSP 四型溝通風格框架專注於「溝通行為」而非廣泛的人格特質，更強調實際互動中的應用策略。相比 MBTI 或 DISC，ACSP 的報告提供更具體的場景化建議，幫助你在真實的溝通情境中立即應用。', is_visible:true },
+      { question:'完成測驗需要多長時間？', answer:'測驗問卷約需 15–20 分鐘完成。完整課程（含測驗解讀與應用模組）總計約 5 小時，可依自己的步調自由安排。', is_visible:true },
+      { question:'我會得到什麼樣的測驗報告？', answer:'完成測驗後，你將獲得一份個人化的 ACSP 四型分佈報告，包含主導風格分析、溝通優勢、潛在盲點，以及針對職場、關係等場景的具體建議。', is_visible:true },
+      { question:'課程可以團體報名嗎？', answer:'是的！我們提供企業團體方案，適合 5 人以上的團隊。團報方案包含專屬的「團隊溝通地圖」報告，協助主管了解整體團隊的風格組成與最佳協作策略。請聯繫我們獲取報價。', is_visible:true }
+    ];
+    let faqs = DEFAULT_FAQS;
+    try {
+      const { data, error } = await _sb.from('acsp_faqs')
+        .select('*').eq('is_visible', true)
+        .order('sort_order', { ascending: true }).order('id', { ascending: true });
+      if (!error && data && data.length) faqs = data;
+    } catch(e) {}
+    const list = document.getElementById('faq-list-render');
+    list.innerHTML = faqs.map(f=>`
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">
+          <span class="faq-q-text">${f.question || f.q || ''}</span>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-a">${f.answer || f.a || ''}</div>
+      </div>`).join('');
+  })();
+  </script>
+
+  <!-- ── Testimonials ── -->
+  <section id="testimonials">
+    <div class="container">
+      <div class="testimonials-header fade-up">
+        <div class="sec-tag">WHAT STUDENTS SAY</div>
+        <h2 class="sec-title">學員怎麼說</h2>
+        <div class="divider center"></div>
+      </div>
+      <div class="testi-track" id="testi-track-render"></div>
+    </div>
+  </section>
+  <script>
+  (async function(){
+    const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    const DEFAULT_REVIEWS = [
+      { author:'林小姐', role:'行銷總監 · 台北', stars:5, body:'「完成測驗後，我終於理解為什麼與某位同事的溝通總是充滿摩擦——我們是截然相反的風格。課程給了我具體的調適策略，現在我們的合作順暢多了。」', is_visible:true },
+      { author:'陳先生', role:'業務經理 · 新竹', stars:5, body:'「這是我參加過最實用的自我成長課程。不只是了解自己，更學到如何快速辨識對方的風格，讓每一次業務拜訪都更有準備。」', is_visible:true },
+      { author:'張太太', role:'全職媽媽 · 台中', stars:5, body:'「我和先生都完成了測驗，發現我們在溝通上的核心差異，讓我們減少了很多不必要的爭吵。這是我送給婚姻最好的禮物。」', is_visible:true }
+    ];
+    let reviews = DEFAULT_REVIEWS;
+    try {
+      const { data, error } = await _sb.from('acsp_reviews')
+        .select('*').eq('is_visible', true)
+        .order('sort_order', { ascending: true }).order('id', { ascending: true });
+      if (!error && data && data.length) reviews = data;
+    } catch(e) {}
+    const track = document.getElementById('testi-track-render');
+    track.innerHTML = reviews.map(r=>`
+      <div class="testi-card fade-up">
+        <div class="testi-stars">${'★'.repeat(r.stars||5)}</div>
+        <p class="testi-text">${r.body || r.text || ''}</p>
+        <div class="testi-author">
+          <div class="testi-avatar">${(r.author || r.name || '?').charAt(0)}</div>
+          <div>
+            <div class="testi-name">${r.author || r.name || ''}</div>
+            <div class="testi-role">${r.role || ''}</div>
+          </div>
+        </div>
+      </div>`).join('');
+  })();
+  </script>
+
+  <!-- ── Take Quiz CTA ── -->
+  <section id="take-quiz" style="padding:100px 0;background:var(--bg-light);">
+    <div class="container">
+      <div style="background:var(--bg-dark);border-radius:8px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;box-shadow:0 20px 60px rgba(0,0,0,0.2);" class="quiz-promo-grid">
+        <div style="padding:52px 48px;">
+          <div style="font-size:0.75rem;letter-spacing:0.18em;color:var(--gold);margin-bottom:14px;">FREE ASSESSMENT</div>
+          <h2 class="sec-title light" style="font-size:clamp(1.5rem,3vw,2.2rem);">現在就來測看看<br/>你是哪種風格？</h2>
+          <div style="width:36px;height:2px;background:var(--gold);margin:20px 0;"></div>
+          <p style="font-size:0.92rem;color:rgba(255,255,255,0.55);line-height:1.9;margin-bottom:32px;">
+            20 道題目，15 分鐘完成。<br/>
+            立即獲得你的 ACSP 個人化報告，<br/>
+            結果同步寄送到你的信箱。
+          </p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a href="quiz.html" class="btn btn-gold" style="padding:14px 32px;font-size:0.95rem;">開始免費測驗 →</a>
+          </div>
+          <div style="margin-top:20px;display:flex;gap:24px;">
+            <div style="font-size:0.78rem;color:rgba(255,255,255,0.35);display:flex;align-items:center;gap:6px;">✓ 免費測驗</div>
+            <div style="font-size:0.78rem;color:rgba(255,255,255,0.35);display:flex;align-items:center;gap:6px;">✓ 即時結果</div>
+            <div style="font-size:0.78rem;color:rgba(255,255,255,0.35);display:flex;align-items:center;gap:6px;">✓ 寄送報告</div>
+          </div>
+        </div>
+        <div style="background:rgba(176,154,114,0.06);border-left:1px solid rgba(176,154,114,0.12);padding:52px 40px;display:flex;flex-direction:column;gap:20px;">
+          <div style="font-size:0.75rem;letter-spacing:0.15em;color:rgba(255,255,255,0.3);margin-bottom:4px;">測驗包含四種風格</div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(176,154,114,0.08);border-radius:6px;border:1px solid rgba(176,154,114,0.15);">
+              <div style="font-family:'Noto Serif TC',serif;font-size:1.5rem;color:var(--gold);width:36px;text-align:center;flex-shrink:0;">A</div>
+              <div><div style="font-size:0.88rem;color:#fff;margin-bottom:2px;">分析型 Analyzer</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.4);">邏輯嚴謹・重視數據・謹慎決策</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(74,114,176,0.08);border-radius:6px;border:1px solid rgba(74,114,176,0.2);">
+              <div style="font-family:'Noto Serif TC',serif;font-size:1.5rem;color:#6a92d0;width:36px;text-align:center;flex-shrink:0;">C</div>
+              <div><div style="font-size:0.88rem;color:#fff;margin-bottom:2px;">控制型 Controller</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.4);">果斷直接・目標明確・執行力強</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(74,155,111,0.08);border-radius:6px;border:1px solid rgba(74,155,111,0.2);">
+              <div style="font-family:'Noto Serif TC',serif;font-size:1.5rem;color:#6ac090;width:36px;text-align:center;flex-shrink:0;">S</div>
+              <div><div style="font-size:0.88rem;color:#fff;margin-bottom:2px;">支持型 Supporter</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.4);">溫暖真誠・善於傾聽・重視關係</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(192,138,58,0.08);border-radius:6px;border:1px solid rgba(192,138,58,0.2);">
+              <div style="font-family:'Noto Serif TC',serif;font-size:1.5rem;color:#d4a060;width:36px;text-align:center;flex-shrink:0;">P</div>
+              <div><div style="font-size:0.88rem;color:#fff;margin-bottom:2px;">推廣型 Promoter</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.4);">熱情感染・富有創意・善於影響</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <style>
+    @media(max-width:768px){
+      .quiz-promo-grid{grid-template-columns:1fr!important;}
+    }
+  </style>
+
+  <!-- ── CTA ── -->
+  <section id="cta">
+    <div class="container cta-inner">
+      <div class="cta-badge">限時優惠方案</div>
+      <h2 class="cta-title serif">
+        開始認識你的溝通風格<br />從今天就改變
+      </h2>
+      <p class="cta-sub">
+        加入超過 500 位學員，透過 ACSP 四型溝通風格測驗，
+        解鎖你在職場與生活中的溝通潛能。
+      </p>
+      <div class="cta-actions">
+        <a href="courses.html" class="btn btn-gold">立即前往報名</a>
+        <a href="#faq" class="btn btn-outline">查看常見問題</a>
+      </div>
+      <p class="cta-note">★ 個人化四型分佈報告 · 立即開通 · 專業解析</p>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <img src="./Logo/logo_64x64.png" alt="Logo" />
+            <span class="footer-logo-name">軸心線工作室</span>
+          </div>
+          <p class="footer-desc">
+            以科學為基礎，以人為核心，協助每個人找到屬於自己的溝通頻率，
+            建立真實而有深度的人際連結。
+          </p>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">服務</div>
+          <a href="#what">關於 ACSP 測驗</a>
+          <a href="#styles">四型溝通風格</a>
+          <a href="courses.html">服務內容</a>
+          <a href="course.html#enroll">立即報名</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">資源</div>
+          <a href="#about">關於我們</a>
+          <a href="#faq">常見問題</a>
+          <a href="admin.html">後台管理</a>
+          <a href="#">隱私政策</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2024 軸心線工作室 Axis Line Studio. All rights reserved.</span>
+        <div class="footer-social">
+          <a href="#">Facebook</a>
+          <a href="#">Instagram</a>
+          <a href="#">LINE</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── Navbar scroll ──
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    });
+    navbar.classList.add('scrolled'); // always show bg for visibility
+
+    // ── Mobile menu ──
+    function toggleMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('open');
+    }
+
+    // ── Module accordion ──
+    function toggleModule(item) {
+      const expand = item.querySelector('.module-expand');
+      const isOpen = expand.classList.contains('open');
+      document.querySelectorAll('.module-expand.open').forEach(e => e.classList.remove('open'));
+      if (!isOpen) expand.classList.add('open');
+    }
+
+    // ── FAQ accordion ──
+    function toggleFaq(item) {
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+
+    // ── Scroll animations ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // ── Smooth nav click ──
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          const offset = 80;
+          window.scrollTo({ top: target.offsetTop - offset, behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

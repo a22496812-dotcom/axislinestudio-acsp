@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ACSP 四型溝通風格測驗 | 軸心線工作室</title>
+  <meta name="description" content="完成 ACSP 測驗，立即了解你的溝通風格類型" />
+  <link rel="icon" type="image/png" href="./Logo/logo_64x64.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet" />
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <style>
+    :root {
+      --bg:       #E8E2D4;
+      --bg-light: #F2EDE3;
+      --bg-dark:  #1E1C1A;
+      --white:    #FDFAF5;
+      --text:     #2B2825;
+      --text-mid: #5A5550;
+      --text-soft:#8C8680;
+      --border:   #D0C9BC;
+      --gold:     #B09A72;
+      --gold-pale:rgba(176,154,114,0.12);
+      --green:    #4A9B6F;
+      --blue:     #4A72B0;
+      --red:      #C0544A;
+      --amber:    #C08A3A;
+      --radius:   8px;
+      --tr:       0.25s ease;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.7;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--bg-dark);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .header-logo img { width: 36px; height: 36px; border-radius: 50%; }
+    .header-logo span {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+    .header-back {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      transition: color var(--tr);
+    }
+    .header-back:hover { color: var(--gold); }
+
+    /* ── Progress Bar ── */
+    .progress-wrap {
+      background: var(--bg-dark);
+      padding: 0 24px 16px;
+    }
+    .progress-bar-outer {
+      height: 3px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.35);
+      margin-top: 8px;
+    }
+
+    /* ── Main Container ── */
+    .quiz-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Screen 0: Intro ── */
+    .intro-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(43,40,37,0.08);
+    }
+    .intro-hero {
+      background: var(--bg-dark);
+      padding: 48px 40px;
+      text-align: center;
+    }
+    .intro-hero img { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 20px; display: block; }
+    .intro-hero h1 {
+      font-family: 'Noto Serif TC', serif;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 500;
+      color: #fff;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+    .intro-hero p { font-size: 0.9rem; color: rgba(255,255,255,0.55); max-width: 440px; margin: 0 auto; }
+    .intro-stars { color: var(--gold); font-size: 1.2rem; letter-spacing: 6px; margin-bottom: 16px; }
+    .intro-body { padding: 36px 40px; }
+    .intro-info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .intro-info-item {
+      text-align: center;
+      padding: 16px;
+      background: var(--bg-light);
+      border-radius: 6px;
+    }
+    .intro-info-num {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: var(--text);
+    }
+    .intro-info-label { font-size: 0.78rem; color: var(--text-soft); margin-top: 4px; }
+
+    /* Form fields */
+    .field-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+    .field-label { font-size: 0.82rem; font-weight: 500; color: var(--text-mid); }
+    .field-input {
+      background: var(--bg-light);
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-size: 0.92rem;
+      font-family: 'Noto Sans TC', sans-serif;
+      color: var(--text);
+      outline: none;
+      transition: border-color var(--tr);
+    }
+    .field-input:focus { border-color: var(--gold); background: var(--white); }
+    .field-input::placeholder { color: var(--text-soft); }
+    .field-hint { font-size: 0.75rem; color: var(--text-soft); }
+
+    .btn-start {
+      width: 100%;
+      padding: 15px;
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: background var(--tr);
+      margin-top: 8px;
+    }
+    .btn-start:hover { background: #9a855c; }
+    .note-text {
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      text-align: center;
+      margin-top: 14px;
+    }
+
+    /* ── Screen 1: Questions ── */
+    .question-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(43,40,37,0.08);
+      min-height: 400px;
+    }
+    .q-header { margin-bottom: 28px; }
+    .q-num {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+    .q-text {
+      font-family: 'Noto Serif TC', serif;
+      font-size: clamp(1.05rem, 2.5vw, 1.25rem);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .q-instruction {
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      margin-top: 8px;
+      font-style: italic;
+    }
+    .options-grid { display: flex; flex-direction: column; gap: 12px; }
+    .option-btn {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 20px;
+      background: var(--bg-light);
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all var(--tr);
+      text-align: left;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 0.92rem;
+      color: var(--text-mid);
+      line-height: 1.6;
+      width: 100%;
+    }
+    .option-btn:hover {
+      border-color: var(--gold);
+      background: rgba(176,154,114,0.08);
+      color: var(--text);
+    }
+    .option-btn.selected {
+      border-color: var(--gold);
+      background: rgba(176,154,114,0.15);
+      color: var(--text);
+    }
+    .option-key {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 600;
+      flex-shrink: 0;
+      color: var(--text-mid);
+      transition: all var(--tr);
+      margin-top: 1px;
+    }
+    .option-btn.selected .option-key {
+      background: var(--gold);
+      color: #fff;
+    }
+    .q-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .btn-nav {
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--tr);
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--text-mid);
+    }
+    .btn-nav:hover { border-color: var(--text-mid); color: var(--text); }
+    .btn-nav.primary {
+      background: var(--text);
+      border-color: var(--text);
+      color: #fff;
+    }
+    .btn-nav.primary:hover { background: #3d3830; }
+    .btn-nav:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── Screen 2: Loading ── */
+    .loading-screen {
+      text-align: center;
+      padding: 80px 24px;
+    }
+    .spinner {
+      width: 56px; height: 56px;
+      border: 3px solid var(--border);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 24px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.1rem;
+      color: var(--text-mid);
+      margin-bottom: 8px;
+    }
+    .loading-sub { font-size: 0.82rem; color: var(--text-soft); }
+
+    /* ── Screen 3: Results ── */
+    .result-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(43,40,37,0.12);
+    }
+    .result-hero {
+      background: var(--bg-dark);
+      padding: 48px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .result-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 50%, rgba(176,154,114,0.15) 0%, transparent 70%);
+    }
+    .result-hero-inner { position: relative; z-index: 1; }
+    .result-badge {
+      display: inline-block;
+      background: rgba(176,154,114,0.2);
+      border: 1px solid rgba(176,154,114,0.4);
+      color: var(--gold);
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      padding: 5px 16px;
+      border-radius: 2px;
+      margin-bottom: 20px;
+    }
+    .result-stars { color: var(--gold); font-size: 1.4rem; letter-spacing: 6px; margin-bottom: 12px; }
+    .result-type-label {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.12em;
+      margin-bottom: 6px;
+    }
+    .result-type-name {
+      font-family: 'Noto Serif TC', serif;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      color: #fff;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .result-type-en {
+      font-size: 0.85rem;
+      color: var(--gold);
+      letter-spacing: 0.2em;
+      margin-bottom: 16px;
+    }
+    .result-tagline {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.55);
+      max-width: 440px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+    .result-user-name {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 8px;
+    }
+
+    /* Score Bars */
+    .result-body { padding: 36px 40px; }
+    .section-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: var(--text-soft);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .score-bars { display: flex; flex-direction: column; gap: 14px; margin-bottom: 36px; }
+    .score-row { }
+    .score-row-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .score-name {
+      font-size: 0.88rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .score-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .score-pct { font-size: 0.82rem; color: var(--text-soft); font-weight: 500; }
+    .score-bar-outer {
+      height: 8px;
+      background: var(--bg);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .score-bar-inner {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1.2s ease;
+    }
+
+    /* Traits */
+    .traits-section { margin-bottom: 32px; }
+    .traits-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .trait-chip {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      color: var(--text-mid);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .trait-chip::before { content: '✓'; color: var(--gold); font-weight: 700; }
+
+    /* Strengths / Blind Spots */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+    .insight-box {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px;
+    }
+    .insight-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .insight-title.strength { color: var(--green); }
+    .insight-title.blind { color: var(--amber); }
+    .insight-list { list-style: none; }
+    .insight-list li {
+      font-size: 0.83rem;
+      color: var(--text-mid);
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.5;
+    }
+    .insight-list li:last-child { border-bottom: none; }
+
+    /* Compatibility */
+    .compat-section { margin-bottom: 32px; }
+    .compat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .compat-card {
+      text-align: center;
+      padding: 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .compat-card.best { background: rgba(74,155,111,0.08); border-color: rgba(74,155,111,0.3); }
+    .compat-card.good { background: rgba(176,154,114,0.08); border-color: rgba(176,154,114,0.3); }
+    .compat-card.challenge { background: rgba(192,84,74,0.08); border-color: rgba(192,84,74,0.3); }
+    .compat-type { font-family: 'Noto Serif TC', serif; font-size: 1rem; font-weight: 500; margin-bottom: 4px; }
+    .compat-label { font-size: 0.7rem; letter-spacing: 0.1em; margin-bottom: 4px; }
+    .compat-label.best { color: var(--green); }
+    .compat-label.good { color: var(--gold); }
+    .compat-label.challenge { color: var(--red); }
+    .compat-desc { font-size: 0.72rem; color: var(--text-soft); line-height: 1.5; }
+
+    /* Actions */
+    .result-actions { display: flex; flex-direction: column; gap: 12px; }
+    .btn-action {
+      width: 100%;
+      padding: 14px;
+      border-radius: 6px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--tr);
+      border: 1.5px solid transparent;
+      letter-spacing: 0.04em;
+    }
+    .btn-action.primary { background: var(--gold); color: #fff; border-color: var(--gold); }
+    .btn-action.primary:hover { background: #9a855c; }
+    .btn-action.outline { background: transparent; color: var(--text); border-color: var(--border); }
+    .btn-action.outline:hover { border-color: var(--text-mid); }
+    .btn-action.dark { background: var(--bg-dark); color: #fff; border-color: var(--bg-dark); }
+    .btn-action.dark:hover { background: #2d2b28; }
+
+    /* Email status */
+    .email-status {
+      text-align: center;
+      font-size: 0.82rem;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 8px;
+      display: none;
+    }
+    .email-status.success { background: rgba(74,155,111,0.1); color: var(--green); }
+    .email-status.error   { background: rgba(192,84,74,0.1); color: var(--red); }
+    .email-status.info    { background: rgba(176,154,114,0.1); color: var(--text-mid); }
+
+    /* ── Divider ── */
+    .divider { width: 36px; height: 2px; background: var(--gold); margin: 0 0 20px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .quiz-wrap { padding: 24px 16px 60px; }
+      .question-card { padding: 28px 20px; }
+      .intro-body { padding: 24px 20px; }
+      .intro-hero { padding: 36px 20px; }
+      .result-hero { padding: 36px 20px; }
+      .result-body { padding: 24px 20px; }
+      .intro-info-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .two-col { grid-template-columns: 1fr; }
+      .compat-grid { grid-template-columns: 1fr; }
+      .traits-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="header-logo">
+    <img src="./Logo/logo_64x64.png" alt="Logo" />
+    <span>軸心線工作室</span>
+  </a>
+  <a href="index.html" class="header-back">← 返回首頁</a>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-bar-outer">
+    <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+  </div>
+  <div class="progress-label">
+    <span id="progressText">準備開始</span>
+    <span id="progressPct">0%</span>
+  </div>
+</div>
+
+<div class="quiz-wrap">
+
+  <!-- ── Screen 0: Intro ── -->
+  <div class="screen active" id="screen-intro">
+    <div class="intro-card">
+      <div class="intro-hero">
+        <img src="./Logo/logo_64x64.png" alt="軸心線工作室" style="width:80px;height:80px;border-radius:50%;object-fit:cover;" />
+        <div style="font-family:'Noto Serif TC',serif;font-size:1.1rem;color:#fff;letter-spacing:0.1em;margin:10px 0 4px;">軸心線工作室</div>
+        <div style="font-size:0.7rem;color:var(--gold);letter-spacing:0.25em;margin-bottom:20px;">AXIS LINE STUDIO</div>
+        <div class="intro-stars">★ ★ ★ ★</div>
+        <h1>ACSP 四型溝通風格測驗</h1>
+        <p>請依照「你平常最自然的反應」作答，不需要想太久，第一直覺最準</p>
+      </div>
+      <div class="intro-body">
+        <div class="intro-info-grid">
+          <div class="intro-info-item">
+            <div class="intro-info-num">25</div>
+            <div class="intro-info-label">道題目</div>
+          </div>
+          <div class="intro-info-item">
+            <div class="intro-info-num">10</div>
+            <div class="intro-info-label">分鐘完成</div>
+          </div>
+          <div class="intro-info-item">
+            <div class="intro-info-num">即時</div>
+            <div class="intro-info-label">查看結果</div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">你的姓名 <span style="color:var(--red)">*</span></label>
+          <input class="field-input" id="userName" type="text" placeholder="請輸入你的姓名" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Email 信箱 <span style="color:var(--red)">*</span></label>
+          <input class="field-input" id="userEmail" type="email" placeholder="test@example.com" />
+          <span class="field-hint">📧 完成測驗後，結果報告將<strong>自動寄送</strong>到此信箱，請確認填寫正確</span>
+        </div>
+        <div class="field-group">
+          <label class="field-label">你的職業 / 身份</label>
+          <input class="field-input" id="userRole" type="text" placeholder="例：行銷經理、設計師、學生…（選填）" />
+        </div>
+
+        <button class="btn-start" onclick="startQuiz()">開始測驗 →</button>
+        <p class="note-text">🔒 你的資料僅用於產生測驗報告，不會公開或轉讓</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Screen 1: Questions ── -->
+  <div class="screen" id="screen-questions">
+    <div class="question-card">
+      <div class="q-header">
+        <div class="q-num" id="qNum">題目 1 / 25</div>
+        <div class="q-text" id="qText"></div>
+        <div class="q-instruction">請選擇最符合你平常真實狀況的選項</div>
+      </div>
+      <div class="options-grid" id="optionsGrid"></div>
+      <div class="q-nav">
+        <button class="btn-nav" id="btnPrev" onclick="prevQ()" disabled>← 上一題</button>
+        <button class="btn-nav primary" id="btnNext" onclick="nextQ()">下一題 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Screen 2: Loading ── -->
+  <div class="screen" id="screen-loading">
+    <div class="loading-screen">
+      <div class="spinner"></div>
+      <div class="loading-text">正在分析你的溝通風格…</div>
+      <div class="loading-sub">結果即將揭曉，同時為你寄出報告信件</div>
+    </div>
+  </div>
+
+  <!-- ── Screen 3: Results ── -->
+  <div class="screen" id="screen-result">
+    <div class="result-card">
+      <div class="result-hero">
+        <div class="result-hero-inner">
+          <div class="result-badge">ACSP 測驗結果</div>
+          <div class="result-user-name" id="resultUserName"></div>
+          <div class="result-stars" id="resultStars">★</div>
+          <div class="result-type-label">主風格（最高分）</div>
+          <div class="result-type-name" id="resultTypeName">—</div>
+          <div class="result-type-en" id="resultTypeEn">—</div>
+          <div class="result-tagline" id="resultTagline">—</div>
+          <div id="secondaryStyleWrap" style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.15);">
+            <div style="font-size:0.75rem;letter-spacing:0.1em;color:rgba(255,255,255,0.5);margin-bottom:6px;">第二語言（第二高分）</div>
+            <div id="secondaryTypeName" style="font-family:'Noto Serif TC',serif;font-size:1.1rem;color:rgba(255,255,255,0.85);font-weight:500;">—</div>
+            <div id="secondaryTypeEn" style="font-size:0.78rem;letter-spacing:0.2em;color:rgba(255,255,255,0.4);margin-top:2px;">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="result-body">
+        <div class="section-label">四型分佈分析</div>
+        <div class="score-bars" id="scoreBars"></div>
+
+        <div class="section-label">你的溝通特質</div>
+        <div class="traits-section">
+          <div class="traits-grid" id="traitsGrid"></div>
+        </div>
+
+        <div class="two-col">
+          <div class="insight-box">
+            <div class="insight-title strength">💪 溝通優勢</div>
+            <ul class="insight-list" id="strengthList"></ul>
+          </div>
+          <div class="insight-box">
+            <div class="insight-title blind">⚠️ 潛在盲點</div>
+            <ul class="insight-list" id="blindList"></ul>
+          </div>
+        </div>
+
+        <div class="compat-section">
+          <div class="section-label">與其他風格的互動</div>
+          <div class="compat-grid" id="compatGrid"></div>
+        </div>
+
+        <div class="result-actions">
+          <div class="email-status info" id="emailStatus" style="display:block;">
+            📧 正在將結果寄送到你的信箱…
+          </div>
+          <button class="btn-action dark" onclick="window.open('index.html#cta')">
+            🎓 立即報名完整課程
+          </button>
+          <button class="btn-action outline" onclick="retakeQuiz()">
+            ↩ 重新測驗
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.quiz-wrap -->
+
+<script>
+// ────────────────────────────────────────────────
+// EmailJS 設定（請替換你的帳號資訊）
+// ────────────────────────────────────────────────
+const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // 替換
+const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // 替換
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // 替換
+emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+// ────────────────────────────────────────────────
+// ACSP 題庫（25 題，每題 4 選項分別對應 A/C/S/P）
+// ────────────────────────────────────────────────
+const questions = [
+  {
+    text: "當你在聽別人講事情時，你最在意的是：",
+    options: [
+      { key: "A", text: "內容是否有講清楚" },
+      { key: "C", text: "結論到底是什麼" },
+      { key: "S", text: "對方現在看起來心情如何" },
+      { key: "P", text: "這件事有趣的地方在哪裡" }
+    ]
+  },
+  {
+    text: "面對新的任務，你會先",
+    options: [
+      { key: "A", text: "了解細節內容" },
+      { key: "C", text: "抓出大方向" },
+      { key: "S", text: "看大家需要什麼" },
+      { key: "P", text: "想像有什麼執行或發展的可能性" }
+    ]
+  },
+  {
+    text: "開會時，你通常",
+    options: [
+      { key: "A", text: "不斷整理資訊" },
+      { key: "C", text: "拉回重點" },
+      { key: "S", text: "協調大家意見" },
+      { key: "P", text: "丟點子出來" }
+    ]
+  },
+  {
+    text: "別人講太久時，你會",
+    options: [
+      { key: "A", text: "幫忙整理重點" },
+      { key: "C", text: "問對方：重點是？" },
+      { key: "S", text: "繼續聽" },
+      { key: "P", text: "趁機說說自己相關的想法或經歷" }
+    ]
+  },
+  {
+    text: "當人家問你問題，你會：",
+    options: [
+      { key: "A", text: "盡可能詳盡回答" },
+      { key: "C", text: "直接講答案" },
+      { key: "S", text: "關心對方感受" },
+      { key: "P", text: "先講故事／背景／發生什麼事" }
+    ]
+  },
+  {
+    text: "在團隊裡，你比較像",
+    options: [
+      { key: "A", text: "確認者：確認資訊、細節、計畫等" },
+      { key: "C", text: "推動者：要讓事情／結果發生" },
+      { key: "S", text: "協作者：一起協助合作出力" },
+      { key: "P", text: "激勵者：鼓舞士氣、振奮能量" }
+    ]
+  },
+  {
+    text: "你最不能接受的是",
+    options: [
+      { key: "A", text: "資訊模糊" },
+      { key: "C", text: "沒效率" },
+      { key: "S", text: "氣氛差／尷尬" },
+      { key: "P", text: "無聊／不好玩" }
+    ]
+  },
+  {
+    text: "做決定時你最需要",
+    options: [
+      { key: "A", text: "資訊、意見" },
+      { key: "C", text: "未來的方向" },
+      { key: "S", text: "大家的共識" },
+      { key: "P", text: "當下的感受" }
+    ]
+  },
+  {
+    text: "別人不同意你時，你會",
+    options: [
+      { key: "A", text: "再一次說明解釋自己的想法" },
+      { key: "C", text: "針對意見，立刻回應" },
+      { key: "S", text: "先退一步，以對方意見為主" },
+      { key: "P", text: "換一個方式／角度說" }
+    ]
+  },
+  {
+    text: "別人給你壓力時，你會",
+    options: [
+      { key: "A", text: "越講越細節" },
+      { key: "C", text: "越講越強硬" },
+      { key: "S", text: "越來越安靜" },
+      { key: "P", text: "趕快跳話題" }
+    ]
+  },
+  {
+    text: "做簡報時，你會重視",
+    options: [
+      { key: "A", text: "內容是否完整" },
+      { key: "C", text: "快速講重點" },
+      { key: "S", text: "注意現場的表情反應" },
+      { key: "P", text: "喜歡講故事" }
+    ]
+  },
+  {
+    text: "做事情時，你習慣",
+    options: [
+      { key: "A", text: "按步驟、要有流程" },
+      { key: "C", text: "快速先把重點完成" },
+      { key: "S", text: "留意大家的步調" },
+      { key: "P", text: "很需要靈感" }
+    ]
+  },
+  {
+    text: "面對突然改變，你會",
+    options: [
+      { key: "A", text: "需要重新思考安排" },
+      { key: "C", text: "立刻換方案" },
+      { key: "S", text: "先安撫大家的感受" },
+      { key: "P", text: "覺得刺激、興致勃勃" }
+    ]
+  },
+  {
+    text: "當別人詢問你意見，你會",
+    options: [
+      { key: "A", text: "分析狀況給他聽" },
+      { key: "C", text: "給建議，直接跟他說怎麼做" },
+      { key: "S", text: "先問對方的想法" },
+      { key: "P", text: "講你體驗到的感覺" }
+    ]
+  },
+  {
+    text: "你覺得溝通最辛苦的是",
+    options: [
+      { key: "A", text: "不清不楚" },
+      { key: "C", text: "拖拖拉拉" },
+      { key: "S", text: "成員有衝突" },
+      { key: "P", text: "日復一日重複不變" }
+    ]
+  },
+  {
+    text: "別人做不好時，你會",
+    options: [
+      { key: "A", text: "幫忙補上細節" },
+      { key: "C", text: "拿回來自己做" },
+      { key: "S", text: "問他需不需要幫忙" },
+      { key: "P", text: "提出另一個新想法" }
+    ]
+  },
+  {
+    text: "你最常被說的一句話",
+    options: [
+      { key: "A", text: "想太多／太細節了" },
+      { key: "C", text: "不要急／等一下" },
+      { key: "S", text: "太慢了／太累了" },
+      { key: "P", text: "跳太快了／先回來這邊" }
+    ]
+  },
+  {
+    text: "遇到問題時你會",
+    options: [
+      { key: "A", text: "先想有可能的原因" },
+      { key: "C", text: "先想怎麼解決" },
+      { key: "S", text: "先問大家都還好嗎" },
+      { key: "P", text: "有沒有更好玩有趣的方式" }
+    ]
+  },
+  {
+    text: "最舒服的溝通方式",
+    options: [
+      { key: "A", text: "清楚、具體" },
+      { key: "C", text: "直接、快速" },
+      { key: "S", text: "柔和、互相理解" },
+      { key: "P", text: "自然、有互動" }
+    ]
+  },
+  {
+    text: "別人請你幫忙時，你會",
+    options: [
+      { key: "A", text: "先問清楚細節" },
+      { key: "C", text: "直接回：我來" },
+      { key: "S", text: "說：我想想怎麼幫" },
+      { key: "P", text: "幫忙鑽起來很有趣的部分" }
+    ]
+  },
+  {
+    text: "當你很累時，你的溝通會變得",
+    options: [
+      { key: "A", text: "愛慢、愛細節" },
+      { key: "C", text: "更急、口氣變硬" },
+      { key: "S", text: "變安靜、不多說" },
+      { key: "P", text: "話題跳來跳去" }
+    ]
+  },
+  {
+    text: "你最在意的是",
+    options: [
+      { key: "A", text: "資訊正確嗎" },
+      { key: "C", text: "立刻可以處理嗎" },
+      { key: "S", text: "好不好相處" },
+      { key: "P", text: "當下有沒有感覺" }
+    ]
+  },
+  {
+    text: "合作時你會",
+    options: [
+      { key: "A", text: "先釐清分工職責" },
+      { key: "C", text: "先設定目標方向" },
+      { key: "S", text: "先看大家的節奏" },
+      { key: "P", text: "先把自己的想法丟出來" }
+    ]
+  },
+  {
+    text: "如果要教人一件事，你會",
+    options: [
+      { key: "A", text: "把步驟講清楚" },
+      { key: "C", text: "示範一次讓他照著做" },
+      { key: "S", text: "先問對方懂不懂，再決定下一步" },
+      { key: "P", text: "用生動的舉例方式說明" }
+    ]
+  },
+  {
+    text: "你說服別人時，通常會",
+    options: [
+      { key: "A", text: "提出數據或邏輯依據" },
+      { key: "C", text: "直接說明好處和結果" },
+      { key: "S", text: "顧及對方的感受與需求" },
+      { key: "P", text: "用熱情和故事感染對方" }
+    ]
+  }
+];
+
+// ────────────────────────────────────────────────
+// ACSP 風格資料庫
+// ────────────────────────────────────────────────
+const styleDB = {
+  A: {
+    name: "分析型", en: "ANALYZER", stars: "★",
+    color: "#B09A72",
+    tagline: "你重視正確，以邏輯與精確為溝通核心，是任何團隊不可或缺的思考引擎。",
+    traits: ["思維縝密", "重視細節", "邏輯清晰", "謹慎決策", "客觀理性", "重視數據"],
+    strengths: ["善於拆解複雜問題", "提供有依據的分析", "確保資訊準確完整", "把混亂的事情講得清楚"],
+    blindSpots: ["有時過度謹慎，遲遲不行動", "難以快速做決定", "在需要情感連結的場合顯得距離感", "可能過度追求完美"],
+    compat: { best: "支持型", good: "控制型", challenge: "推廣型" }
+  },
+  C: {
+    name: "控制型", en: "CONTROLLER", stars: "★★",
+    color: "#4A72B0",
+    tagline: "你重視效率，以果斷與行動力驅動目標達成，天生具備帶領者的氣場。",
+    traits: ["果決自信", "目標明確", "效率優先", "勇於挑戰", "直接溝通", "結果導向"],
+    strengths: ["快速做出決策", "推動團隊達成目標", "在壓力下保持冷靜", "清楚表達方向與期望"],
+    blindSpots: ["有時顯得過於強勢", "不易傾聽他人意見", "在情感議題上缺乏耐心", "可能忽視細節與感受"],
+    compat: { best: "分析型", good: "推廣型", challenge: "支持型" }
+  },
+  S: {
+    name: "支持型", en: "SUPPORTER", stars: "★★★",
+    color: "#4A9B6F",
+    tagline: "你重視和諧，以真誠與溫暖建立深度信任，是讓人感到安心的人際穩定器。",
+    traits: ["善於傾聽", "真誠溫暖", "重視和諧", "耐心細膩", "值得信賴", "忠誠穩定"],
+    strengths: ["建立深度信任關係", "善於化解人際衝突", "讓團隊成員感到被關心", "維持穩定的合作氣氛"],
+    blindSpots: ["有時避免說出真實想法", "過度配合讓自己有壓力", "在需要直接表達的場合退縮", "改變時需要較長的適應期"],
+    compat: { best: "推廣型", good: "分析型", challenge: "控制型" }
+  },
+  P: {
+    name: "推廣型", en: "PROMOTER", stars: "★★★★",
+    color: "#C08A3A",
+    tagline: "你重視能量與互動，以熱情與感染力影響他人，是天生的溝通者與故事傳遞者。",
+    traits: ["熱情感染", "善於表達", "富有創意", "影響力強", "樂觀積極", "善於建立連結"],
+    strengths: ["快速建立信任與好感", "激發他人的動力與熱情", "說故事能力極強", "在陌生場合也能自在溝通"],
+    blindSpots: ["有時話多而流於表面", "不易維持長期的穩定執行", "可能對細節和數據缺乏耐心", "情緒起伏影響表現"],
+    compat: { best: "分析型", good: "支持型", challenge: "控制型" }
+  }
+};
+
+// ────────────────────────────────────────────────
+// State
+// ────────────────────────────────────────────────
+let currentQ = 0;
+let answers  = new Array(questions.length).fill(null);
+let userData = { name: '', email: '', role: '' };
+// Pre-shuffle all question options once so prev/next navigation stays consistent
+let shuffledOptions = [];
+
+// ────────────────────────────────────────────────
+// Quiz Flow
+// ────────────────────────────────────────────────
+function startQuiz() {
+  const name  = document.getElementById('userName').value.trim();
+  const email = document.getElementById('userEmail').value.trim();
+  const role  = document.getElementById('userRole').value.trim();
+
+  if (!name) { alert('請輸入你的姓名'); return; }
+  if (!email || !email.includes('@')) { alert('請輸入有效的 Email 信箱'); return; }
+
+  userData = { name, email, role };
+  currentQ = 0;
+  answers  = new Array(questions.length).fill(null);
+  // Pre-shuffle all questions' options once at start
+  shuffledOptions = questions.map(q => shuffleOptions(q.options));
+
+  showScreen('screen-questions');
+  renderQ();
+}
+
+function renderQ() {
+  const q = questions[currentQ];
+  document.getElementById('qNum').textContent = `題目 ${currentQ + 1} / ${questions.length}`;
+  document.getElementById('qText').textContent = q.text;
+
+  const grid = document.getElementById('optionsGrid');
+  const opts = shuffledOptions[currentQ] || q.options;
+  grid.innerHTML = opts.map((opt, idx) => `
+    <button class="option-btn ${answers[currentQ] === opt.key ? 'selected' : ''}"
+            onclick="selectOption('${opt.key}', this)">
+      <span class="option-key">${idx + 1}</span>
+      <span>${opt.text}</span>
+    </button>
+  `).join('');
+
+  document.getElementById('btnPrev').disabled = currentQ === 0;
+  document.getElementById('btnNext').textContent =
+    currentQ === questions.length - 1 ? '查看結果 ✓' : '下一題 →';
+
+  updateProgress();
+}
+
+function shuffleOptions(opts) {
+  const arr = [...opts];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function selectOption(key, btn) {
+  answers[currentQ] = key;
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  // auto-advance after short delay
+  if (currentQ < questions.length - 1) {
+    setTimeout(() => nextQ(), 400);
+  }
+}
+
+function nextQ() {
+  if (answers[currentQ] === null) {
+    alert('請選擇一個選項再繼續');
+    return;
+  }
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQ();
+  } else {
+    showResults();
+  }
+}
+
+function prevQ() {
+  if (currentQ > 0) { currentQ--; renderQ(); }
+}
+
+function updateProgress() {
+  const answered = answers.filter(a => a !== null).length;
+  const pct = Math.round((answered / questions.length) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent =
+    answered === 0 ? '準備開始' : `已完成 ${answered} / ${questions.length} 題`;
+  document.getElementById('progressPct').textContent = pct + '%';
+}
+
+// ────────────────────────────────────────────────
+// Scoring
+// ────────────────────────────────────────────────
+function calcScores() {
+  const raw = { A: 0, C: 0, S: 0, P: 0 };
+  answers.forEach(a => { if (a) raw[a]++; });
+  const total = Object.values(raw).reduce((s, v) => s + v, 0);
+  const pct = {};
+  Object.keys(raw).forEach(k => pct[k] = Math.round((raw[k] / total) * 100));
+
+  const sorted = Object.keys(raw).sort((a, b) => raw[b] - raw[a]);
+  const topScore = raw[sorted[0]];
+
+  // 找出最高分的所有風格（可能多個同分）
+  const topTied = sorted.filter(k => raw[k] === topScore);
+
+  // 找出第二高分（排除最高同分群）
+  let secondary = null;
+  let secondaryTied = [];
+  if (topTied.length < 4) {
+    const rest = sorted.filter(k => !topTied.includes(k));
+    if (rest.length) {
+      const secScore = raw[rest[0]];
+      secondaryTied = rest.filter(k => raw[k] === secScore);
+      secondary = rest[0];
+    }
+  }
+
+  // 判斷同分類型
+  const tieType = topTied.length === 1 ? 'none'
+                : topTied.length === 2 ? 'double'
+                : topTied.length === 3 ? 'triple'
+                : 'quad';
+
+  const dominant = topTied[0]; // 代表主風格（同分時取第一個）
+  return { raw, pct, dominant, secondary, topTied, secondaryTied, tieType };
+}
+
+// ────────────────────────────────────────────────
+// Results
+// ────────────────────────────────────────────────
+function showResults() {
+  showScreen('screen-loading');
+  setTimeout(() => {
+    const { raw, pct, dominant, secondary, topTied, secondaryTied, tieType } = calcScores();
+    const style = styleDB[dominant];
+    const secondaryStyle = secondary ? styleDB[secondary] : null;
+
+    // ── Hero：依同分情況決定顯示內容 ──
+    document.getElementById('resultUserName').textContent = `${userData.name} 的測驗結果`;
+
+    if (tieType === 'none') {
+      // 正常：單一主風格
+      document.getElementById('resultStars').textContent = style.stars;
+      document.getElementById('resultTypeName').textContent = style.name;
+      document.getElementById('resultTypeEn').textContent = style.en;
+      document.getElementById('resultTagline').textContent = style.tagline;
+      // 第二語言
+      document.getElementById('secondaryStyleWrap').style.display = '';
+      document.getElementById('secondaryStyleWrap').querySelector('div').textContent = '第二語言（第二高分）';
+      document.getElementById('secondaryTypeName').textContent = secondaryStyle ? secondaryStyle.name : '—';
+      document.getElementById('secondaryTypeEn').textContent = secondaryStyle ? secondaryStyle.en : '—';
+
+    } else if (tieType === 'double') {
+      // 兩項同分
+      const styleB = styleDB[topTied[1]];
+      document.getElementById('resultStars').textContent = '★★ ＆ ★★';
+      document.getElementById('resultTypeName').textContent = `${style.name} ＆ ${styleB.name}`;
+      document.getElementById('resultTypeEn').textContent = `${style.en}  ·  ${styleB.en}`;
+      document.getElementById('resultTagline').textContent = '你在兩種風格中展現同等強度，這是罕見的雙核心彈性！';
+      // 第二語言區塊改為提示說明
+      document.getElementById('secondaryStyleWrap').style.display = '';
+      document.getElementById('secondaryStyleWrap').querySelector('div').textContent = '建議';
+      document.getElementById('secondaryTypeName').textContent = '可再做一次測驗，選出更直覺的答案';
+      document.getElementById('secondaryTypeEn').textContent = '或與老師討論你的雙主風格組合';
+
+    } else if (tieType === 'triple') {
+      // 三項同分
+      const names = topTied.map(k => styleDB[k].name).join(' ＆ ');
+      document.getElementById('resultStars').textContent = '★★★';
+      document.getElementById('resultTypeName').textContent = names;
+      document.getElementById('resultTypeEn').textContent = topTied.map(k => styleDB[k].en).join('  ·  ');
+      document.getElementById('resultTagline').textContent = '你的溝通極具彈性，能靈活切換三種模式，屬於罕見的多面溝通者。';
+      document.getElementById('secondaryStyleWrap').style.display = '';
+      document.getElementById('secondaryStyleWrap').querySelector('div').textContent = '建議';
+      document.getElementById('secondaryTypeName').textContent = '建議重新作答，選出最直覺、最「像你」的選項';
+      document.getElementById('secondaryTypeEn').textContent = '或預約講師進行個人風格諮詢';
+
+    } else {
+      // 四項全同分（極罕見）
+      document.getElementById('resultStars').textContent = '★ ★ ★ ★';
+      document.getElementById('resultTypeName').textContent = '四型均衡型';
+      document.getElementById('resultTypeEn').textContent = 'BALANCED ALL-TYPE';
+      document.getElementById('resultTagline').textContent = '你在四種溝通風格中表現完全均衡，是極為少見的全方位溝通者。';
+      document.getElementById('secondaryStyleWrap').style.display = '';
+      document.getElementById('secondaryStyleWrap').querySelector('div').textContent = '建議';
+      document.getElementById('secondaryTypeName').textContent = '建議重新作答，選出最直覺的答案';
+      document.getElementById('secondaryTypeEn').textContent = '四型同分可能表示選項時過度思考';
+    }
+
+    // Score bars（標記同分群）
+    const order = [
+      { key:'A', label:'分析型 (A)', color:'#B09A72' },
+      { key:'C', label:'控制型 (C)', color:'#4A72B0' },
+      { key:'S', label:'支持型 (S)', color:'#4A9B6F' },
+      { key:'P', label:'推廣型 (P)', color:'#C08A3A' },
+    ];
+    document.getElementById('scoreBars').innerHTML = order.map(s => {
+      const isTopTied   = topTied.includes(s.key);
+      const isSecTied   = secondaryTied.includes(s.key);
+      const isSec       = s.key === secondary && tieType === 'none';
+      let badge = '';
+      if (tieType === 'none' && dominant === s.key)
+        badge = `<span style="font-size:0.7rem;background:${s.color};color:#fff;padding:1px 6px;border-radius:3px;margin-left:4px;">主風格</span>`;
+      else if (tieType !== 'none' && isTopTied)
+        badge = `<span style="font-size:0.7rem;background:${s.color};color:#fff;padding:1px 6px;border-radius:3px;margin-left:4px;">同分</span>`;
+      else if (isSec)
+        badge = `<span style="font-size:0.7rem;background:rgba(0,0,0,0.12);color:#666;padding:1px 6px;border-radius:3px;margin-left:4px;">第二語言</span>`;
+      else if (isSecTied && tieType !== 'none')
+        badge = `<span style="font-size:0.7rem;background:rgba(0,0,0,0.1);color:#888;padding:1px 6px;border-radius:3px;margin-left:4px;">第二同分</span>`;
+      return `
+        <div class="score-row">
+          <div class="score-row-top">
+            <div class="score-name">
+              <span class="score-dot" style="background:${s.color}"></span>
+              ${s.label}${badge}
+            </div>
+            <div class="score-pct">${pct[s.key]}%</div>
+          </div>
+          <div class="score-bar-outer">
+            <div class="score-bar-inner" style="width:${pct[s.key]}%;background:${s.color}"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Traits、Strengths、Blind Spots（使用主風格）
+    document.getElementById('traitsGrid').innerHTML =
+      style.traits.map(t => `<div class="trait-chip">${t}</div>`).join('');
+    document.getElementById('strengthList').innerHTML =
+      style.strengths.map(s => `<li>${s}</li>`).join('');
+    document.getElementById('blindList').innerHTML =
+      style.blindSpots.map(s => `<li>${s}</li>`).join('');
+
+    // Compatibility
+    const compatData = [
+      { type: styleDB[getKeyByName(style.compat.best)], rel: 'best',      label: '最佳拍檔', desc: '溝通自然流暢，互補性極強' },
+      { type: styleDB[getKeyByName(style.compat.good)], rel: 'good',      label: '合作夥伴', desc: '有共識，偶爾需要調適' },
+      { type: styleDB[getKeyByName(style.compat.challenge)], rel:'challenge', label: '成長挑戰', desc: '需要更多理解與包容' },
+    ];
+    document.getElementById('compatGrid').innerHTML = compatData.map(c => `
+      <div class="compat-card ${c.rel}">
+        <div class="compat-label ${c.rel}">${c.label}</div>
+        <div class="compat-type">${c.type.name}</div>
+        <div class="compat-desc">${c.desc}</div>
+      </div>
+    `).join('');
+
+    // 同分時在主風格名稱顯示標記
+    const dominantDisplay = tieType !== 'none'
+      ? topTied.map(k => styleDB[k].name).join('＆')
+      : styleDB[dominant].name;
+
+    // Save to sessionStorage for admin demo
+    saveResult({ name: userData.name, email: userData.email, role: userData.role, dominant, secondary, dominantDisplay, tieType, topTied, pct, date: new Date().toISOString() });
+
+    // Show result screen
+    showScreen('screen-result');
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('progressText').textContent = '測驗完成';
+    document.getElementById('progressPct').textContent = '100%';
+
+    // Auto-send email
+    autoSendEmail(dominant, secondary, pct, style);
+
+  }, 2000);
+}
+
+function getKeyByName(name) {
+  return Object.keys(styleDB).find(k => styleDB[k].name === name) || 'A';
+}
+
+// ────────────────────────────────────────────────
+// Email
+// ────────────────────────────────────────────────
+function autoSendEmail(dominant, secondary, pct, style) {
+  if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
+    showEmailStatus('📧 結果已產生（Email 功能需完成 EmailJS 設定後啟用）', 'info');
+    return;
+  }
+  sendEmailInternal(dominant, secondary, pct, style);
+}
+
+function sendEmailInternal(dominant, secondary, pct, style) {
+  const secStyle = styleDB[secondary];
+  const params = {
+    to_name:          userData.name,
+    to_email:         userData.email,
+    user_role:        userData.role || '未填寫',
+    style_name:       style.name,
+    style_en:         style.en,
+    style_stars:      style.stars,
+    style_tagline:    style.tagline,
+    secondary_name:   secStyle.name,
+    secondary_en:     secStyle.en,
+    score_A: pct.A + '%',
+    score_C: pct.C + '%',
+    score_S: pct.S + '%',
+    score_P: pct.P + '%',
+    strengths:        style.strengths.join('、'),
+    blind_spots:      style.blindSpots.join('、'),
+    course_url:       window.location.origin + '/index.html#cta',
+  };
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
+    .then(() => {
+      showEmailStatus('✅ 結果已成功寄送到 ' + userData.email, 'success');
+    })
+    .catch(err => {
+      console.error('EmailJS error:', err);
+      showEmailStatus('❌ 寄送失敗，請截圖保存你的結果', 'error');
+    });
+}
+
+function showEmailStatus(msg, type) {
+  const el = document.getElementById('emailStatus');
+  el.textContent = msg;
+  el.className = 'email-status ' + type;
+  el.style.display = 'block';
+}
+
+// ────────────────────────────────────────────────
+// Persist result for admin demo
+// ────────────────────────────────────────────────
+function saveResult(result) {
+  try {
+    const existing = JSON.parse(sessionStorage.getItem('acsp_results') || '[]');
+    existing.unshift(result);
+    sessionStorage.setItem('acsp_results', JSON.stringify(existing.slice(0, 100)));
+  } catch(e) {}
+}
+
+// ────────────────────────────────────────────────
+// Screen management
+// ────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function retakeQuiz() {
+  currentQ = 0;
+  answers  = new Array(questions.length).fill(null);
+  showScreen('screen-intro');
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('progressText').textContent = '準備開始';
+  document.getElementById('progressPct').textContent = '0%';
+  document.getElementById('emailStatus').style.display = 'none';
+}
+</script>
+</body>
+</html>
