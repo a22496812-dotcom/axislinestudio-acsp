@@ -2282,16 +2282,18 @@
 
       showToast('儲存中…');
       try {
-        const rowId = editId ? Number(editId) : Date.now();
+        // Handle cover image
         let coverUrl = '';
         if (editId) {
           const existing = articlesData.find(x => x.id === Number(editId));
           coverUrl = existing ? (existing.cover_img || '') : '';
         }
-        if (newCover) coverUrl = await uploadImgToStorage(newCover, `articles/cover_${rowId}.jpg`);
+        if (newCover) {
+          const tempId = editId || String(Date.now());
+          coverUrl = await uploadImgToStorage(newCover, `articles/cover_${tempId}.jpg`);
+        }
 
-        const row = {
-          id:         rowId,
+        const rowData = {
           title,
           subtitle:   document.getElementById('am-subtitle').value.trim(),
           summary:    document.getElementById('am-summary').value.trim(),
@@ -2301,16 +2303,26 @@
           visibility: document.getElementById('am-visibility').value,
           status:     statusOverride,
           cover_img:  coverUrl,
-          sort_order: editId
-            ? (articlesData.find(x => x.id === Number(editId))?.sort_order ?? 0)
-            : articlesData.length,
         };
-        const { error } = await sb.from('acsp_articles').upsert(row);
-        if (error) throw error;
+
+        if (editId) {
+          // 編輯：update 現有文章
+          const { error } = await sb.from('acsp_articles')
+            .update({ ...rowData, sort_order: articlesData.find(x => x.id === Number(editId))?.sort_order ?? 0 })
+            .eq('id', Number(editId));
+          if (error) throw error;
+          showToast(`「${title}」已更新 ✓`);
+        } else {
+          // 新增：insert，讓 BIGSERIAL 自動生成 id
+          const { error } = await sb.from('acsp_articles')
+            .insert({ ...rowData, sort_order: articlesData.length });
+          if (error) throw error;
+          showToast(statusOverride === '已發布' ? `「${title}」已發布 ✓` : `「${title}」已存為草稿`);
+        }
+
         articlesData = await loadArticles();
         renderArticlesTable(articlesData);
         closeArticleModal();
-        showToast(editId ? `「${title}」已更新 ✓` : (statusOverride === '已發布' ? `「${title}」已發布 ✓` : `「${title}」已存為草稿`));
       } catch(e) { showToast('儲存失敗：' + e.message, 'error'); }
     }
 
@@ -2985,12 +2997,12 @@
       try {
         if (id) {
           const { error } = await sb.from('acsp_faqs')
-            .update({ question: q, answer: a, is_visible: on }).eq('id', Number(id));
+            .update({ question: q, answer: a, is_visible: on }).eq('id', id);
           if (error) throw error;
           showToast('問題已更新 ✓');
         } else {
           const { error } = await sb.from('acsp_faqs')
-            .insert({ question: q, answer: a, is_visible: on, sort_order: faqData.length });
+            .insert({ id: String(Date.now()), question: q, answer: a, is_visible: on, sort_order: faqData.length });
           if (error) throw error;
           showToast('問題已新增 ✓');
         }
@@ -3026,7 +3038,7 @@
       if (!f) return;
       const newOn = !f.on;
       try {
-        const { error } = await sb.from('acsp_faqs').update({ is_visible: newOn }).eq('id', Number(id));
+        const { error } = await sb.from('acsp_faqs').update({ is_visible: newOn }).eq('id', id);
         if (error) throw error;
         f.on = newOn;
         renderFaqTable();
@@ -3037,7 +3049,7 @@
     window.faqDelete = async function(id) {
       if (!confirm('確定刪除此問題？此操作無法復原。')) return;
       try {
-        const { error } = await sb.from('acsp_faqs').delete().eq('id', Number(id));
+        const { error } = await sb.from('acsp_faqs').delete().eq('id', id);
         if (error) throw error;
         faqData = faqData.filter(f => f.id !== id);
         renderFaqTable();

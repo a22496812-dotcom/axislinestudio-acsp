@@ -1526,32 +1526,40 @@
   </section>
   <script>
   (async function(){
-    const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
     const DEFAULT_REVIEWS = [
-      { author:'林小姐', role:'行銷總監 · 台北', stars:5, body:'「完成測驗後，我終於理解為什麼與某位同事的溝通總是充滿摩擦——我們是截然相反的風格。課程給了我具體的調適策略，現在我們的合作順暢多了。」', is_visible:true },
-      { author:'陳先生', role:'業務經理 · 新竹', stars:5, body:'「這是我參加過最實用的自我成長課程。不只是了解自己，更學到如何快速辨識對方的風格，讓每一次業務拜訪都更有準備。」', is_visible:true },
-      { author:'張太太', role:'全職媽媽 · 台中', stars:5, body:'「我和先生都完成了測驗，發現我們在溝通上的核心差異，讓我們減少了很多不必要的爭吵。這是我送給婚姻最好的禮物。」', is_visible:true }
+      { author:'林小姐', role:'行銷總監 · 台北', stars:5, body:'「完成測驗後，我終於理解為什麼與某位同事的溝通總是充滿摩擦——我們是截然相反的風格。課程給了我具體的調適策略，現在我們的合作順暢多了。」' },
+      { author:'陳先生', role:'業務經理 · 新竹', stars:5, body:'「這是我參加過最實用的自我成長課程。不只是了解自己，更學到如何快速辨識對方的風格，讓每一次業務拜訪都更有準備。」' },
+      { author:'張太太', role:'全職媽媽 · 台中', stars:5, body:'「我和先生都完成了測驗，發現我們在溝通上的核心差異，讓我們減少了很多不必要的爭吵。這是我送給婚姻最好的禮物。」' }
     ];
-    let reviews = DEFAULT_REVIEWS;
+    const track = document.getElementById('testi-track-render');
+    if (!track) return;
+
+    function renderReviews(reviews) {
+      track.innerHTML = reviews.map(r=>`
+        <div class="testi-card fade-up">
+          <div class="testi-stars">${'★'.repeat(r.stars||5)}</div>
+          <p class="testi-text">${r.body || r.text || ''}</p>
+          <div class="testi-author">
+            <div class="testi-avatar">${(r.author || r.name || '?').charAt(0)}</div>
+            <div>
+              <div class="testi-name">${r.author || r.name || ''}</div>
+              <div class="testi-role">${r.role || ''}</div>
+            </div>
+          </div>
+        </div>`).join('');
+    }
+
+    // 先顯示預設評價，讓頁面不空白
+    renderReviews(DEFAULT_REVIEWS);
+
+    // 再嘗試從 Supabase 讀取（如果有資料就取代）
     try {
+      const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
       const { data, error } = await _sb.from('acsp_reviews')
         .select('*').eq('is_visible', true)
-        .order('sort_order', { ascending: true }).order('id', { ascending: true });
-      if (!error && data && data.length) reviews = data;
+        .order('sort_order', { ascending: true });
+      if (!error && data && data.length) renderReviews(data);
     } catch(e) {}
-    const track = document.getElementById('testi-track-render');
-    track.innerHTML = reviews.map(r=>`
-      <div class="testi-card fade-up">
-        <div class="testi-stars">${'★'.repeat(r.stars||5)}</div>
-        <p class="testi-text">${r.body || r.text || ''}</p>
-        <div class="testi-author">
-          <div class="testi-avatar">${(r.author || r.name || '?').charAt(0)}</div>
-          <div>
-            <div class="testi-name">${r.author || r.name || ''}</div>
-            <div class="testi-role">${r.role || ''}</div>
-          </div>
-        </div>
-      </div>`).join('');
   })();
   </script>
 
