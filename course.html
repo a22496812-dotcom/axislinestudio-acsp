@@ -706,11 +706,26 @@ async function init() {
   }
   document.getElementById('dyn-price').innerHTML = `${c.price || 'TBD'} <span>/ 人</span>`;
 
-  // — Sidebar enroll button —
+  // — Sidebar enroll button — requires login —
   const enrollBtn = document.getElementById('dyn-enroll-btn');
-  enrollBtn.href = c.enroll_url || '#';
+  const enrollUrl = c.enroll_url || '#';
   enrollBtn.textContent = `立即報名 ${c.price || ''}`;
   enrollBtn.id = 'enroll';
+  enrollBtn.href = '#';
+  enrollBtn.onclick = async (e) => {
+    e.preventDefault();
+    const sb2 = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    const { data: { session } } = await sb2.auth.getSession();
+    if (session && session.user) {
+      // Logged in — go to enroll URL
+      if (enrollUrl && enrollUrl !== '#') window.open(enrollUrl, '_blank');
+      else alert('報名連結尚未設定，請洽客服。');
+    } else {
+      // Not logged in — redirect to login
+      const returnUrl = encodeURIComponent(location.pathname + location.search);
+      location.href = `login.html?return=${returnUrl}`;
+    }
+  };
 
   // — Sidebar meta rows —
   const metaRows = [];

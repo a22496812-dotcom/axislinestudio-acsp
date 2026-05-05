@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet" />
   <!-- EmailJS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
   <style>
     :root {
       --bg:       #E8E2D4;
@@ -1117,7 +1120,7 @@ function calcScores() {
 // ────────────────────────────────────────────────
 function showResults() {
   showScreen('screen-loading');
-  setTimeout(() => {
+  setTimeout(async () => {
     const { raw, pct, dominant, secondary, topTied, secondaryTied, tieType } = calcScores();
     const style = styleDB[dominant];
     const secondaryStyle = secondary ? styleDB[secondary] : null;
@@ -1237,8 +1240,8 @@ function showResults() {
       ? topTied.map(k => styleDB[k].name).join('＆')
       : styleDB[dominant].name;
 
-    // Save to sessionStorage for admin demo
-    saveResult({ name: userData.name, email: userData.email, role: userData.role, dominant, secondary, dominantDisplay, tieType, topTied, pct, date: new Date().toISOString() });
+    // Save to Supabase (+ sessionStorage)
+    await saveResult({ name: userData.name, email: userData.email, role: userData.role, dominant, secondary, dominantDisplay, tieType, topTied, pct, date: new Date().toISOString() });
 
     // Show result screen
     showScreen('screen-result');
@@ -1305,14 +1308,37 @@ function showEmailStatus(msg, type) {
 }
 
 // ────────────────────────────────────────────────
-// Persist result for admin demo
+// Persist result → Supabase (+ sessionStorage fallback)
 // ────────────────────────────────────────────────
-function saveResult(result) {
+async function saveResult(result) {
+  // sessionStorage backup (same-session admin preview)
   try {
     const existing = JSON.parse(sessionStorage.getItem('acsp_results') || '[]');
     existing.unshift(result);
     sessionStorage.setItem('acsp_results', JSON.stringify(existing.slice(0, 100)));
   } catch(e) {}
+
+  // Supabase insert
+  try {
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    await sb.from('acsp_results').insert({
+      name:             result.name,
+      email:            result.email,
+      role:             result.role || '',
+      dominant:         result.dominant,
+      secondary:        result.secondary || '',
+      dominant_display: result.dominantDisplay || result.dominant,
+      tie_type:         result.tieType || 'none',
+      top_tied:         JSON.stringify(result.topTied || [result.dominant]),
+      pct_a:            result.pct?.A ?? 0,
+      pct_c:            result.pct?.C ?? 0,
+      pct_s:            result.pct?.S ?? 0,
+      pct_p:            result.pct?.P ?? 0,
+      source:           '前台測驗',
+    });
+  } catch(e) {
+    console.warn('Supabase saveResult failed:', e);
+  }
 }
 
 // ────────────────────────────────────────────────

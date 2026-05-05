@@ -684,9 +684,87 @@
       .filter-bar { gap: 8px; }
       .filter-input { max-width: none; }
     }
+
+    /* ── Login Overlay ── */
+    #login-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--sidebar2);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #login-overlay.hidden { display: none; }
+    .login-box {
+      background: var(--bg-white);
+      border-radius: 12px;
+      padding: 48px 40px 40px;
+      width: 360px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+      text-align: center;
+    }
+    .login-logo {
+      width: 52px; height: 52px; border-radius: 50%;
+      margin: 0 auto 16px;
+    }
+    .login-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.3rem; font-weight: 400;
+      color: var(--text); margin-bottom: 4px;
+    }
+    .login-sub {
+      font-size: 0.78rem; color: var(--text-soft);
+      margin-bottom: 32px; letter-spacing: 0.08em;
+    }
+    .login-field {
+      text-align: left; margin-bottom: 16px;
+    }
+    .login-field label {
+      display: block; font-size: 0.78rem; font-weight: 500;
+      color: var(--text-mid); margin-bottom: 6px;
+    }
+    .login-field input {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px; font-size: 0.9rem;
+      background: var(--bg); color: var(--text);
+      transition: border-color var(--tr);
+    }
+    .login-field input:focus { border-color: var(--gold); outline: none; background: #fff; }
+    .btn-login {
+      width: 100%; padding: 13px;
+      background: var(--gold); color: #fff;
+      border: none; border-radius: 6px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 0.95rem; font-weight: 500;
+      cursor: pointer; margin-top: 8px;
+      transition: opacity var(--tr);
+    }
+    .btn-login:hover { opacity: 0.88; }
+    .login-error {
+      margin-top: 12px; font-size: 0.8rem;
+      color: var(--red); display: none;
+    }
   </style>
 </head>
 <body>
+
+  <!-- ── Login Overlay ── -->
+  <div id="login-overlay">
+    <div class="login-box">
+      <img class="login-logo" src="./Logo/logo_64x64.png" alt="Logo" />
+      <div class="login-title">軸心線工作室</div>
+      <div class="login-sub">後台管理系統</div>
+      <div class="login-field">
+        <label>帳號</label>
+        <input type="text" id="login-user" placeholder="輸入帳號" autocomplete="username" />
+      </div>
+      <div class="login-field">
+        <label>密碼</label>
+        <input type="password" id="login-pass" placeholder="輸入密碼" autocomplete="current-password"
+               onkeydown="if(event.key==='Enter')doLogin()" />
+      </div>
+      <button class="btn-login" onclick="doLogin()">登入後台</button>
+      <div class="login-error" id="login-error">帳號或密碼錯誤，請再試一次</div>
+    </div>
+  </div>
 
   <!-- ── Sidebar ── -->
   <aside class="sidebar" id="sidebar">
@@ -741,11 +819,11 @@
       </div>
     </nav>
     <div class="sidebar-footer">
-      <div class="sidebar-user">
+      <div class="sidebar-user" style="cursor:pointer;" onclick="doLogout()" title="點擊登出">
         <div class="user-avatar">管</div>
         <div>
           <div style="color:rgba(255,255,255,0.7);font-size:0.83rem;">管理員</div>
-          <div style="color:rgba(255,255,255,0.3);font-size:0.72rem;">admin@axisline.tw</div>
+          <div style="color:rgba(255,255,255,0.3);font-size:0.72rem;">點擊登出</div>
         </div>
       </div>
     </div>
@@ -950,7 +1028,7 @@
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>課程名稱</th><th>類型</th><th>學員數</th><th>完成率</th><th>價格</th><th>狀態</th><th>操作</th></tr></thead>
+              <thead><tr><th style="width:32px;"></th><th>課程名稱</th><th>類型</th><th>價格</th><th>狀態</th><th>操作</th></tr></thead>
               <tbody id="courses-tbody"></tbody>
             </table>
           </div>
@@ -1307,37 +1385,23 @@
         <div class="card">
           <div class="card-header">
             <div class="filter-bar">
-              <input type="text" class="filter-input" placeholder="🔍 搜尋文章標題…" />
-              <select class="filter-select"><option>所有狀態</option><option>已發布</option><option>草稿</option></select>
-              <select class="filter-select"><option>所有類別</option><option>溝通技巧</option><option>職場應用</option><option>關係經營</option></select>
+              <input type="text" class="filter-input" id="art-search" placeholder="🔍 搜尋文章標題…" oninput="filterArticles()" />
+              <select class="filter-select" id="art-filter-status" onchange="filterArticles()">
+                <option value="">所有狀態</option><option>已發布</option><option>草稿</option>
+              </select>
+              <select class="filter-select" id="art-filter-cat" onchange="filterArticles()">
+                <option value="">所有類別</option><option>溝通技巧</option><option>職場應用</option><option>關係經營</option><option>ACSP 介紹</option><option>其他</option>
+              </select>
             </div>
             <div class="filter-right">
-              <button class="btn btn-gold" onclick="openModal('article-modal')">＋ 新增文章</button>
+              <span style="font-size:0.78rem;color:var(--text-soft);margin-right:8px;" id="art-count"></span>
+              <button class="btn btn-gold" onclick="openArticleModal()">＋ 新增文章</button>
             </div>
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>文章標題</th><th>類別</th><th>作者</th><th>發布日期</th><th>觀看設定</th><th>狀態</th><th>操作</th></tr></thead>
-              <tbody>
-                <tr>
-                  <td><div class="td-name">為什麼你總是說不清楚？從 ACSP 看溝通盲點</div><div class="td-sub">副標：認識自己的溝通模式，才能真正被理解</div></td>
-                  <td><span class="badge gold">溝通技巧</span></td>
-                  <td>鄭瀞儀</td>
-                  <td>2026/04/20</td>
-                  <td><span class="badge green">公開</span></td>
-                  <td><span class="badge green">已發布</span></td>
-                  <td><div style="display:flex;gap:6px;"><button class="btn btn-outline btn-sm" onclick="openModal('article-modal')">編輯</button><button class="btn btn-danger btn-sm">刪除</button></div></td>
-                </tr>
-                <tr>
-                  <td><div class="td-name">職場衝突的根源：你是哪種溝通風格？</div><div class="td-sub">副標：從四型風格解析常見職場摩擦</div></td>
-                  <td><span class="badge blue">職場應用</span></td>
-                  <td>鄭瀞儀</td>
-                  <td>—</td>
-                  <td><span class="badge amber">需登入</span></td>
-                  <td><span class="badge amber">草稿</span></td>
-                  <td><div style="display:flex;gap:6px;"><button class="btn btn-outline btn-sm" onclick="openModal('article-modal')">編輯</button><button class="btn btn-primary btn-sm">發布</button></div></td>
-                </tr>
-              </tbody>
+              <thead><tr><th style="width:32px;"></th><th>文章標題</th><th>類別</th><th>發布日期</th><th>觀看</th><th>狀態</th><th>操作</th></tr></thead>
+              <tbody id="articles-tbody"></tbody>
             </table>
           </div>
         </div>
@@ -1657,6 +1721,17 @@
     </div>
   </div>
 
+  <!-- Result Detail Modal -->
+  <div class="modal-overlay" id="result-detail-modal">
+    <div class="modal" style="max-width:560px;max-height:85vh;overflow-y:auto;">
+      <div class="modal-header" style="position:sticky;top:0;background:var(--bg-white);z-index:1;">
+        <div class="modal-title">學員風格詳細分析</div>
+        <button class="modal-close" onclick="closeModal('result-detail-modal')">✕</button>
+      </div>
+      <div class="modal-body" id="result-detail-content" style="padding:20px;"></div>
+    </div>
+  </div>
+
   <!-- FAQ Modal -->
   <div class="modal-overlay" id="faq-modal">
     <div class="modal">
@@ -1681,46 +1756,50 @@
 
   <!-- Article Modal -->
   <div class="modal-overlay" id="article-modal">
-    <div class="modal" style="max-width:720px;">
-      <div class="modal-header">
-        <div class="modal-title">新增文章</div>
-        <button class="modal-close" onclick="closeModal('article-modal')">✕</button>
+    <div class="modal" style="max-width:720px;max-height:90vh;overflow-y:auto;">
+      <div class="modal-header" style="position:sticky;top:0;background:var(--bg-white);z-index:1;">
+        <div class="modal-title" id="art-modal-title">新增文章</div>
+        <button class="modal-close" onclick="closeArticleModal()">✕</button>
       </div>
       <div class="modal-body">
         <div class="form-grid">
-          <div class="form-group full"><label class="form-label">文章標題 *</label><input class="form-input" placeholder="輸入吸引人的標題" /></div>
-          <div class="form-group full"><label class="form-label">副標題</label><input class="form-input" placeholder="例：從四型風格解析常見職場摩擦" /></div>
-          <div class="form-group full"><label class="form-label">摘要 <span style="color:var(--text-soft);font-weight:400;">（顯示在列表預覽）</span></label><textarea class="form-input" style="min-height:70px;" placeholder="輸入文章摘要，約 50–100 字"></textarea></div>
+          <div class="form-group full"><label class="form-label">文章標題 *</label><input id="am-title" class="form-input" placeholder="輸入吸引人的標題" /></div>
+          <div class="form-group full"><label class="form-label">副標題</label><input id="am-subtitle" class="form-input" placeholder="例：從四型風格解析常見職場摩擦" /></div>
+          <div class="form-group full"><label class="form-label">摘要 <span style="color:var(--text-soft);font-weight:400;">（顯示在列表預覽，約 50–100 字）</span></label><textarea id="am-summary" class="form-input" style="min-height:70px;" placeholder="輸入文章摘要"></textarea></div>
           <div class="form-group">
             <label class="form-label">文章類別</label>
-            <select class="form-input"><option>溝通技巧</option><option>職場應用</option><option>關係經營</option><option>ACSP 介紹</option><option>其他</option></select>
+            <select id="am-category" class="form-input">
+              <option>溝通技巧</option><option>職場應用</option><option>關係經營</option><option>ACSP 介紹</option><option>其他</option>
+            </select>
           </div>
           <div class="form-group">
             <label class="form-label">觀看設定</label>
-            <select class="form-input"><option>公開</option><option>需登入</option><option>草稿（不公開）</option></select>
+            <select id="am-visibility" class="form-input">
+              <option value="public">公開</option>
+              <option value="login">需登入</option>
+              <option value="draft">草稿（不公開）</option>
+            </select>
           </div>
           <div class="form-group full">
-            <label class="form-label">封面圖片</label>
-            <div style="border:2px dashed var(--border);border-radius:var(--radius);padding:20px;text-align:center;background:var(--bg);cursor:pointer;" onclick="document.getElementById('article-cover-input').click()">
-              <div style="font-size:1.5rem;margin-bottom:4px;">📷</div>
+            <label class="form-label">封面圖片 <span style="color:var(--text-soft);font-weight:400;">建議 1200×630 px・JPG/PNG・最大 2 MB</span></label>
+            <div style="border:2px dashed var(--border);border-radius:var(--radius);padding:16px;text-align:center;background:var(--bg);cursor:pointer;" onclick="document.getElementById('article-cover-input').click()">
+              <div style="font-size:1.4rem;margin-bottom:4px;">📷</div>
               <div style="font-size:0.82rem;color:var(--text-mid);">點擊上傳封面圖</div>
-              <div style="font-size:0.72rem;color:var(--text-soft);margin-top:4px;">建議：<strong>1200 × 630 px</strong>・最大 <strong>2 MB</strong>・JPG / PNG</div>
             </div>
-            <input type="file" id="article-cover-input" accept="image/jpeg,image/png" style="display:none;" onchange="previewCoverImg(this,'article-cover-preview')" />
-            <img id="article-cover-preview" src="" alt="" style="display:none;margin-top:10px;width:100%;max-height:140px;object-fit:cover;border-radius:var(--radius);" />
+            <input type="file" id="article-cover-input" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="previewCoverImg(this,'article-cover-preview')" />
+            <img id="article-cover-preview" src="" alt="" style="display:none;margin-top:10px;width:240px;height:126px;object-fit:cover;border-radius:var(--radius);border:1px solid var(--border);" />
           </div>
           <div class="form-group full">
-            <label class="form-label">文章內文</label>
-            <textarea class="form-input" style="min-height:160px;" placeholder="在此輸入文章正文…（儲存後可在富文本編輯器中繼續編輯）"></textarea>
+            <label class="form-label">文章內文 <span style="color:var(--text-soft);font-weight:400;">（空行分段）</span></label>
+            <textarea id="am-content" class="form-input" style="min-height:200px;" placeholder="在此輸入文章正文…&#10;&#10;空一行代表換段落。"></textarea>
           </div>
-          <div class="form-group"><label class="form-label">標籤 <span style="color:var(--text-soft);font-weight:400;">（逗號分隔）</span></label><input class="form-input" placeholder="ACSP, 溝通, 職場" /></div>
-          <div class="form-group"><label class="form-label">搜尋引擎收錄</label><select class="form-input"><option>允許收錄（預設）</option><option>不要收錄</option></select></div>
+          <div class="form-group full"><label class="form-label">標籤 <span style="color:var(--text-soft);font-weight:400;">（逗號分隔）</span></label><input id="am-tags" class="form-input" placeholder="ACSP, 溝通, 職場" /></div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeModal('article-modal')">取消</button>
-        <button class="btn btn-outline" onclick="closeModal('article-modal');showToast('草稿已儲存')">儲存草稿</button>
-        <button class="btn btn-gold" onclick="closeModal('article-modal');showToast('文章已發布 ✓')">儲存並發布</button>
+        <button class="btn btn-outline" onclick="closeArticleModal()">取消</button>
+        <button class="btn btn-outline" onclick="saveArticle('草稿')">儲存草稿</button>
+        <button class="btn btn-gold" onclick="saveArticle('已發布')">儲存並發布</button>
       </div>
     </div>
   </div>
@@ -1857,17 +1936,18 @@
     function renderCourses() {
       const tbody = document.getElementById('courses-tbody');
       if (!tbody) return;
-      tbody.innerHTML = coursesData.map(c => `
-        <tr id="course-row-${c.id}">
+      tbody.innerHTML = coursesData.map((c, idx) => `
+        <tr id="course-row-${c.id}" draggable="true"
+            ondragstart="crsDragStart(event,${idx})" ondragover="crsDragOver(event)"
+            ondrop="crsDrop(event,${idx})" ondragend="crsDragEnd(event)"
+            style="cursor:default;">
+          <td style="color:var(--text-soft);font-size:0.9rem;cursor:grab;user-select:none;">⋮⋮</td>
           <td>
-            <div class="td-name">${c.name}</div>
+            ${c.coverImg ? `<img src="${c.coverImg}" style="width:36px;height:36px;object-fit:cover;border-radius:4px;display:inline-block;vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'" />` : ''}
+            <div class="td-name" style="display:inline-block;vertical-align:middle;">${c.name}</div>
             <div class="td-sub">${c.sub}</div>
           </td>
           <td><span class="badge ${c.typeClass}">${c.type}</span></td>
-          <td>${c.students !== null ? c.students : '—'}</td>
-          <td>${c.progress !== null
-            ? `<div style="display:flex;align-items:center;gap:8px;"><div class="progress-bar" style="width:80px;display:inline-block;"><div class="progress-fill ${c.progressClass}" style="width:${c.progress}%"></div></div><span style="font-size:0.78rem;color:var(--text-soft)">${c.progress}%</span></div>`
-            : '—'}</td>
           <td>${c.price}</td>
           <td><span class="badge ${c.statusClass}" id="course-status-badge-${c.id}">${c.status}</span></td>
           <td>
@@ -1923,7 +2003,10 @@
           duration: val('cm-duration') || '', seats: val('cm-seats') || '',
           highlights: val('cm-highlights') || '', modules: val('cm-modules') || '',
           audience: val('cm-audience') || '', enroll_url: val('cm-enroll') || '',
-          link: `course.html?id=${rowId}`, sort_order: 0
+          link: `course.html?id=${rowId}`,
+          sort_order: editId
+            ? (coursesData.find(x => x.id === Number(editId))?.sort_order ?? 0)
+            : coursesData.length
         };
         const { error } = await sb.from('acsp_courses').upsert(row);
         if (error) throw error;
@@ -1958,6 +2041,19 @@
       document.getElementById('cm-modules').value    = c.modules || '';
       document.getElementById('cm-audience').value   = c.audience || '';
       document.getElementById('cm-enroll').value     = c.enrollUrl || '';
+      // Show existing cover / banner thumbnails
+      const coverPrev = document.getElementById('course-cover-preview');
+      if (c.coverImg) { coverPrev.src = c.coverImg; coverPrev.style.display = 'block'; }
+      else             { coverPrev.src = ''; coverPrev.style.display = 'none'; }
+      const bannerPrev = document.getElementById('course-banner-preview');
+      if (c.bannerImg) { bannerPrev.src = c.bannerImg; bannerPrev.style.display = 'block'; }
+      else              { bannerPrev.src = ''; bannerPrev.style.display = 'none'; }
+      // Clear any pending new-image data so we don't accidentally overwrite
+      delete window._imgData['course-cover-preview'];
+      delete window._imgData['course-banner-preview'];
+      document.getElementById('course-cover-input').value = '';
+      document.getElementById('course-banner-input').value = '';
+
       switchCourseTab(document.querySelector('#course-modal .tab-item'), 'ctab-info');
       openModal('course-modal');
       document.getElementById('course-modal').dataset.editId = id;
@@ -1978,43 +2074,50 @@
       } catch(e) { showToast('更新失敗：' + e.message, 'error'); }
     }
 
-    // ── Students Data ──
-    const students = [
-      { name: '林雅婷', email: 'yating.lin@gmail.com', date: '2024/12/18', course: 'ACSP 完整課程', style: '支持型', styleClass: 'green', progress: 100, status: '已完成', statusClass: 'green' },
-      { name: '陳建宏', email: 'jh.chen@company.tw',   date: '2024/12/17', course: 'ACSP 完整課程', style: '控制型', styleClass: 'blue',  progress: 60,  status: '進行中', statusClass: 'amber' },
-      { name: '張美玲', email: 'meiling.chang@mail.com',date: '2024/12/16', course: 'ACSP 完整課程', style: '—',    styleClass: '',      progress: 10,  status: '剛報名', statusClass: 'amber' },
-      { name: '王志明', email: 'zm.wang@outlook.com',  date: '2024/12/15', course: 'ACSP 完整課程', style: '分析型', styleClass: 'gold',  progress: 100, status: '已完成', statusClass: 'green' },
-      { name: '劉家豪', email: 'kh.liu@gmail.com',     date: '2024/12/10', course: 'ACSP 完整課程', style: '推廣型', styleClass: 'amber', progress: 100, status: '已退款', statusClass: 'red' },
-      { name: '黃淑芬', email: 'sf.huang@mail.tw',     date: '2024/12/09', course: '職場工作坊',    style: '支持型', styleClass: 'green', progress: 100, status: '已完成', statusClass: 'green' },
-      { name: '李正文', email: 'cw.li@company.com',    date: '2024/12/08', course: 'ACSP 完整課程', style: '分析型', styleClass: 'gold',  progress: 75,  status: '進行中', statusClass: 'amber' },
-      { name: '吳思穎', email: 'sy.wu@outlook.com',    date: '2024/12/07', course: 'ACSP 完整課程', style: '控制型', styleClass: 'blue',  progress: 100, status: '已完成', statusClass: 'green' },
-      { name: '蔡明哲', email: 'mj.tsai@gmail.com',    date: '2024/12/06', course: '職場工作坊',    style: '—',    styleClass: '',      progress: 0,   status: '剛報名', statusClass: 'amber' },
-      { name: '鄭雅惠', email: 'yh.jeng@mail.tw',      date: '2024/12/05', course: 'ACSP 完整課程', style: '推廣型', styleClass: 'amber', progress: 100, status: '已完成', statusClass: 'green' },
-    ];
+    // ── Students — loaded from acsp_results ──
+    async function loadStudents() {
+      try {
+        const { data, error } = await sb.from('acsp_results')
+          .select('name,email,role,dominant,dominant_display,created_at')
+          .order('created_at', { ascending: false })
+          .limit(200);
+        if (error) throw error;
+        return data || [];
+      } catch(e) {
+        console.error('loadStudents:', e);
+        return [];
+      }
+    }
 
-    function renderStudents() {
+    async function renderStudents() {
       const tbody = document.getElementById('students-tbody');
-      tbody.innerHTML = students.map(s => `
-        <tr>
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-soft);">載入中…</td></tr>';
+      const list = await loadStudents();
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-soft);">尚無學員資料。完成測驗的學員將自動出現在這裡。</td></tr>';
+        return;
+      }
+      const styleClassMap = { '分析型':'gold','控制型':'blue','支持型':'green','推廣型':'amber' };
+      tbody.innerHTML = list.map(s => {
+        const d = new Date(s.created_at);
+        const dateStr = isNaN(d) ? '' : `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+        const dominant = s.dominant_display || s.dominant || '';
+        const cls = styleClassMap[s.dominant] || 'gold';
+        const hasDominant = !!s.dominant;
+        return `<tr>
           <td><div class="td-name">${s.name}</div><div class="td-sub">${s.email}</div></td>
-          <td>${s.date}</td>
-          <td style="font-size:0.82rem;">${s.course}</td>
-          <td>${s.style !== '—' ? `<span class="badge ${s.styleClass}">★ ${s.style}</span>` : '<span style="color:var(--text-soft)">未完成</span>'}</td>
+          <td>${dateStr}</td>
+          <td style="font-size:0.82rem;">${s.role || '—'}</td>
+          <td>${hasDominant ? `<span class="badge ${cls}">★ ${dominant}</span>` : '<span style="color:var(--text-soft)">未完成</span>'}</td>
+          <td><span class="badge ${hasDominant ? 'green' : 'amber'}">${hasDominant ? '已完成' : '進行中'}</span></td>
           <td>
-            <div style="display:flex;align-items:center;gap:8px;">
-              <div class="progress-bar" style="width:80px;display:inline-block;">
-                <div class="progress-fill ${s.styleClass}" style="width:${s.progress}%"></div>
-              </div>
-              <span style="font-size:0.75rem;color:var(--text-soft)">${s.progress}%</span>
-            </div>
+            <button class="btn btn-outline btn-sm" onclick="navigate('results', document.querySelector('[onclick*=results]'))">查看結果</button>
           </td>
-          <td><span class="badge ${s.statusClass}">${s.status}</span></td>
-          <td><div style="display:flex;gap:6px;">
-            <button class="btn btn-outline btn-sm">詳情</button>
-            <button class="btn btn-danger btn-sm">刪除</button>
-          </div></td>
-        </tr>
-      `).join('');
+        </tr>`;
+      }).join('');
+      // update count text
+      const countEl = document.querySelector('#page-students .pagination span');
+      if (countEl) countEl.textContent = `共 ${list.length} 名學員（已完成測驗）`;
     }
 
     // ── Chart ──
@@ -2039,10 +2142,13 @@
       document.getElementById('topbar-title').textContent = titles[page] || page;
       if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
       // Re-fetch and re-render dynamic pages on every visit
-      if (page === 'courses') { coursesData = await loadCourses(); renderCourses(); }
-      if (page === 'faq')     { faqData = await loadFaqs();         renderFaqTable(); }
-      if (page === 'reviews') { revData = await loadReviews();       renderRevTable(); }
-      if (page === 'banners') { bannerData = await loadBanners();    renderBannerList(); }
+      if (page === 'courses')  { coursesData = await loadCourses();   renderCourses(); }
+      if (page === 'articles') { articlesData = await loadArticles(); renderArticlesTable(articlesData); }
+      if (page === 'faq')      { faqData = await loadFaqs();          renderFaqTable(); }
+      if (page === 'reviews')  { revData = await loadReviews();        renderRevTable(); }
+      if (page === 'banners')  { bannerData = await loadBanners();     renderBannerList(); }
+      if (page === 'students') { await renderStudents(); }
+      if (page === 'results')  { await initResultsPage(); }
     }
 
     // ── Sidebar ──
@@ -2069,61 +2175,330 @@
       setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
+    // ── Articles ──
+    let articlesData = [];
+
+    async function loadArticles() {
+      try {
+        const { data, error } = await sb.from('acsp_articles')
+          .select('*').order('sort_order', { ascending: true }).order('id', { ascending: true });
+        if (error) throw error;
+        return data || [];
+      } catch(e) { console.error('loadArticles:', e); return []; }
+    }
+
+    const artCatClass = { '溝通技巧':'gold','職場應用':'blue','關係經營':'green','ACSP 介紹':'amber','其他':'amber' };
+    const artVisLabel = { public:'公開', login:'需登入', draft:'草稿' };
+    const artVisClass = { public:'green', login:'amber', draft:'amber' };
+
+    function renderArticlesTable(list) {
+      const tbody = document.getElementById('articles-tbody');
+      document.getElementById('art-count').textContent = `共 ${list.length} 篇`;
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-soft);">尚無文章，點「＋ 新增文章」開始建立</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = list.map((a, i) => {
+        const d = new Date(a.created_at);
+        const dateStr = a.status === '已發布'
+          ? `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`
+          : '—';
+        const thumbHtml = a.cover_img
+          ? `<img src="${a.cover_img}" style="width:36px;height:36px;object-fit:cover;border-radius:4px;display:inline-block;vertical-align:middle;margin-right:6px;" />`
+          : '';
+        return `<tr draggable="true" data-art-id="${a.id}" data-art-idx="${i}"
+                    ondragstart="artDragStart(event,${i})" ondragover="artDragOver(event)" ondrop="artDrop(event,${i})" ondragend="artDragEnd(event)"
+                    style="cursor:grab;">
+          <td style="color:var(--text-soft);font-size:0.9rem;cursor:grab;">⋮⋮</td>
+          <td>
+            ${thumbHtml}
+            <div class="td-name" style="display:inline-block;vertical-align:middle;">${a.title}</div>
+            ${a.subtitle ? `<div class="td-sub">${a.subtitle}</div>` : ''}
+          </td>
+          <td><span class="badge ${artCatClass[a.category]||'gold'}">${a.category}</span></td>
+          <td style="font-size:0.8rem;">${dateStr}</td>
+          <td><span class="badge ${artVisClass[a.visibility]||'green'}">${artVisLabel[a.visibility]||a.visibility}</span></td>
+          <td><span class="badge ${a.status==='已發布'?'green':'amber'}">${a.status}</span></td>
+          <td>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-outline btn-sm" onclick="editArticle(${a.id})">編輯</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteArticle(${a.id})">刪除</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    function filterArticles() {
+      const q   = (document.getElementById('art-search')?.value || '').toLowerCase();
+      const st  = document.getElementById('art-filter-status')?.value || '';
+      const cat = document.getElementById('art-filter-cat')?.value || '';
+      const filtered = articlesData.filter(a =>
+        (!q   || a.title.toLowerCase().includes(q) || (a.subtitle||'').toLowerCase().includes(q)) &&
+        (!st  || a.status === st) &&
+        (!cat || a.category === cat)
+      );
+      renderArticlesTable(filtered);
+    }
+
+    function openArticleModal(id) {
+      document.getElementById('art-modal-title').textContent = id ? '編輯文章' : '新增文章';
+      document.getElementById('article-modal').dataset.editId = id || '';
+      if (!id) {
+        ['am-title','am-subtitle','am-summary','am-content','am-tags'].forEach(x => document.getElementById(x).value = '');
+        document.getElementById('am-category').value  = '溝通技巧';
+        document.getElementById('am-visibility').value = 'public';
+        document.getElementById('article-cover-preview').style.display = 'none';
+        document.getElementById('article-cover-preview').src = '';
+        document.getElementById('article-cover-input').value = '';
+        delete window._imgData['article-cover-preview'];
+      } else {
+        const a = articlesData.find(x => x.id === id);
+        if (!a) return;
+        document.getElementById('am-title').value    = a.title;
+        document.getElementById('am-subtitle').value = a.subtitle || '';
+        document.getElementById('am-summary').value  = a.summary  || '';
+        document.getElementById('am-content').value  = a.content  || '';
+        document.getElementById('am-tags').value     = a.tags     || '';
+        document.getElementById('am-category').value  = a.category  || '溝通技巧';
+        document.getElementById('am-visibility').value = a.visibility || 'public';
+        // Show existing cover thumbnail
+        const prev = document.getElementById('article-cover-preview');
+        if (a.cover_img) { prev.src = a.cover_img; prev.style.display = 'block'; }
+        else              { prev.src = ''; prev.style.display = 'none'; }
+        document.getElementById('article-cover-input').value = '';
+        delete window._imgData['article-cover-preview'];
+      }
+      openModal('article-modal');
+    }
+
+    function closeArticleModal() { closeModal('article-modal'); }
+
+    async function saveArticle(statusOverride) {
+      const title = document.getElementById('am-title').value.trim();
+      if (!title) { showToast('請填寫文章標題', 'error'); return; }
+      const editId = document.getElementById('article-modal').dataset.editId;
+      const newCover = window._imgData['article-cover-preview'] || null;
+
+      showToast('儲存中…');
+      try {
+        const rowId = editId ? Number(editId) : Date.now();
+        let coverUrl = '';
+        if (editId) {
+          const existing = articlesData.find(x => x.id === Number(editId));
+          coverUrl = existing ? (existing.cover_img || '') : '';
+        }
+        if (newCover) coverUrl = await uploadImgToStorage(newCover, `articles/cover_${rowId}.jpg`);
+
+        const row = {
+          id:         rowId,
+          title,
+          subtitle:   document.getElementById('am-subtitle').value.trim(),
+          summary:    document.getElementById('am-summary').value.trim(),
+          content:    document.getElementById('am-content').value,
+          tags:       document.getElementById('am-tags').value.trim(),
+          category:   document.getElementById('am-category').value,
+          visibility: document.getElementById('am-visibility').value,
+          status:     statusOverride,
+          cover_img:  coverUrl,
+          sort_order: editId
+            ? (articlesData.find(x => x.id === Number(editId))?.sort_order ?? 0)
+            : articlesData.length,
+        };
+        const { error } = await sb.from('acsp_articles').upsert(row);
+        if (error) throw error;
+        articlesData = await loadArticles();
+        renderArticlesTable(articlesData);
+        closeArticleModal();
+        showToast(editId ? `「${title}」已更新 ✓` : (statusOverride === '已發布' ? `「${title}」已發布 ✓` : `「${title}」已存為草稿`));
+      } catch(e) { showToast('儲存失敗：' + e.message, 'error'); }
+    }
+
+    function editArticle(id) { openArticleModal(id); }
+
+    async function deleteArticle(id) {
+      const a = articlesData.find(x => x.id === id);
+      if (!a) return;
+      if (!confirm(`確定要刪除「${a.title}」？此動作無法復原。`)) return;
+      try {
+        const { error } = await sb.from('acsp_articles').delete().eq('id', id);
+        if (error) throw error;
+        articlesData = await loadArticles();
+        renderArticlesTable(articlesData);
+        showToast('文章已刪除');
+      } catch(e) { showToast('刪除失敗：' + e.message, 'error'); }
+    }
+
+    // ── Drag-and-Drop: Courses ──
+    let _cDragIdx = null;
+    function crsRowAttrs(idx) {
+      return `draggable="true" data-crs-idx="${idx}"
+        ondragstart="crsDragStart(event,${idx})" ondragover="crsDragOver(event)"
+        ondrop="crsDrop(event,${idx})" ondragend="crsDragEnd(event)"`;
+    }
+    function crsDragStart(e, idx) {
+      _cDragIdx = idx;
+      e.currentTarget.style.opacity = '0.5';
+      e.dataTransfer.effectAllowed = 'move';
+    }
+    function crsDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+    function crsDrop(e, targetIdx) {
+      e.preventDefault();
+      if (_cDragIdx === null || _cDragIdx === targetIdx) return;
+      const arr = [...coursesData];
+      const [moved] = arr.splice(_cDragIdx, 1);
+      arr.splice(targetIdx, 0, moved);
+      arr.forEach((c, i) => c.sort_order = i);
+      coursesData = arr;
+      renderCourses();
+      // Persist new order to Supabase
+      Promise.all(arr.map(c => sb.from('acsp_courses').update({ sort_order: c.sort_order }).eq('id', c.id)))
+        .then(() => showToast('課程順序已儲存 ✓'))
+        .catch(err => showToast('排序儲存失敗', 'error'));
+    }
+    function crsDragEnd(e) { _cDragIdx = null; e.currentTarget.style.opacity = ''; }
+
+    // ── Drag-and-Drop: Articles ──
+    let _aDragIdx = null;
+    function artDragStart(e, idx) {
+      _aDragIdx = idx;
+      e.currentTarget.style.opacity = '0.5';
+      e.dataTransfer.effectAllowed = 'move';
+    }
+    function artDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+    function artDrop(e, targetIdx) {
+      e.preventDefault();
+      if (_aDragIdx === null || _aDragIdx === targetIdx) return;
+      const arr = [...articlesData];
+      const [moved] = arr.splice(_aDragIdx, 1);
+      arr.splice(targetIdx, 0, moved);
+      arr.forEach((a, i) => a.sort_order = i);
+      articlesData = arr;
+      renderArticlesTable(articlesData);
+      Promise.all(arr.map(a => sb.from('acsp_articles').update({ sort_order: a.sort_order }).eq('id', a.id)))
+        .then(() => showToast('文章順序已儲存 ✓'))
+        .catch(err => showToast('排序儲存失敗', 'error'));
+    }
+    function artDragEnd(e) { _aDragIdx = null; e.currentTarget.style.opacity = ''; }
+
+    // ── Admin Login ──
+    const ADMIN_USER = 'admin';
+    const ADMIN_PASS = 'acsp2026';
+
+    function checkAuth() {
+      if (sessionStorage.getItem('acsp_admin_auth') === '1') {
+        document.getElementById('login-overlay').classList.add('hidden');
+      }
+    }
+    function doLogin() {
+      const u = document.getElementById('login-user').value.trim();
+      const p = document.getElementById('login-pass').value;
+      if (u === ADMIN_USER && p === ADMIN_PASS) {
+        sessionStorage.setItem('acsp_admin_auth', '1');
+        document.getElementById('login-overlay').classList.add('hidden');
+        document.getElementById('login-error').style.display = 'none';
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+        document.getElementById('login-pass').value = '';
+        document.getElementById('login-pass').focus();
+      }
+    }
+    function doLogout() {
+      if (!confirm('確定要登出嗎？')) return;
+      sessionStorage.removeItem('acsp_admin_auth');
+      location.reload();
+    }
+    checkAuth();
+
     // ── Init ──
     async function init() {
       try {
-        [coursesData, faqData, revData, bannerData] = await Promise.all([
-          loadCourses(), loadFaqs(), loadReviews(), loadBanners()
+        [coursesData, faqData, revData, bannerData, articlesData] = await Promise.all([
+          loadCourses(), loadFaqs(), loadReviews(), loadBanners(), loadArticles()
         ]);
       } catch(e) { console.error('init:', e); }
       renderCourses();
       renderBannerList();
-      renderStudents();
       renderChart();
-      initResultsPage();
+      await renderStudents();
+      await initResultsPage();
     }
     init();
 
     // ── Results Page ──
-    const DEMO_RESULTS = [
-      // 單一主風格
-      { name:'林雅婷', email:'yating.lin@gmail.com', role:'行銷總監', dominant:'支持型', dominantDisplay:'支持型', tieType:'none',   pct:{A:15,C:18,S:42,P:25}, date:'2024-12-18T14:32:00', source:'前台測驗' },
-      { name:'王志明', email:'zm.wang@outlook.com',  role:'工程師',   dominant:'分析型', dominantDisplay:'分析型', tieType:'none',   pct:{A:48,C:22,S:16,P:14}, date:'2024-12-15T09:15:00', source:'前台測驗' },
-      { name:'陳美玲', email:'meiling.chen@mail.com',role:'業務',     dominant:'推廣型', dominantDisplay:'推廣型', tieType:'none',   pct:{A:12,C:20,S:18,P:50}, date:'2024-12-14T16:45:00', source:'前台測驗' },
-      { name:'黃建志', email:'jz.huang@company.tw',  role:'主管',     dominant:'控制型', dominantDisplay:'控制型', tieType:'none',   pct:{A:19,C:45,S:21,P:15}, date:'2024-12-13T11:20:00', source:'前台測驗' },
-      { name:'蔡淑芬', email:'sf.tsai@gmail.com',    role:'老師',     dominant:'支持型', dominantDisplay:'支持型', tieType:'none',   pct:{A:20,C:15,S:38,P:27}, date:'2024-12-12T10:05:00', source:'前台測驗' },
-      // 雙項同分
-      { name:'吳雅琳', email:'yalin.wu@gmail.com',   role:'教師',     dominant:'支持型', dominantDisplay:'支持型＆推廣型', tieType:'double', topTied:['S','P'], pct:{A:12,C:28,S:30,P:30}, date:'2024-12-11T15:20:00', source:'前台測驗' },
-      { name:'張宇翔', email:'yuxiang.chang@mail.com',role:'設計師',  dominant:'分析型', dominantDisplay:'分析型＆控制型', tieType:'double', topTied:['A','C'], pct:{A:32,C:32,S:20,P:16}, date:'2024-12-10T11:40:00', source:'前台測驗' },
-      // 三項同分
-      { name:'李依珊', email:'yishan.li@outlook.com',role:'學生',     dominant:'分析型', dominantDisplay:'分析型＆支持型＆推廣型', tieType:'triple', topTied:['A','S','P'], pct:{A:25,C:25,S:25,P:25}, date:'2024-12-09T09:00:00', source:'前台測驗' },
-      // 四型均衡
-      { name:'周明德', email:'mingde.chou@mail.tw',  role:'顧問',     dominant:'分析型', dominantDisplay:'四型均衡型', tieType:'quad', topTied:['A','C','S','P'], pct:{A:25,C:25,S:25,P:25}, date:'2024-12-08T16:30:00', source:'前台測驗' },
-    ];
-
     const styleColorMap = { '分析型':'gold','控制型':'blue','支持型':'green','推廣型':'amber' };
+
+    // styleDB for detail modal (mirrors quiz.html)
+    const styleDB = {
+      A: { name:'分析型', en:'ANALYZER', color:'#B09A72',
+           tagline:'你重視正確，以邏輯與精確為溝通核心，是任何團隊不可或缺的思考引擎。',
+           traits:['思維縝密','重視細節','邏輯清晰','謹慎決策','客觀理性','重視數據'],
+           strengths:['善於拆解複雜問題','提供有依據的分析','確保資訊準確完整','把混亂的事情講得清楚'],
+           blindSpots:['有時過度謹慎，遲遲不行動','難以快速做決定','在需要情感連結的場合顯得距離感','可能過度追求完美'],
+           compat:{ best:'支持型', good:'控制型', challenge:'推廣型' } },
+      C: { name:'控制型', en:'CONTROLLER', color:'#4A72B0',
+           tagline:'你重視效率，以果斷與行動力驅動目標達成，天生具備帶領者的氣場。',
+           traits:['果決自信','目標明確','效率優先','勇於挑戰','直接溝通','結果導向'],
+           strengths:['快速做出決策','推動團隊達成目標','在壓力下保持冷靜','清楚表達方向與期望'],
+           blindSpots:['有時顯得過於強勢','不易傾聽他人意見','在情感議題上缺乏耐心','可能忽視細節與感受'],
+           compat:{ best:'分析型', good:'推廣型', challenge:'支持型' } },
+      S: { name:'支持型', en:'SUPPORTER', color:'#4A9B6F',
+           tagline:'你重視和諧，以真誠與溫暖建立深度信任，是讓人感到安心的人際穩定器。',
+           traits:['善於傾聽','真誠溫暖','重視和諧','耐心細膩','值得信賴','忠誠穩定'],
+           strengths:['建立深度信任關係','善於化解人際衝突','讓團隊成員感到被關心','維持穩定的合作氣氛'],
+           blindSpots:['有時避免說出真實想法','過度配合讓自己有壓力','在需要直接表達的場合退縮','改變時需要較長的適應期'],
+           compat:{ best:'推廣型', good:'分析型', challenge:'控制型' } },
+      P: { name:'推廣型', en:'PROMOTER', color:'#C08A3A',
+           tagline:'你重視能量與互動，以熱情與感染力影響他人，是天生的溝通者與故事傳遞者。',
+           traits:['熱情感染','善於表達','富有創意','影響力強','樂觀積極','善於建立連結'],
+           strengths:['快速建立信任與好感','激發他人的動力與熱情','說故事能力極強','在陌生場合也能自在溝通'],
+           blindSpots:['有時話多而流於表面','不易維持長期的穩定執行','可能對細節和數據缺乏耐心','情緒起伏影響表現'],
+           compat:{ best:'分析型', good:'支持型', challenge:'控制型' } }
+    };
+    const nameToKey = k => Object.keys(styleDB).find(x => styleDB[x].name === k) || k;
 
     let allResults = [];
 
-    function initResultsPage() {
-      // Merge demo + live (sessionStorage)
-      let live = [];
-      try { live = JSON.parse(sessionStorage.getItem('acsp_results') || '[]'); } catch(e){}
-      allResults = [...live.map(r => ({...r, source:'🔴 即時'})), ...DEMO_RESULTS];
-      renderResultsTable(allResults);
-      updateDonut(allResults);
-      updateResultStats(allResults);
-      if (live.length > 0) {
-        document.getElementById('live-results-banner').style.display = 'flex';
-        document.getElementById('live-banner-text').textContent =
-          `收到 ${live.length} 筆來自前台測驗的即時結果`;
-        document.getElementById('newResultsBadge').style.display = '';
-        document.getElementById('newResultsBadge').textContent = live.length;
+    async function loadResults() {
+      try {
+        const { data, error } = await sb.from('acsp_results')
+          .select('*').order('created_at', { ascending: false }).limit(500);
+        if (error) throw error;
+        return (data || []).map(r => ({
+          name:             r.name,
+          email:            r.email,
+          role:             r.role,
+          dominant:         r.dominant,
+          secondary:        r.secondary,
+          dominantDisplay:  r.dominant_display || r.dominant,
+          tieType:          r.tie_type || 'none',
+          topTied:          (() => { try { return JSON.parse(r.top_tied || '[]'); } catch(e){ return []; } })(),
+          pct:              { A: r.pct_a, C: r.pct_c, S: r.pct_s, P: r.pct_p },
+          date:             r.created_at,
+          source:           r.source || '前台測驗',
+        }));
+      } catch(e) {
+        console.error('loadResults:', e);
+        return [];
       }
     }
 
-    function refreshLiveResults() {
-      initResultsPage();
+    async function initResultsPage() {
+      allResults = await loadResults();
+      renderResultsTable(allResults);
+      updateDonut(allResults);
+      updateResultStats(allResults);
+      if (allResults.length > 0) {
+        document.getElementById('live-results-banner').style.display = 'flex';
+        document.getElementById('live-banner-text').textContent =
+          `資料庫共有 ${allResults.length} 筆測驗結果`;
+        document.getElementById('newResultsBadge').style.display = '';
+        document.getElementById('newResultsBadge').textContent = allResults.length;
+      }
+    }
+
+    async function refreshLiveResults() {
+      await initResultsPage();
       showToast('已同步最新測驗資料 ✓');
     }
 
@@ -2175,7 +2550,8 @@
         const hlS = r.pct.S === topPct ? 'font-weight:600;color:var(--green)'  : '';
         const hlP = r.pct.P === topPct ? 'font-weight:600;color:var(--amber)'  : '';
 
-        return `<tr>
+        const idx = data.indexOf(r);
+        return `<tr style="cursor:pointer;" onclick="openResultDetail(${idx})" title="點擊查看詳細分析">
           <td><div class="td-name">${r.name}</div></td>
           <td style="font-size:0.8rem;color:var(--text-soft);">${r.email}</td>
           <td style="font-size:0.8rem;">${r.role || '—'}</td>
@@ -2233,6 +2609,87 @@
       data.forEach(r => counts[r.dominant] = (counts[r.dominant]||0)+1);
       const top = Object.keys(counts).sort((a,b)=>counts[b]-counts[a])[0];
       document.getElementById('stat-top').textContent = top || '—';
+    }
+
+    // ── Result Detail Modal ──
+    let _lastRendered = [];
+    const _origRenderResultsTable = renderResultsTable;
+    renderResultsTable = function(data) {
+      _lastRendered = data;
+      _origRenderResultsTable(data);
+    };
+
+    function openResultDetail(idx) {
+      const r = _lastRendered[idx];
+      if (!r) return;
+      const key = nameToKey(r.dominant);
+      const st = styleDB[key] || {};
+      const d = new Date(r.date);
+      const dateStr = isNaN(d) ? r.date : `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+
+      const colorMap = { A:'#B09A72', C:'#4A72B0', S:'#4A9B6F', P:'#C08A3A' };
+      const scoreBars = [
+        { key:'A', label:'分析型' }, { key:'C', label:'控制型' },
+        { key:'S', label:'支持型' }, { key:'P', label:'推廣型' },
+      ].map(s => {
+        const pct = r.pct[s.key] || 0;
+        const col = colorMap[s.key];
+        const isDominant = (r.topTied && r.topTied.includes(s.key)) ||
+                          ((!r.topTied || !r.topTied.length) && s.key === key);
+        return `<div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px;">
+            <span>${s.label}${isDominant ? ' ★' : ''}</span>
+            <span style="font-weight:${isDominant?'600':'400'};color:${isDominant?col:'var(--text-soft)'};">${pct}%</span>
+          </div>
+          <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:${pct}%;background:${col};border-radius:3px;transition:width 0.5s;"></div>
+          </div>
+        </div>`;
+      }).join('');
+
+      const traits = (st.traits || []).map(t =>
+        `<span style="display:inline-block;padding:3px 10px;border-radius:20px;border:1px solid var(--border);font-size:0.76rem;margin:3px;">${t}</span>`
+      ).join('');
+      const strengths = (st.strengths || []).map(s => `<li style="font-size:0.82rem;margin-bottom:6px;">✓ ${s}</li>`).join('');
+      const blinds = (st.blindSpots || []).map(s => `<li style="font-size:0.82rem;margin-bottom:6px;">△ ${s}</li>`).join('');
+      const compat = st.compat ? `
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:4px;">
+          <div style="background:rgba(74,155,111,0.08);border:1px solid rgba(74,155,111,0.2);border-radius:6px;padding:10px;text-align:center;">
+            <div style="font-size:0.68rem;color:var(--green);margin-bottom:4px;">最佳拍檔</div>
+            <div style="font-size:0.9rem;font-weight:500;">${st.compat.best}</div>
+          </div>
+          <div style="background:var(--blue-bg);border:1px solid rgba(74,114,176,0.2);border-radius:6px;padding:10px;text-align:center;">
+            <div style="font-size:0.68rem;color:var(--blue);margin-bottom:4px;">合作夥伴</div>
+            <div style="font-size:0.9rem;font-weight:500;">${st.compat.good}</div>
+          </div>
+          <div style="background:var(--amber-bg);border:1px solid rgba(192,138,58,0.2);border-radius:6px;padding:10px;text-align:center;">
+            <div style="font-size:0.68rem;color:var(--amber);margin-bottom:4px;">成長挑戰</div>
+            <div style="font-size:0.9rem;font-weight:500;">${st.compat.challenge}</div>
+          </div>
+        </div>` : '';
+
+      document.getElementById('result-detail-content').innerHTML = `
+        <div style="background:var(--sidebar);border-radius:8px 8px 0 0;padding:24px 28px;margin:-20px -20px 20px;">
+          <div style="font-size:0.72rem;letter-spacing:0.15em;color:var(--gold);margin-bottom:6px;">ACSP 溝通風格分析</div>
+          <div style="font-family:'Noto Serif TC',serif;font-size:1.5rem;color:#fff;font-weight:400;">${r.dominantDisplay || r.dominant}</div>
+          <div style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-top:2px;">${st.en || ''}</div>
+          <div style="font-size:0.82rem;color:rgba(255,255,255,0.55);margin-top:8px;line-height:1.7;">${st.tagline || ''}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:0.8rem;margin-bottom:16px;padding:12px;background:var(--bg);border-radius:6px;">
+          <div><span style="color:var(--text-soft);">姓名：</span>${r.name}</div>
+          <div><span style="color:var(--text-soft);">職業：</span>${r.role || '—'}</div>
+          <div style="grid-column:1/-1;"><span style="color:var(--text-soft);">Email：</span>${r.email}</div>
+          <div style="grid-column:1/-1;"><span style="color:var(--text-soft);">測驗時間：</span>${dateStr}</div>
+        </div>
+        <div style="margin-bottom:16px;"><div style="font-size:0.72rem;letter-spacing:0.1em;color:var(--text-soft);margin-bottom:10px;">分數分佈</div>${scoreBars}</div>
+        <div style="margin-bottom:16px;"><div style="font-size:0.72rem;letter-spacing:0.1em;color:var(--text-soft);margin-bottom:8px;">性格特質</div><div>${traits}</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div><div style="font-size:0.72rem;letter-spacing:0.1em;color:var(--text-soft);margin-bottom:8px;">溝通優勢</div><ul style="list-style:none;padding:0;">${strengths}</ul></div>
+          <div><div style="font-size:0.72rem;letter-spacing:0.1em;color:var(--text-soft);margin-bottom:8px;">潛在盲點</div><ul style="list-style:none;padding:0;">${blinds}</ul></div>
+        </div>
+        ${compat ? `<div><div style="font-size:0.72rem;letter-spacing:0.1em;color:var(--text-soft);margin-bottom:8px;">風格相容</div>${compat}</div>` : ''}
+      `;
+      openModal('result-detail-modal');
     }
 
     function exportCSV() {

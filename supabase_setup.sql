@@ -62,21 +62,62 @@ CREATE TABLE IF NOT EXISTS public.acsp_reviews (
   sort_order  INT     DEFAULT 0
 );
 
+-- ── 文章表 ──
+CREATE TABLE IF NOT EXISTS public.acsp_articles (
+  id          BIGSERIAL   PRIMARY KEY,
+  title       TEXT        DEFAULT '',
+  subtitle    TEXT        DEFAULT '',
+  summary     TEXT        DEFAULT '',
+  content     TEXT        DEFAULT '',
+  cover_img   TEXT        DEFAULT '',
+  category    TEXT        DEFAULT '知識文章',
+  visibility  TEXT        DEFAULT 'public',
+  status      TEXT        DEFAULT '草稿',
+  tags        TEXT        DEFAULT '',
+  sort_order  INT         DEFAULT 0,
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ── ACSP 測驗結果表 ──
+CREATE TABLE IF NOT EXISTS public.acsp_results (
+  id               BIGSERIAL   PRIMARY KEY,
+  name             TEXT        DEFAULT '',
+  email            TEXT        DEFAULT '',
+  role             TEXT        DEFAULT '',
+  dominant         TEXT        DEFAULT '',
+  secondary        TEXT        DEFAULT '',
+  dominant_display TEXT        DEFAULT '',
+  tie_type         TEXT        DEFAULT 'none',
+  top_tied         TEXT        DEFAULT '[]',
+  pct_a            INT         DEFAULT 0,
+  pct_c            INT         DEFAULT 0,
+  pct_s            INT         DEFAULT 0,
+  pct_p            INT         DEFAULT 0,
+  source           TEXT        DEFAULT '前台測驗',
+  created_at       TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ── 開放公開讀取 + anon 寫入（後台用） ──
-ALTER TABLE public.acsp_courses ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.acsp_banners ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.acsp_faqs    ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.acsp_reviews ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.acsp_courses  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.acsp_banners  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.acsp_faqs     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.acsp_reviews  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.acsp_articles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.acsp_results  ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "public_read_courses"  ON public.acsp_courses  FOR SELECT USING (true);
 CREATE POLICY "public_read_banners"  ON public.acsp_banners  FOR SELECT USING (true);
 CREATE POLICY "public_read_faqs"     ON public.acsp_faqs     FOR SELECT USING (true);
 CREATE POLICY "public_read_reviews"  ON public.acsp_reviews  FOR SELECT USING (true);
+CREATE POLICY "public_read_articles" ON public.acsp_articles FOR SELECT USING (true);
+CREATE POLICY "public_read_results"  ON public.acsp_results  FOR SELECT USING (true);
 
 CREATE POLICY "anon_write_courses"   ON public.acsp_courses  FOR ALL    USING (true) WITH CHECK (true);
 CREATE POLICY "anon_write_banners"   ON public.acsp_banners  FOR ALL    USING (true) WITH CHECK (true);
 CREATE POLICY "anon_write_faqs"      ON public.acsp_faqs     FOR ALL    USING (true) WITH CHECK (true);
 CREATE POLICY "anon_write_reviews"   ON public.acsp_reviews  FOR ALL    USING (true) WITH CHECK (true);
+CREATE POLICY "anon_write_articles"  ON public.acsp_articles FOR ALL    USING (true) WITH CHECK (true);
+CREATE POLICY "anon_write_results"   ON public.acsp_results  FOR ALL    USING (true) WITH CHECK (true);
 
 -- ── 圖片儲存桶（Storage Bucket）──
 -- 說明：這段需要在 Storage 頁面手動建立（或用以下 SQL）

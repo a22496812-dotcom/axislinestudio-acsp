@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>文章 | 軸心線工作室</title>
+  <link rel="icon" type="image/png" href="./Logo/logo_64x64.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#E8E2D4;--bg-light:#F2EDE3;--bg-dark:#1E1C1A;--white:#FDFAF5;--text:#2B2825;--text-mid:#5A5550;--text-soft:#8C8680;--border:#D0C9BC;--gold:#B09A72;--radius:8px;--tr:0.2s ease;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;min-height:100vh;display:flex;flex-direction:column}
+    header{position:sticky;top:0;z-index:100;background:var(--bg-dark);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;border-bottom:1px solid rgba(255,255,255,0.06)}
+    .logo-link{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .logo-link img{width:32px;height:32px;border-radius:50%}
+    .logo-link span{font-family:'Noto Serif TC',serif;font-size:0.92rem;color:#fff;letter-spacing:0.06em}
+    .back-link{font-size:0.82rem;color:rgba(255,255,255,0.5);text-decoration:none;transition:color var(--tr)}
+    .back-link:hover{color:var(--gold)}
+
+    /* Loading / Error */
+    #page-loading,#page-error{text-align:center;padding:100px 24px;color:var(--text-soft)}
+    .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.9s linear infinite;margin:0 auto 16px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Article layout */
+    #article-page{display:none}
+    .art-hero{background:var(--bg-dark);padding:56px 32px 48px;text-align:center}
+    .art-hero-cat{display:inline-block;font-size:0.72rem;letter-spacing:0.15em;color:var(--gold);border:1px solid rgba(176,154,114,0.4);background:rgba(176,154,114,0.1);padding:4px 14px;border-radius:2px;margin-bottom:20px}
+    .art-hero-title{font-family:'Noto Serif TC',serif;font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:500;color:#fff;line-height:1.4;max-width:700px;margin:0 auto 12px}
+    .art-hero-subtitle{font-size:0.9rem;color:rgba(255,255,255,0.5);max-width:580px;margin:0 auto 20px}
+    .art-meta{font-size:0.75rem;color:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+    .art-meta span{display:flex;align-items:center;gap:5px}
+
+    .art-cover{max-height:420px;overflow:hidden;background:var(--bg-light)}
+    .art-cover img{width:100%;max-height:420px;object-fit:cover;display:block}
+
+    .art-wrap{max-width:720px;margin:0 auto;padding:56px 32px 80px}
+    .art-body p{margin-bottom:1.5em;font-size:0.96rem;line-height:1.9;color:var(--text)}
+    .art-body p:first-child::first-letter{font-family:'Noto Serif TC',serif;font-size:2.2em;float:left;line-height:1;margin-right:6px;color:var(--gold)}
+    .art-tags{margin-top:40px;padding-top:24px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:8px}
+    .art-tag{font-size:0.75rem;padding:4px 12px;border-radius:20px;border:1px solid var(--border);color:var(--text-soft)}
+
+    /* CTA */
+    .art-cta{background:var(--bg-dark);margin-top:60px;padding:48px 32px;text-align:center;border-radius:var(--radius)}
+    .art-cta h3{font-family:'Noto Serif TC',serif;font-size:1.3rem;font-weight:400;color:#fff;margin-bottom:10px}
+    .art-cta p{font-size:0.85rem;color:rgba(255,255,255,0.45);margin-bottom:24px}
+    .btn-cta{display:inline-block;padding:13px 36px;background:var(--gold);color:#fff;border-radius:4px;text-decoration:none;font-size:0.9rem;transition:opacity var(--tr)}
+    .btn-cta:hover{opacity:0.85}
+
+    footer{background:var(--bg-dark);padding:28px 32px;text-align:center;border-top:1px solid rgba(255,255,255,0.06);font-size:0.75rem;color:rgba(255,255,255,0.25)}
+    @media(max-width:768px){header{padding:0 20px}.art-hero{padding:40px 20px 36px}.art-wrap{padding:40px 20px 60px}}
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="logo-link" href="index.html">
+    <img src="./Logo/logo_64x64.png" alt="軸心線工作室" />
+    <span>軸心線工作室</span>
+  </a>
+  <a class="back-link" href="articles.html">← 返回文章列表</a>
+</header>
+
+<div id="page-loading">
+  <div class="spinner"></div>
+  <p>載入文章中…</p>
+</div>
+
+<div id="page-error" style="display:none;">
+  <p style="font-size:1.1rem;margin-bottom:12px;">找不到這篇文章</p>
+  <a href="articles.html" style="color:var(--gold);">← 返回文章列表</a>
+</div>
+
+<div id="article-page">
+  <!-- Hero -->
+  <div class="art-hero">
+    <div class="art-hero-cat" id="dyn-cat">文章</div>
+    <h1 class="art-hero-title" id="dyn-title">—</h1>
+    <p class="art-hero-subtitle" id="dyn-subtitle"></p>
+    <div class="art-meta">
+      <span>✍ 鄭瀞儀</span>
+      <span id="dyn-date"></span>
+      <span id="dyn-tags-meta"></span>
+    </div>
+  </div>
+
+  <!-- Cover image -->
+  <div class="art-cover" id="dyn-cover-wrap" style="display:none;">
+    <img id="dyn-cover" src="" alt="" />
+  </div>
+
+  <!-- Article content -->
+  <div class="art-wrap">
+    <div class="art-body" id="dyn-body"></div>
+    <div class="art-tags" id="dyn-tags"></div>
+
+    <!-- CTA -->
+    <div class="art-cta">
+      <h3>想了解你的溝通風格？</h3>
+      <p>完成 ACSP 測驗，立即獲得個人化分析報告</p>
+      <a class="btn-cta" href="quiz.html">免費開始測驗 →</a>
+    </div>
+  </div>
+</div>
+
+<footer>© 2026 軸心線工作室 All Rights Reserved.</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
+<script>
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  function showError() {
+    document.getElementById('page-loading').style.display = 'none';
+    document.getElementById('page-error').style.display = '';
+  }
+
+  async function init() {
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    if (!id) { showError(); return; }
+
+    try {
+      const { data, error } = await sb.from('acsp_articles')
+        .select('*').eq('id', id).single();
+      if (error || !data) { showError(); return; }
+      renderArticle(data);
+    } catch(e) { showError(); }
+  }
+
+  function renderArticle(a) {
+    document.title = `${a.title} | 軸心線工作室`;
+
+    document.getElementById('dyn-cat').textContent   = a.category || '文章';
+    document.getElementById('dyn-title').textContent = a.title;
+    if (a.subtitle) document.getElementById('dyn-subtitle').textContent = a.subtitle;
+
+    const d = new Date(a.created_at);
+    if (!isNaN(d)) {
+      document.getElementById('dyn-date').textContent =
+        `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    if (a.cover_img) {
+      document.getElementById('dyn-cover').src = a.cover_img;
+      document.getElementById('dyn-cover').alt = a.title;
+      document.getElementById('dyn-cover-wrap').style.display = '';
+    }
+
+    // Render content — split by double newline → paragraphs
+    const paragraphs = (a.content || '').split(/\n\n+/).filter(p => p.trim());
+    document.getElementById('dyn-body').innerHTML = paragraphs.length
+      ? paragraphs.map(p => `<p>${p.replace(/\n/g, '<br />')}</p>`).join('')
+      : '<p style="color:var(--text-soft);">（內文即將更新）</p>';
+
+    // Tags
+    if (a.tags) {
+      const tagList = a.tags.split(',').map(t => t.trim()).filter(Boolean);
+      document.getElementById('dyn-tags').innerHTML = tagList.map(t =>
+        `<span class="art-tag">${t}</span>`
+      ).join('');
+      document.getElementById('dyn-tags-meta').textContent = tagList.map(t => '#'+t).join(' ');
+    }
+
+    document.getElementById('page-loading').style.display = 'none';
+    document.getElementById('article-page').style.display = '';
+  }
+
+  init();
+</script>
+</body>
+</html>

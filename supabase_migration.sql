@@ -27,3 +27,45 @@ END $$;
 -- ── Banner 表：確保 id 欄位是 BIGINT（舊版可能是 TEXT）──
 -- 注意：如果 id 已是 TEXT 且有資料，這行可能要先清空 banner 資料再跑
 -- ALTER TABLE public.acsp_banners ALTER COLUMN id TYPE BIGINT USING id::BIGINT;
+
+-- ── ACSP 測驗結果表 ──
+CREATE TABLE IF NOT EXISTS public.acsp_results (
+  id               BIGSERIAL PRIMARY KEY,
+  name             TEXT        DEFAULT '',
+  email            TEXT        DEFAULT '',
+  role             TEXT        DEFAULT '',
+  dominant         TEXT        DEFAULT '',
+  secondary        TEXT        DEFAULT '',
+  dominant_display TEXT        DEFAULT '',
+  tie_type         TEXT        DEFAULT 'none',
+  top_tied         TEXT        DEFAULT '[]',   -- JSON 字串，例如 '["A","C"]'
+  pct_a            INT         DEFAULT 0,
+  pct_c            INT         DEFAULT 0,
+  pct_s            INT         DEFAULT 0,
+  pct_p            INT         DEFAULT 0,
+  source           TEXT        DEFAULT '前台測驗',
+  created_at       TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.acsp_results ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "public_read_results"  ON public.acsp_results FOR SELECT USING (true);
+CREATE POLICY "anon_write_results"   ON public.acsp_results FOR ALL    USING (true) WITH CHECK (true);
+
+-- ── 文章表 ──
+CREATE TABLE IF NOT EXISTS public.acsp_articles (
+  id          BIGSERIAL   PRIMARY KEY,
+  title       TEXT        DEFAULT '',
+  subtitle    TEXT        DEFAULT '',
+  summary     TEXT        DEFAULT '',
+  content     TEXT        DEFAULT '',
+  cover_img   TEXT        DEFAULT '',
+  category    TEXT        DEFAULT '知識文章',
+  visibility  TEXT        DEFAULT 'public',
+  status      TEXT        DEFAULT '草稿',
+  tags        TEXT        DEFAULT '',
+  sort_order  INT         DEFAULT 0,
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE public.acsp_articles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "public_read_articles" ON public.acsp_articles FOR SELECT USING (true);
+CREATE POLICY "anon_write_articles"  ON public.acsp_articles FOR ALL    USING (true) WITH CHECK (true);

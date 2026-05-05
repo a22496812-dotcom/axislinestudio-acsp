@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>知識文章 | 軸心線工作室</title>
+  <meta name="description" content="軸心線工作室溝通風格知識庫，幫你看懂人、說對話、建立真正有效的溝通。" />
+  <link rel="icon" type="image/png" href="./Logo/logo_64x64.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#E8E2D4; --bg-light:#F2EDE3; --bg-dark:#1E1C1A;
+      --white:#FDFAF5; --text:#2B2825; --text-mid:#5A5550;
+      --text-soft:#8C8680; --border:#D0C9BC; --gold:#B09A72;
+      --radius:8px; --tr:0.2s ease; --max-w:1100px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.75;min-height:100vh;display:flex;flex-direction:column}
+    header{position:sticky;top:0;z-index:100;background:var(--bg-dark);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;border-bottom:1px solid rgba(255,255,255,0.06)}
+    .logo-link{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .logo-link img{width:32px;height:32px;border-radius:50%}
+    .logo-link span{font-family:'Noto Serif TC',serif;font-size:0.92rem;color:#fff;letter-spacing:0.06em}
+    nav.main-nav{display:flex;align-items:center;gap:28px}
+    nav.main-nav a{font-size:0.82rem;color:rgba(255,255,255,0.6);text-decoration:none;transition:color var(--tr)}
+    nav.main-nav a:hover,nav.main-nav a.active{color:#fff}
+    .page-hero{background:var(--bg-dark);padding:48px 32px 40px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06)}
+    .page-hero h1{font-family:'Noto Serif TC',serif;font-size:1.6rem;font-weight:400;color:#fff;letter-spacing:0.08em}
+    .page-hero p{margin-top:8px;font-size:0.85rem;color:rgba(255,255,255,0.4);letter-spacing:0.04em}
+    main{flex:1;padding:60px 32px}
+    .container{max-width:var(--max-w);margin:0 auto}
+
+    /* Category filter */
+    .cat-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:36px}
+    .cat-btn{padding:6px 16px;border-radius:20px;border:1.5px solid var(--border);background:transparent;font-family:'Noto Sans TC',sans-serif;font-size:0.8rem;color:var(--text-mid);cursor:pointer;transition:all var(--tr)}
+    .cat-btn:hover,.cat-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(176,154,114,0.08)}
+
+    /* Article grid */
+    .art-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px}
+    .art-card{background:var(--white);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);transition:box-shadow var(--tr),transform var(--tr);display:flex;flex-direction:column}
+    .art-card:hover{box-shadow:0 8px 32px rgba(0,0,0,0.12);transform:translateY(-3px)}
+    .art-thumb{width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--bg-light)}
+    .art-thumb img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s}
+    .art-card:hover .art-thumb img{transform:scale(1.03)}
+    .art-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--border)}
+    .art-body{padding:20px;flex:1;display:flex;flex-direction:column}
+    .art-cat{display:inline-block;font-size:0.68rem;letter-spacing:0.1em;color:var(--gold);border:1px solid var(--gold);padding:2px 8px;border-radius:3px;margin-bottom:10px}
+    .art-title{font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:500;line-height:1.55;margin-bottom:8px;color:var(--text)}
+    .art-summary{font-size:0.82rem;color:var(--text-soft);line-height:1.7;flex:1;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .art-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border)}
+    .art-date{font-size:0.72rem;color:var(--text-soft)}
+    .btn-read{padding:7px 16px;background:var(--gold);color:#fff;border:none;border-radius:4px;font-size:0.78rem;cursor:pointer;text-decoration:none;transition:opacity var(--tr)}
+    .btn-read:hover{opacity:0.85}
+
+    /* Empty state */
+    .empty-state{text-align:center;padding:80px 20px;color:var(--text-soft);font-size:0.9rem}
+
+    footer{background:var(--bg-dark);padding:28px 32px;text-align:center;border-top:1px solid rgba(255,255,255,0.06)}
+    .footer-email{font-size:0.82rem;color:rgba(255,255,255,0.45);margin-bottom:12px}
+    .footer-email a{color:var(--gold);text-decoration:none}
+    .footer-bottom{font-size:0.75rem;color:rgba(255,255,255,0.25)}
+    @media(max-width:768px){header{padding:0 20px}nav.main-nav{display:none}.page-hero{padding:36px 20px 28px}main{padding:36px 20px}.art-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="logo-link" href="index.html">
+    <img src="./Logo/logo_64x64.png" alt="軸心線工作室" />
+    <span>軸心線工作室</span>
+  </a>
+  <nav class="main-nav">
+    <a href="index.html">首頁</a>
+    <a href="courses.html">所有服務</a>
+    <a href="articles.html" class="active">知識文章</a>
+    <a href="index.html#faq">常見問題</a>
+    <a href="index.html#about">關於我們</a>
+  </nav>
+</header>
+
+<div class="page-hero">
+  <h1>知識文章</h1>
+  <p>溝通風格知識庫・幫你看懂人、說對話</p>
+</div>
+
+<main>
+  <div class="container">
+    <div class="cat-bar" id="cat-bar">
+      <button class="cat-btn active" onclick="filterCat('', this)">全部</button>
+      <button class="cat-btn" onclick="filterCat('溝通技巧', this)">溝通技巧</button>
+      <button class="cat-btn" onclick="filterCat('職場應用', this)">職場應用</button>
+      <button class="cat-btn" onclick="filterCat('關係經營', this)">關係經營</button>
+      <button class="cat-btn" onclick="filterCat('ACSP 介紹', this)">ACSP 介紹</button>
+    </div>
+    <div class="art-grid" id="art-grid">
+      <div class="empty-state">載入中…</div>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
+<script>
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  let allArticles = [];
+
+  async function loadArticles() {
+    try {
+      const { data, error } = await sb.from('acsp_articles')
+        .select('id,title,subtitle,summary,cover_img,category,status,visibility,created_at,sort_order')
+        .eq('status', '已發布')
+        .eq('visibility', 'public')
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    } catch(e) {
+      console.error('articles fetch:', e);
+      return [];
+    }
+  }
+
+  function buildCard(a) {
+    const d = new Date(a.created_at);
+    const dateStr = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+    const thumb = a.cover_img
+      ? `<img src="${a.cover_img}" alt="${a.title}" loading="lazy" />`
+      : `<div class="art-thumb-placeholder">✍</div>`;
+    return `
+      <div class="art-card" onclick="location.href='article.html?id=${a.id}'" style="cursor:pointer;">
+        <div class="art-thumb">${thumb}</div>
+        <div class="art-body">
+          <div class="art-cat">${a.category || '文章'}</div>
+          <div class="art-title">${a.title}</div>
+          ${a.summary ? `<div class="art-summary">${a.summary}</div>` : ''}
+          <div class="art-footer">
+            <span class="art-date">${dateStr}</span>
+            <a class="btn-read" href="article.html?id=${a.id}">閱讀全文</a>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  let currentCat = '';
+  function filterCat(cat, btn) {
+    currentCat = cat;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render(cat ? allArticles.filter(a => a.category === cat) : allArticles);
+  }
+
+  function render(list) {
+    const grid = document.getElementById('art-grid');
+    if (!list.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">暫無文章</div>`;
+      return;
+    }
+    grid.innerHTML = list.map(buildCard).join('');
+  }
+
+  (async () => {
+    allArticles = await loadArticles();
+    render(allArticles);
+  })();
+</script>
+
+<footer>
+  <div class="footer-email">✉ 客服信箱：<a href="mailto:axislinestudio@gmail.com">axislinestudio@gmail.com</a></div>
+  <div class="footer-bottom">© 2026 軸心線工作室 All Rights Reserved.</div>
+</footer>
+</body>
+</html>

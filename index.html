@@ -960,6 +960,7 @@
       <ul class="nav-links">
         <li><a href="#acsp">關於 ACSP</a></li>
         <li><a href="courses.html">服務內容</a></li>
+        <li><a href="articles.html">知識文章</a></li>
         <li><a href="#instructor">講師介紹</a></li>
         <li><a href="#about">關於我們</a></li>
         <li><a href="#faq">常見問題</a></li>
@@ -1452,6 +1453,23 @@
     </div>
   </section>
 
+  <!-- ── 知識文章 ── -->
+  <section id="articles" style="padding:80px 32px;background:var(--bg-light);">
+    <div class="container">
+      <div class="fade-up" style="text-align:center;margin-bottom:48px;">
+        <div style="font-size:0.75rem;letter-spacing:0.2em;color:var(--gold);margin-bottom:12px;">KNOWLEDGE</div>
+        <h2 style="font-family:'Noto Serif TC',serif;font-size:clamp(1.5rem,3vw,2rem);font-weight:400;color:var(--text);">知識文章</h2>
+        <p style="font-size:0.88rem;color:var(--text-soft);margin-top:8px;">溝通風格知識庫・幫你看懂人、說對話</p>
+      </div>
+      <div id="home-art-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;max-width:var(--max-w,1100px);margin:0 auto 40px;"></div>
+      <div style="text-align:center;">
+        <a href="articles.html" style="display:inline-block;padding:12px 36px;border:1.5px solid var(--gold);border-radius:4px;color:var(--gold);font-size:0.88rem;text-decoration:none;transition:background 0.2s,color 0.2s;" onmouseover="this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--gold');this.style.color='#fff';" onmouseout="this.style.background='';this.style.color=getComputedStyle(document.documentElement).getPropertyValue('--gold');">
+          查看所有文章 →
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- ── FAQ ── -->
   <section id="faq">
     <div class="container">
@@ -1534,6 +1552,35 @@
           </div>
         </div>
       </div>`).join('');
+  })();
+  </script>
+
+  <!-- ── Articles loader ── -->
+  <script>
+  (async () => {
+    const _sbA = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    const grid = document.getElementById('home-art-grid');
+    if (!grid) return;
+    try {
+      const { data } = await _sbA.from('acsp_articles')
+        .select('id,title,subtitle,summary,cover_img,category,created_at')
+        .eq('status','已發布').eq('visibility','public')
+        .order('sort_order',{ascending:true}).order('created_at',{ascending:false}).limit(3);
+      if (!data || !data.length) { grid.style.display = 'none'; return; }
+      grid.innerHTML = data.map(a => {
+        const d = new Date(a.created_at);
+        const ds = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+        return `<div onclick="location.href='article.html?id=${a.id}'" style="background:#FDFAF5;border-radius:8px;overflow:hidden;border:1px solid #D0C9BC;cursor:pointer;transition:box-shadow 0.2s,transform 0.2s;" onmouseover="this.style.boxShadow='0 8px 32px rgba(0,0,0,0.12)';this.style.transform='translateY(-3px)'" onmouseout="this.style.boxShadow='';this.style.transform=''">
+          ${a.cover_img ? `<div style="aspect-ratio:16/9;overflow:hidden;"><img src="${a.cover_img}" alt="${a.title}" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy" /></div>` : `<div style="aspect-ratio:16/9;background:#E8E2D4;display:flex;align-items:center;justify-content:center;font-size:2rem;">✍</div>`}
+          <div style="padding:18px 20px;">
+            <div style="font-size:0.68rem;letter-spacing:0.1em;color:#B09A72;margin-bottom:8px;">${a.category||'文章'}</div>
+            <div style="font-family:'Noto Serif TC',serif;font-size:0.95rem;font-weight:500;line-height:1.55;margin-bottom:8px;">${a.title}</div>
+            ${a.summary ? `<div style="font-size:0.8rem;color:#8C8680;line-height:1.7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${a.summary}</div>` : ''}
+            <div style="font-size:0.72rem;color:#8C8680;margin-top:10px;">${ds}</div>
+          </div>
+        </div>`;
+      }).join('');
+    } catch(e) { grid.style.display='none'; }
   })();
   </script>
 
@@ -1631,6 +1678,7 @@
         </div>
         <div class="footer-col">
           <div class="footer-col-title">資源</div>
+          <a href="articles.html">知識文章</a>
           <a href="#about">關於我們</a>
           <a href="#faq">常見問題</a>
           <a href="admin.html">後台管理</a>
