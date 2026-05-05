@@ -2806,6 +2806,29 @@
     }
 
     // ── Render Banner List from Supabase ──
+    let _bDragIdx = null;
+    function bannerDragStart(e, idx) {
+      _bDragIdx = idx;
+      e.currentTarget.style.opacity = '0.5';
+      e.dataTransfer.effectAllowed = 'move';
+    }
+    function bannerDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+    function bannerDragEnd(e) { e.currentTarget.style.opacity = ''; }
+    function bannerDrop(e, targetIdx) {
+      e.preventDefault();
+      if (_bDragIdx === null || _bDragIdx === targetIdx) { _bDragIdx = null; return; }
+      const arr = [...bannerData];
+      const [moved] = arr.splice(_bDragIdx, 1);
+      arr.splice(targetIdx, 0, moved);
+      arr.forEach((b, i) => b.sort_order = i);
+      bannerData = arr;
+      _bDragIdx = null;
+      renderBannerList();
+      Promise.all(arr.map(b => sb.from('acsp_banners').update({ sort_order: b.sort_order }).eq('id', Number(b.id))))
+        .then(() => showToast('Banner 順序已儲存 ✓'))
+        .catch(() => showToast('順序儲存失敗', 'error'));
+    }
+
     function renderBannerList() {
       const list = document.getElementById('banner-list');
       if (!list) return;
@@ -2813,17 +2836,21 @@
         list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-soft);font-size:0.9rem;">尚無 Banner，請從上方新增</div>';
         return;
       }
-      list.innerHTML = bannerData.map(b => `
-        <div class="banner-row" data-bid="${b.id}" style="display:flex;align-items:center;gap:16px;padding:16px 24px;border-bottom:1px solid var(--border);">
-          <div style="color:var(--text-soft);font-size:1.1rem;cursor:grab;">⠿</div>
+      list.innerHTML = bannerData.map((b, i) => `
+        <div class="banner-row" data-bid="${b.id}" data-bidx="${i}" draggable="true"
+             ondragstart="bannerDragStart(event,${i})" ondragover="bannerDragOver(event)"
+             ondrop="bannerDrop(event,${i})" ondragend="bannerDragEnd(event)"
+             style="display:flex;align-items:center;gap:16px;padding:16px 24px;border-bottom:1px solid var(--border);cursor:grab;transition:background 0.15s;"
+             onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
+          <div style="color:var(--text-soft);font-size:1.1rem;cursor:grab;flex-shrink:0;">⠿</div>
           <img src="${b.img || ''}"
-               alt="" style="width:120px;height:45px;object-fit:cover;border-radius:4px;border:1px solid var(--border);background:var(--border);" />
-          <div style="flex:1;">
-            <div style="font-size:0.88rem;font-weight:500;">${b.title || '（未命名）'}</div>
+               alt="" style="width:140px;height:52px;object-fit:cover;border-radius:4px;border:1px solid var(--border);background:var(--border);flex-shrink:0;" />
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.88rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${b.title || '（未命名）'}</div>
             <div style="font-size:0.75rem;color:var(--text-soft);">${b.link ? b.link : '無連結'}</div>
           </div>
-          <span class="badge ${b.on ? 'green' : ''}" style="${b.on ? '' : 'background:var(--bg);color:var(--text-soft);border:1px solid var(--border);'}">${b.on ? '顯示中' : '已隱藏'}</span>
-          <div style="display:flex;gap:6px;align-items:center;">
+          <span class="badge ${b.on ? 'green' : ''}" style="${b.on ? '' : 'background:var(--bg);color:var(--text-soft);border:1px solid var(--border);'}flex-shrink:0;">${b.on ? '顯示中' : '已隱藏'}</span>
+          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
             <label class="toggle" style="transform:scale(0.85);">
               <input type="checkbox" ${b.on ? 'checked' : ''} onchange="bannerToggle('${b.id}', this.checked)">
               <span class="slider"></span>
@@ -3072,12 +3099,12 @@
       try {
         if (id) {
           const { error } = await sb.from('acsp_reviews')
-            .update({ author: name, role, stars, body: text, is_visible: on }).eq('id', Number(id));
+            .update({ author: name, role, stars, body: text, is_visible: on }).eq('id', id);
           if (error) throw error;
           showToast('評價已更新 ✓');
         } else {
           const { error } = await sb.from('acsp_reviews')
-            .insert({ author: name, role, stars, body: text, is_visible: on, sort_order: revData.length });
+            .insert({ id: String(Date.now()), author: name, role, stars, body: text, is_visible: on, sort_order: revData.length });
           if (error) throw error;
           showToast('評價已新增 ✓');
         }
@@ -3116,7 +3143,7 @@
       if (!r) return;
       const newOn = !r.on;
       try {
-        const { error } = await sb.from('acsp_reviews').update({ is_visible: newOn }).eq('id', Number(id));
+        const { error } = await sb.from('acsp_reviews').update({ is_visible: newOn }).eq('id', id);
         if (error) throw error;
         r.on = newOn;
         renderRevTable();
@@ -3127,7 +3154,7 @@
     window.revDelete = async function(id) {
       if (!confirm('確定刪除此評價？此操作無法復原。')) return;
       try {
-        const { error } = await sb.from('acsp_reviews').delete().eq('id', Number(id));
+        const { error } = await sb.from('acsp_reviews').delete().eq('id', id);
         if (error) throw error;
         revData = revData.filter(r => r.id !== id);
         renderRevTable();
