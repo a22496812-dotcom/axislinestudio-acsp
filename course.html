@@ -441,26 +441,41 @@
   <a href="courses.html">← 所有課程</a>
 </div>
 
+<!-- ── Loading ── -->
+<div id="page-loading" style="text-align:center;padding:100px 24px;color:#8C8680;font-size:0.95rem;">
+  載入課程資訊中…
+</div>
+
+<!-- ── Error ── -->
+<div id="page-error" style="display:none;text-align:center;padding:100px 24px;">
+  <div style="font-size:2rem;margin-bottom:16px;">😔</div>
+  <div style="font-size:1.1rem;color:#2B2825;margin-bottom:8px;">找不到這門課程</div>
+  <div style="font-size:0.88rem;color:#8C8680;margin-bottom:24px;">課程可能已下架或網址有誤</div>
+  <a href="courses.html" style="color:#B09A72;text-decoration:none;border-bottom:1px solid #B09A72;">← 回到所有課程</a>
+</div>
+
 <!-- ── Page ── -->
-<div class="course-page">
+<div class="course-page" id="course-page" style="display:none;">
   <div class="course-layout">
 
     <!-- LEFT: Main content -->
     <main class="course-main">
-      <div class="course-badge">線下課程</div>
-      <h1 class="course-title">ACSP溝通風格工作坊｜16型精準定位與立體溝通</h1>
-      <p class="course-tagline">看懂對方的「手段」與「核心」，精準導航職場關係</p>
+      <div class="course-badge" id="dyn-badge">課程</div>
+      <h1 class="course-title" id="dyn-title"></h1>
+      <p class="course-tagline" id="dyn-tagline"></p>
 
       <div class="instructor-row">
-        <div class="instructor-avatar">儀</div>
-        <span class="instructor-name">鄭湘儀</span>
+        <img src="./鄭瀞儀講師照片/WUC_9648.jpg" alt="鄭瀞儀"
+             style="width:32px;height:32px;border-radius:50%;object-fit:cover;"
+             onerror="this.style.display='none'" />
+        <span class="instructor-name">鄭瀞儀</span>
       </div>
 
       <!-- Tab nav -->
       <nav class="course-tabs" id="tabs">
         <a href="#intro" class="active" onclick="setTab(this)">課程介紹</a>
-        <a href="#highlights" onclick="setTab(this)">課程要點</a>
-        <a href="#content" onclick="setTab(this)">課程內容</a>
+        <a href="#highlights" onclick="setTab(this)" id="tab-highlights">課程要點</a>
+        <a href="#content" onclick="setTab(this)" id="tab-content">課程內容</a>
         <a href="#instructor" onclick="setTab(this)">關於講師</a>
         <a href="#faq" onclick="setTab(this)">常見問題</a>
       </nav>
@@ -468,15 +483,8 @@
       <!-- 課程介紹 -->
       <section class="course-section" id="intro">
         <h2 class="section-title">課程介紹</h2>
-        <div class="intro-quote">
-          「為什麼總是聽完對方說話後，私底下卻還是在意別人的眼光？」<br />
-          「為什麼那個平常隨和的同事，遇到某些細節卻突然變得寸步不讓？」
-        </div>
-        <div class="intro-body">
-          <p>如果你覺得平常的溝通風格分析不夠用，那是因為人是立體的，而我們往往只看到了平面。</p>
-          <p>這堂 <strong>4 小時的 ACSP 16型工作坊</strong>，不是讓您背更多理論，而是帶您進入「數微鏡視角」。我將運用獨創的「雙層風格解碼」，區分一個人的 <strong>主風格：內在安全感</strong> 與 <strong>第二風格：外在手段</strong>。</p>
-          <p>透過獨特的「桌上戰場」實演，您將學會對話路徑設計。無論您是初次接觸 ACSP 的新朋友，還是想深化溝通技巧的老朋友，這堂課都能讓您看懂「表裡不一」的矛盾行為，並為您最在意的關鍵人物，設計出 <strong>明天就能用的精準對話</strong>。</p>
-          <p>不只看表相，我們可以直擊人心的原點。</p>
+        <div class="intro-body" id="dyn-description"></div>
+        <div class="event-info" id="dyn-event-info" style="display:none;">
         </div>
 
         <div class="event-info">
@@ -499,104 +507,38 @@
         </div>
       </section>
 
-      <!-- 課程要點 -->
-      <section class="course-section" id="highlights">
+      <!-- 課程要點（動態） -->
+      <section class="course-section" id="highlights" style="display:none;">
         <h2 class="section-title">課程要點</h2>
-        <div class="highlight-list">
-          <div class="highlight-item">
-            <div class="highlight-icon">✓</div>
-            <div class="highlight-text">
-              <strong>升高維度定義 ACSP</strong>：從「行為」看懂「安全感」，深入核心，解析 Analyzer（分析型）、Controller（控制型）、Supporter（支持型）、Promoter（推廣型）四大風格背後真正的焦慮與渴望。
-            </div>
-          </div>
-          <div class="highlight-item">
-            <div class="highlight-icon">✓</div>
-            <div class="highlight-text">
-              <strong>懂得什麼是「安全感」</strong>，你就掌握了溝通的核心關鍵，不再被表面行為誤導。
-            </div>
-          </div>
-          <div class="highlight-item">
-            <div class="highlight-icon">✓</div>
-            <div class="highlight-text">
-              <strong>精準定位 16 型：區分「心」與「手」</strong>——透過定位技術，拆解你的主風格（目的）與第二風格（手段）。為什麼有些人表現如一（純粹型）？為什麼有些人讓人捉摸不定（對角型）？
-            </div>
-          </div>
-          <div class="highlight-item">
-            <div class="highlight-icon">✓</div>
-            <div class="highlight-text">
-              <strong>從 4 個象限展至 16 個定標</strong>，精確定位在職場中的戰略位置，看懂自己在組織關係中的角色與影響力。
-            </div>
-          </div>
-          <div class="highlight-item">
-            <div class="highlight-icon">✓</div>
-            <div class="highlight-text">
-              <strong>風格化學反應</strong>：解讀人性的手段，深入解析最困擾的溝通對象。看懂「強勢的溫柔（C-S）」「保守的創新者（A-P）」等複雜組合，學會聽懂他「沒說出口」的需求。
-            </div>
-          </div>
-          <div class="highlight-item">
-            <div class="highlight-icon">✓</div>
-            <div class="highlight-text">
-              <strong>桌上戰場演練：設計您的溝通劇本</strong>——利用桌上微模型，將抽象的溝通理論轉化為手中的棋子移動。針對您的真實職場難題，運用「三明治對話策略」（順應手段＋滿足安全感），帶您產出<strong>明天立刻能說的一句話</strong>。
-            </div>
-          </div>
-        </div>
+        <div class="highlight-list" id="dyn-highlights"></div>
       </section>
 
-      <!-- 課程內容 -->
-      <section class="course-section" id="content">
+      <!-- 課程內容（動態） -->
+      <section class="course-section" id="content" style="display:none;">
         <h2 class="section-title">課程內容</h2>
-        <div class="content-duration">總時數約 4 小時</div>
-        <div class="content-list">
-          <div class="content-item open">
-            <div class="content-item-header" onclick="toggleContent(this)">
-              <span>升高維度定義 ACSP：從「行為」看懂「安全感」</span>
-              <span class="content-item-badge">60 分鐘</span>
-            </div>
-            <div class="content-item-body">
-              深入核心，解析四大風格背後真正的焦慮與渴望。了解 Analyzer、Controller、Supporter、Promoter 每一型真正在「保護」什麼，重新理解溝通衝突的根源。
-            </div>
-          </div>
-          <div class="content-item">
-            <div class="content-item-header" onclick="toggleContent(this)">
-              <span>精準定位 16 型：區分「心」與「手」</span>
-              <span class="content-item-badge">70 分鐘</span>
-            </div>
-            <div class="content-item-body">
-              從 4 個象限展至 16 個定標，透過定位技術拆解主風格（目的）與第二風格（手段）。學員現場定位自己的類型，並理解他人的複雜行為模式。
-            </div>
-          </div>
-          <div class="content-item">
-            <div class="content-item-header" onclick="toggleContent(this)">
-              <span>風格化學反應：解讀人性的手段</span>
-              <span class="content-item-badge">60 分鐘</span>
-            </div>
-            <div class="content-item-body">
-              深入解析最困擾的溝通對象。看懂「強勢的溫柔（C-S）」「保守的創新者（A-P）」等複雜組合，不再被對方表面行為誤導，學會聽懂「沒說出口」的真實需求。
-            </div>
-          </div>
-          <div class="content-item">
-            <div class="content-item-header" onclick="toggleContent(this)">
-              <span>桌上戰場演練：設計您的溝通劇本</span>
-              <span class="content-item-badge">50 分鐘</span>
-            </div>
-            <div class="content-item-body">
-              利用桌上微模型將溝通理論實體化，針對學員真實職場難題，運用「三明治對話策略」設計個人化對話腳本，產出明天立刻能用的溝通句型。
-            </div>
-          </div>
-        </div>
+        <div class="content-duration" id="dyn-duration-label"></div>
+        <div class="content-list" id="dyn-modules"></div>
       </section>
 
-      <!-- 關於講師 -->
+      <!-- 適合對象（動態） -->
+      <section class="course-section" id="audience" style="display:none;">
+        <h2 class="section-title">適合對象</h2>
+        <div id="dyn-audience" style="display:flex;flex-direction:column;gap:10px;"></div>
+      </section>
+
+      <!-- 關於講師（靜態） -->
       <section class="course-section" id="instructor">
         <h2 class="section-title">關於講師</h2>
         <div class="instructor-card">
-          <div class="instructor-photo">儀</div>
+          <img src="./鄭瀞儀講師照片/WUC_9648.jpg" alt="鄭瀞儀"
+               class="instructor-photo" style="object-fit:cover;"
+               onerror="this.style.display='none'" />
           <div>
-            <div class="instructor-info-name">鄭湘儀</div>
+            <div class="instructor-info-name">鄭瀞儀</div>
             <div class="instructor-info-role">溝通風格教練 · 軸心線工作室創辦人</div>
             <div class="instructor-info-bio">
               <p>具備十五年培訓與管理經驗，曾從基層職員一路走到培訓公司總經理，長期投入職場溝通、衝突協作與衝突處理。</p>
-              <p>一路結著上千個人練習說話、處理誤會，把卡住的關係慢慢鬆開。擅長把混亂講清楚、把衝突變共識，用簡單的方式陪你把話說到位，讓事情順著走。</p>
+              <p>一路陪著上千個人練習說話、處理誤會，把卡住的關係慢慢鬆開。擅長把混亂講清楚、把衝突變共識，用簡單的方式陪你把話說到位，讓事情順著走。</p>
               <p>擅長將複雜的人際狀況整理成可理解、可操作的結晶，協助個人與團隊在有限時間內，產出更有效的溝通選擇。</p>
             </div>
             <a class="btn-more" href="index.html#about">瞭解更多 →</a>
@@ -604,95 +546,29 @@
         </div>
       </section>
 
-      <!-- 常見問題 -->
+      <!-- 常見問題（動態讀 Supabase） -->
       <section class="course-section" id="faq">
         <h2 class="section-title">常見問題</h2>
-        <div class="faq-list">
-          <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">
-              <span>退費機制</span>
-              <span class="faq-icon">⌄</span>
-            </div>
-            <div class="faq-a">
-              課程開始前 7 日（含）以上提出申請，可退還全額費用。課程開始前 3–6 日提出申請，退還 50% 費用。課程開始前 2 日（含）以內或課程開始後，恕不受理退費，但可轉讓名額給他人。如需申請退費，請寄信至 axislinestudio@gmail.com，說明報名姓名及申請事由。
-            </div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">
-              <span>購買課程可提供發票嗎？</span>
-              <span class="faq-icon">⌄</span>
-            </div>
-            <div class="faq-a">
-              本工作室為免用統一發票行號，無法提供統一發票。如需報帳，可提供付款收據作為憑證，請於報名時備註需求。
-            </div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">
-              <span>沒有做過 ACSP 測驗，可以參加嗎？</span>
-              <span class="faq-icon">⌄</span>
-            </div>
-            <div class="faq-a">
-              完全可以！建議在課程前先完成免費的 ACSP 四型溝通風格測驗，對課程內容的吸收會更有幫助。若尚未測驗，可至本站首頁免費進行，約 10 分鐘即可完成。
-            </div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">
-              <span>課程是否提供錄影或線上重播？</span>
-              <span class="faq-icon">⌄</span>
-            </div>
-            <div class="faq-a">
-              本課程為純線下互動工作坊，重點在於現場演練與即時回饋，不提供錄影或線上重播。建議確認可出席後再報名。若因特殊原因無法出席，可依退費機制辦理或轉讓名額。
-            </div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">
-              <span>課程地點好停車嗎？</span>
-              <span class="faq-icon">⌄</span>
-            </div>
-            <div class="faq-a">
-              課程地點位於台北市民權西路20號2樓，捷運民權西路站步行約1分鐘，建議搭乘大眾交通工具。附近有路邊停車格及停車場，但假日停車位較為緊張，請自行評估。
-            </div>
-          </div>
+        <div class="faq-list" id="dyn-faq">
+          <div style="color:var(--text-soft);font-size:0.88rem;padding:16px;">載入中…</div>
         </div>
       </section>
     </main>
 
-    <!-- RIGHT: Sidebar -->
+    <!-- RIGHT: Sidebar（動態） -->
     <aside class="course-sidebar">
       <div class="course-sidebar-inner">
         <div class="sidebar-card">
-          <!-- Course cover image -->
           <div class="sidebar-cover-placeholder">
-            <img src="./ACSP 16型風格應用-20260424T040741Z-3-001/ACSP 16型風格應用/ACSP_16型溝通風格_0607.jpg" alt="ACSP溝通風格工作坊" />
+            <img id="dyn-cover" src="" alt="" style="width:100%;display:block;object-fit:cover;" />
           </div>
-
           <div class="sidebar-body">
-            <div class="sidebar-meta">
-              <span>📋</span>
-              <span>課程時數約 4 小時</span>
-            </div>
-
-            <div class="sidebar-season">2026 夏季優惠</div>
-            <div class="sidebar-price-orig">NT$7,000</div>
-            <div class="sidebar-price">NT$3,480 <span>/ 人</span></div>
-
-            <a class="btn-buy" href="#enroll" id="enroll">立即報名 NT$3,480</a>
+            <div class="sidebar-meta" id="dyn-meta-duration"></div>
+            <div class="sidebar-price-orig" id="dyn-orig-price" style="display:none;"></div>
+            <div class="sidebar-price" id="dyn-price">TBD</div>
+            <a class="btn-buy" id="dyn-enroll-btn" href="#">立即報名</a>
             <a class="btn-quiz-link" href="quiz.html">先免費做 ACSP 測驗</a>
-
-            <div class="sidebar-guarantee">
-              <div class="guarantee-row">📅 課程日期：2026/6/7（日）</div>
-              <div class="guarantee-row">⏰ 時間：14:00 – 18:00</div>
-              <div class="guarantee-row">📍 台北市民權西路20號2樓</div>
-              <div class="guarantee-row">👥 限量 20 位</div>
-            </div>
-
-            <div class="sidebar-tags">
-              <span class="sidebar-tag">線下工作坊</span>
-              <span class="sidebar-tag">ACSP 框架</span>
-              <span class="sidebar-tag">16型定位</span>
-              <span class="sidebar-tag">職場溝通</span>
-              <span class="sidebar-tag">實戰演練</span>
-            </div>
+            <div class="sidebar-guarantee" id="dyn-sidebar-meta"></div>
           </div>
         </div>
       </div>
@@ -706,43 +582,194 @@
   <div class="footer-email">
     ✉ 客服信箱：<a href="mailto:axislinestudio@gmail.com">axislinestudio@gmail.com</a>
   </div>
-  <div class="footer-bottom">
-    © 2026 軸心線工作室 All Rights Reserved.
-  </div>
+  <div class="footer-bottom">© 2026 軸心線工作室 All Rights Reserved.</div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
 <script>
-// Tab active highlight on scroll
-const sections = ['intro','highlights','content','instructor','faq'];
-const tabLinks  = document.querySelectorAll('.course-tabs a');
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+const DEFAULT_COVER = './ACSP 16型風格應用-20260424T040741Z-3-001/ACSP 16型風格應用/ACSP_16型溝通風格_0607_課程封面.jpg';
+
+function formatDate(dt) {
+  if (!dt) return '';
+  const d = new Date(dt);
+  if (isNaN(d)) return dt;
+  return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+}
+function formatTime(dt) {
+  if (!dt) return '';
+  const d = new Date(dt);
+  if (isNaN(d)) return '';
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
 
 function setTab(el) {
-  tabLinks.forEach(a => a.classList.remove('active'));
+  document.querySelectorAll('.course-tabs a').forEach(a => a.classList.remove('active'));
   el.classList.add('active');
 }
 
+function toggleContent(header) {
+  header.closest('.content-item').classList.toggle('open');
+}
+function toggleFaq(el) {
+  el.closest('.faq-item').classList.toggle('open');
+}
+
+async function init() {
+  const id = new URLSearchParams(window.location.search).get('id');
+  if (!id) { showError(); return; }
+
+  const { data: c, error } = await sb.from('acsp_courses').select('*').eq('id', id).single();
+  if (error || !c) { showError(); return; }
+
+  // — Page title —
+  document.title = c.name + ' | 軸心線工作室';
+
+  // — Header enroll button —
+  document.querySelector('.btn-enroll-nav').href = c.enroll_url || '#';
+
+  // — Badge, title, tagline —
+  document.getElementById('dyn-badge').textContent = c.type || '課程';
+  document.getElementById('dyn-title').textContent = c.name;
+  document.getElementById('dyn-tagline').textContent = c.sub || '';
+
+  // — Description —
+  const descEl = document.getElementById('dyn-description');
+  const lines = (c.description || '').split('\n').filter(l => l.trim());
+  descEl.innerHTML = lines.length
+    ? lines.map(l => `<p style="font-size:0.92rem;color:var(--text-mid);margin-bottom:14px;line-height:1.85;">${l}</p>`).join('')
+    : '<p style="color:var(--text-soft);">（課程介紹待補充）</p>';
+
+  // — Event info box in intro —
+  const evRows = [];
+  if (c.date) evRows.push(`<div class="event-info-row"><span class="event-info-label">📅 時間</span><span class="event-info-value">${formatDate(c.date)}（${formatTime(c.date)}）</span></div>`);
+  if (c.location) evRows.push(`<div class="event-info-row"><span class="event-info-label">📍 地點</span><span class="event-info-value">${c.location}</span></div>`);
+  if (c.seats) evRows.push(`<div class="event-info-row"><span class="event-info-label">👥 人數</span><span class="event-info-value">限量 ${c.seats} 位，額滿截止報名</span></div>`);
+  if (c.duration) evRows.push(`<div class="event-info-row"><span class="event-info-label">⏱ 時數</span><span class="event-info-value">${c.duration}</span></div>`);
+  if (evRows.length) {
+    document.getElementById('dyn-event-info').innerHTML = evRows.join('');
+    document.getElementById('dyn-event-info').style.display = '';
+  }
+
+  // — Highlights —
+  if (c.highlights && c.highlights.trim()) {
+    const items = c.highlights.split('\n').filter(h => h.trim());
+    document.getElementById('dyn-highlights').innerHTML = items.map(h =>
+      `<div class="highlight-item"><div class="highlight-icon">✓</div><div class="highlight-text">${h.trim()}</div></div>`
+    ).join('');
+    document.getElementById('highlights').style.display = '';
+    document.getElementById('tab-highlights').style.display = '';
+  } else {
+    document.getElementById('tab-highlights').style.display = 'none';
+  }
+
+  // — Modules —
+  if (c.modules && c.modules.trim()) {
+    const items = c.modules.split('\n').filter(m => m.trim());
+    document.getElementById('dyn-modules').innerHTML = items.map((m, i) =>
+      `<div class="content-item${i===0?' open':''}">
+        <div class="content-item-header" onclick="toggleContent(this)">
+          <span>${m.trim()}</span>
+        </div>
+        <div class="content-item-body"></div>
+      </div>`
+    ).join('');
+    if (c.duration) document.getElementById('dyn-duration-label').textContent = `總時數約 ${c.duration}`;
+    document.getElementById('content').style.display = '';
+    document.getElementById('tab-content').style.display = '';
+  } else {
+    document.getElementById('tab-content').style.display = 'none';
+  }
+
+  // — Audience —
+  if (c.audience && c.audience.trim()) {
+    const items = c.audience.split('\n').filter(a => a.trim());
+    document.getElementById('dyn-audience').innerHTML = items.map(a =>
+      `<div style="display:flex;align-items:center;gap:10px;font-size:0.9rem;color:var(--text-mid);padding:10px 16px;background:var(--white);border:1px solid var(--border);border-radius:6px;">
+        <span style="color:var(--green);font-size:1rem;">✓</span>${a.trim()}
+      </div>`
+    ).join('');
+    document.getElementById('audience').style.display = '';
+  }
+
+  // — Sidebar cover —
+  const coverImg = document.getElementById('dyn-cover');
+  coverImg.src = c.cover_img || DEFAULT_COVER;
+  coverImg.alt = c.name;
+  coverImg.onerror = () => { coverImg.src = DEFAULT_COVER; };
+
+  // — Sidebar price —
+  if (c.orig_price) {
+    document.getElementById('dyn-orig-price').textContent = c.orig_price;
+    document.getElementById('dyn-orig-price').style.display = '';
+  }
+  document.getElementById('dyn-price').innerHTML = `${c.price || 'TBD'} <span>/ 人</span>`;
+
+  // — Sidebar enroll button —
+  const enrollBtn = document.getElementById('dyn-enroll-btn');
+  enrollBtn.href = c.enroll_url || '#';
+  enrollBtn.textContent = `立即報名 ${c.price || ''}`;
+  enrollBtn.id = 'enroll';
+
+  // — Sidebar meta rows —
+  const metaRows = [];
+  if (c.date) metaRows.push(`<div class="guarantee-row">📅 ${formatDate(c.date)}</div>`);
+  if (c.date) metaRows.push(`<div class="guarantee-row">⏰ ${formatTime(c.date)}</div>`);
+  if (c.location) metaRows.push(`<div class="guarantee-row">📍 ${c.location}</div>`);
+  if (c.seats) metaRows.push(`<div class="guarantee-row">👥 限量 ${c.seats} 位</div>`);
+  if (c.duration) metaRows.push(`<div class="guarantee-row">📋 時數約 ${c.duration}</div>`);
+  document.getElementById('dyn-sidebar-meta').innerHTML = metaRows.join('');
+
+  // — Duration label —
+  if (c.duration) {
+    document.getElementById('dyn-meta-duration').innerHTML = `<span>📋</span><span>課程時數約 ${c.duration}</span>`;
+  }
+
+  // — Show page —
+  document.getElementById('page-loading').style.display = 'none';
+  document.getElementById('course-page').style.display = '';
+
+  // — Load FAQs —
+  loadFaqs();
+}
+
+async function loadFaqs() {
+  const faqEl = document.getElementById('dyn-faq');
+  try {
+    const { data, error } = await sb.from('acsp_faqs')
+      .select('*').eq('is_visible', true)
+      .order('sort_order', { ascending: true });
+    if (error || !data || !data.length) { faqEl.innerHTML = '<div style="color:var(--text-soft);padding:16px;">暫無常見問題</div>'; return; }
+    faqEl.innerHTML = data.map(f => `
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>${f.question || ''}</span><span class="faq-icon">⌄</span>
+        </div>
+        <div class="faq-a">${f.answer || ''}</div>
+      </div>`).join('');
+  } catch(e) { faqEl.innerHTML = ''; }
+}
+
+function showError() {
+  document.getElementById('page-loading').style.display = 'none';
+  document.getElementById('page-error').style.display = '';
+}
+
+// Scroll tab highlight
 window.addEventListener('scroll', () => {
+  const sections = ['intro','highlights','content','audience','instructor','faq'];
   let current = 'intro';
   sections.forEach(id => {
     const el = document.getElementById(id);
-    if (el && window.scrollY >= el.offsetTop - 100) current = id;
+    if (el && el.style.display !== 'none' && window.scrollY >= el.offsetTop - 100) current = id;
   });
-  tabLinks.forEach(a => {
+  document.querySelectorAll('.course-tabs a').forEach(a => {
     a.classList.toggle('active', a.getAttribute('href') === '#' + current);
   });
 }, { passive: true });
 
-// Content accordion
-function toggleContent(header) {
-  const item = header.closest('.content-item');
-  item.classList.toggle('open');
-}
-
-// FAQ accordion
-function toggleFaq(q) {
-  const item = q.closest('.faq-item');
-  item.classList.toggle('open');
-}
+init();
 </script>
 </body>
 </html>

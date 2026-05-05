@@ -21,14 +21,21 @@ CREATE TABLE IF NOT EXISTS public.acsp_courses (
   banner_img  TEXT    DEFAULT '',
   link        TEXT    DEFAULT 'course.html',
   sort_order  INT     DEFAULT 0,
+  -- 課程詳細頁欄位
+  duration    TEXT    DEFAULT '',
+  seats       TEXT    DEFAULT '',
+  highlights  TEXT    DEFAULT '',
+  modules     TEXT    DEFAULT '',
+  audience    TEXT    DEFAULT '',
+  enroll_url  TEXT    DEFAULT '',
   created_at  TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ── Banner 表 ──
 CREATE TABLE IF NOT EXISTS public.acsp_banners (
-  id          TEXT    PRIMARY KEY,
+  id          BIGINT  PRIMARY KEY,
   title       TEXT    DEFAULT '',
-  img         TEXT    DEFAULT '',
+  img_url     TEXT    DEFAULT '',
   link        TEXT    DEFAULT '',
   is_visible  BOOLEAN DEFAULT true,
   sort_order  INT     DEFAULT 0,

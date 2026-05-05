@@ -1567,23 +1567,37 @@
         <div id="ctab-content" class="ctab" style="display:none;">
           <div class="form-group" style="margin-bottom:16px;">
             <label class="form-label">課程要點 <span style="color:var(--text-soft);font-weight:400;">（每行一條，顯示於課程頁「課程要點」區塊）</span></label>
-            <textarea class="form-input" style="min-height:120px;" placeholder="升高維度定義 ACSP：從「行為」看懂「安全感」
+            <textarea id="cm-highlights" class="form-input" style="min-height:120px;" placeholder="升高維度定義 ACSP：從「行為」看懂「安全感」
 精準定位 16 型：細分「心」與「手」
 風格化學反應：解碼人性的手語
 桌上戰場演練：設計你的溝通劇本"></textarea>
           </div>
           <div class="form-group" style="margin-bottom:16px;">
             <label class="form-label">課程章節 <span style="color:var(--text-soft);font-weight:400;">（每行一個章節名稱）</span></label>
-            <textarea class="form-input" style="min-height:100px;" placeholder="升高維度定義 ACSP
+            <textarea id="cm-modules" class="form-input" style="min-height:100px;" placeholder="升高維度定義 ACSP
 從 4 個象限展至 16 個座標，精準定位
 風格化學反應：解碼人性的手語
 桌上戰場演練：設計你的溝通劇本"></textarea>
           </div>
           <div class="form-group">
             <label class="form-label">適合對象 <span style="color:var(--text-soft);font-weight:400;">（每行一類對象）</span></label>
-            <textarea class="form-input" style="min-height:80px;" placeholder="職場工作者
+            <textarea id="cm-audience" class="form-input" style="min-height:80px;" placeholder="職場工作者
 管理者、主管
 想改善關係的任何人"></textarea>
+          </div>
+          <div class="form-group" style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <label class="form-label">課程時數</label>
+              <input id="cm-duration" class="form-input" placeholder="例：4小時" />
+            </div>
+            <div>
+              <label class="form-label">人數限制</label>
+              <input id="cm-seats" class="form-input" placeholder="例：20" />
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:12px;">
+            <label class="form-label">報名連結 <span style="color:var(--text-soft);font-weight:400;">（Google 表單或其他報名頁網址）</span></label>
+            <input id="cm-enroll" class="form-input" placeholder="https://forms.gle/..." />
           </div>
         </div>
 
@@ -1822,6 +1836,9 @@
         date: r.date || '', location: r.location || '',
         desc: r.description || '',
         coverImg: r.cover_img || '', bannerImg: r.banner_img || '',
+        duration: r.duration || '', seats: r.seats || '',
+        highlights: r.highlights || '', modules: r.modules || '',
+        audience: r.audience || '', enrollUrl: r.enroll_url || '',
         link: r.link || 'course.html'
       };
     }
@@ -1903,7 +1920,10 @@
           date: val('cm-date') || '', location: val('cm-location') || '',
           description: val('cm-desc') || '',
           cover_img: coverUrl, banner_img: bannerUrl,
-          link: 'course.html', sort_order: 0
+          duration: val('cm-duration') || '', seats: val('cm-seats') || '',
+          highlights: val('cm-highlights') || '', modules: val('cm-modules') || '',
+          audience: val('cm-audience') || '', enroll_url: val('cm-enroll') || '',
+          link: `course.html?id=${rowId}`, sort_order: 0
         };
         const { error } = await sb.from('acsp_courses').upsert(row);
         if (error) throw error;
@@ -1929,9 +1949,15 @@
       document.getElementById('cm-price').value    = c.price.replace(/[^0-9]/g,'');
       document.getElementById('cm-origprice').value= c.origPrice ? c.origPrice.replace(/[^0-9]/g,'') : '';
       document.getElementById('cm-status').value   = c.status;
-      document.getElementById('cm-location').value = c.location || '';
-      document.getElementById('cm-date').value     = c.date || '';
-      document.getElementById('cm-desc').value     = c.desc || '';
+      document.getElementById('cm-location').value   = c.location || '';
+      document.getElementById('cm-date').value       = c.date || '';
+      document.getElementById('cm-desc').value       = c.desc || '';
+      document.getElementById('cm-duration').value   = c.duration || '';
+      document.getElementById('cm-seats').value      = c.seats || '';
+      document.getElementById('cm-highlights').value = c.highlights || '';
+      document.getElementById('cm-modules').value    = c.modules || '';
+      document.getElementById('cm-audience').value   = c.audience || '';
+      document.getElementById('cm-enroll').value     = c.enrollUrl || '';
       switchCourseTab(document.querySelector('#course-modal .tab-item'), 'ctab-info');
       openModal('course-modal');
       document.getElementById('course-modal').dataset.editId = id;
