@@ -807,9 +807,6 @@
       <div class="nav-item" onclick="navigate('reviews', this)">
         <span class="icon">💬</span> 學員評價
       </div>
-      <div class="nav-item" onclick="navigate('banners', this)">
-        <span class="icon">🖼️</span> Banner 管理
-      </div>
       <div class="nav-section-label">系統</div>
       <div class="nav-item" onclick="navigate('settings', this)">
         <span class="icon">⚙️</span> 系統設定
@@ -1466,94 +1463,6 @@
         </div>
       </div>
 
-      <!-- ── Banners ── -->
-      <div class="page" id="page-banners">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
-          <!-- Upload Card -->
-          <div class="card">
-            <div class="card-header"><div class="card-title">新增 Banner</div></div>
-            <div class="card-body">
-              <div class="form-grid">
-                <div class="form-group full">
-                  <label class="form-label">Banner 標題 <span style="color:var(--text-soft);font-weight:400;">（選填，內部識別用）</span></label>
-                  <input class="form-input" id="banner-title" placeholder="例：ACSP 16型工作坊 0607 場" />
-                </div>
-                <div class="form-group full">
-                  <label class="form-label">Banner 圖片</label>
-                  <div style="border:2px dashed var(--border);border-radius:var(--radius);padding:28px;text-align:center;background:var(--bg);cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'" onclick="document.getElementById('banner-file').click()">
-                    <div style="font-size:2rem;margin-bottom:8px;">🖼️</div>
-                    <div style="font-size:0.88rem;color:var(--text-mid);font-weight:500;">點擊選擇圖片</div>
-                    <div style="font-size:0.78rem;color:var(--text-soft);margin-top:6px;">建議尺寸：<strong>1112 × 520 px</strong></div>
-                    <div style="font-size:0.75rem;color:var(--text-soft);margin-top:2px;">格式：JPG / PNG・檔案大小：最大 <strong>2 MB</strong></div>
-                  </div>
-                  <input type="file" id="banner-file" accept="image/jpeg,image/png" style="display:none;" onchange="previewBanner(this)" />
-                  <img id="banner-preview" src="" alt="" style="display:none;margin-top:12px;width:100%;max-height:160px;object-fit:cover;border-radius:var(--radius);" />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">點擊連結（選填）</label>
-                  <input class="form-input" id="banner-link" placeholder="https:// 或 course.html" />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">顯示順序</label>
-                  <input class="form-input" type="number" placeholder="1" min="1" />
-                </div>
-                <div class="form-group full" style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
-                  <div>
-                    <div style="font-size:0.88rem;font-weight:500;">上架顯示</div>
-                    <div style="font-size:0.75rem;color:var(--text-soft);">開啟後 Banner 將顯示在首頁輪播</div>
-                  </div>
-                  <label class="toggle"><input type="checkbox" id="banner-visible" checked><span class="slider"></span></label>
-                </div>
-                <div class="form-actions">
-                  <button class="btn btn-gold" onclick="addBannerToList()">＋ 新增 Banner</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Spec Guide -->
-          <div class="card">
-            <div class="card-header"><div class="card-title">圖片規格說明</div></div>
-            <div class="card-body">
-              <div style="display:flex;flex-direction:column;gap:20px;">
-                <div style="background:var(--bg);border-radius:var(--radius);padding:16px;">
-                  <div style="font-size:0.78rem;font-weight:600;color:var(--gold);letter-spacing:0.06em;margin-bottom:10px;">首頁輪播 BANNER</div>
-                  <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:0.83rem;">
-                    <span style="color:var(--text-soft);">建議尺寸</span><span><strong>1112 × 520 px</strong></span>
-                    <span style="color:var(--text-soft);">比例</span><span>1112 : 520（橫幅型）</span>
-                    <span style="color:var(--text-soft);">格式</span><span>JPG / PNG</span>
-                    <span style="color:var(--text-soft);">最大大小</span><span><strong>2 MB</strong></span>
-                    <span style="color:var(--text-soft);">最少張數</span><span>1 張（最多建議 5 張）</span>
-                  </div>
-                </div>
-                <div style="background:var(--bg);border-radius:var(--radius);padding:16px;">
-                  <div style="font-size:0.78rem;font-weight:600;color:var(--blue);letter-spacing:0.06em;margin-bottom:10px;">課程封面圖</div>
-                  <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:0.83rem;">
-                    <span style="color:var(--text-soft);">建議尺寸</span><span><strong>318 × 318 px</strong></span>
-                    <span style="color:var(--text-soft);">比例</span><span>1 : 1（正方形）</span>
-                    <span style="color:var(--text-soft);">格式</span><span>JPG / PNG / WEBP</span>
-                    <span style="color:var(--text-soft);">最大大小</span><span><strong>2 MB</strong></span>
-                  </div>
-                </div>
-                <div style="font-size:0.78rem;color:var(--text-soft);background:rgba(192,138,58,0.08);border-left:3px solid var(--amber);padding:10px 14px;border-radius:0 var(--radius) var(--radius) 0;">
-                  💡 建議將重要文字置中，兩側各留 15% 安全區，避免在手機端被裁切。
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Banner List -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Banner 列表</div>
-            <span style="font-size:0.78rem;color:var(--text-soft);">拖曳可調整顯示順序</span>
-          </div>
-          <div id="banner-list">
-            <!-- rendered by renderBannerList() -->
-          </div>
-        </div>
-      </div>
 
     </div>
   </main>
@@ -2146,7 +2055,6 @@
       if (page === 'articles') { articlesData = await loadArticles(); renderArticlesTable(articlesData); }
       if (page === 'faq')      { faqData = await loadFaqs();          renderFaqTable(); }
       if (page === 'reviews')  { revData = await loadReviews();        renderRevTable(); }
-      if (page === 'banners')  { bannerData = await loadBanners();     renderBannerList(); }
       if (page === 'students') { await renderStudents(); }
       if (page === 'results')  { await initResultsPage(); }
     }
@@ -2425,12 +2333,11 @@
     // ── Init ──
     async function init() {
       try {
-        [coursesData, faqData, revData, bannerData, articlesData] = await Promise.all([
-          loadCourses(), loadFaqs(), loadReviews(), loadBanners(), loadArticles()
+        [coursesData, faqData, revData, articlesData] = await Promise.all([
+          loadCourses(), loadFaqs(), loadReviews(), loadArticles()
         ]);
       } catch(e) { console.error('init:', e); }
       renderCourses();
-      renderBannerList();
       renderChart();
       await renderStudents();
       await initResultsPage();

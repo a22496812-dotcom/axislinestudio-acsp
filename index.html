@@ -1536,7 +1536,7 @@
 
     function renderReviews(reviews) {
       track.innerHTML = reviews.map(r=>`
-        <div class="testi-card fade-up">
+        <div class="testi-card fade-up visible">
           <div class="testi-stars">${'★'.repeat(r.stars||5)}</div>
           <p class="testi-text">${r.body || r.text || ''}</p>
           <div class="testi-author">
