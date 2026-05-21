@@ -702,9 +702,9 @@
 // ────────────────────────────────────────────────
 // EmailJS 設定（請替換你的帳號資訊）
 // ────────────────────────────────────────────────
-const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // 替換
-const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // 替換
-const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // 替換
+const EMAILJS_PUBLIC_KEY  = '3hv8CwNu943gcpF9N';
+const EMAILJS_SERVICE_ID  = 'service_4kfsclp';
+const EMAILJS_TEMPLATE_ID = 'template_ztb3dul';
 emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
 // ────────────────────────────────────────────────
@@ -1241,7 +1241,10 @@ function showResults() {
       : styleDB[dominant].name;
 
     // Save to Supabase (+ sessionStorage)
-    await saveResult({ name: userData.name, email: userData.email, role: userData.role, dominant, secondary, dominantDisplay, tieType, topTied, pct, date: new Date().toISOString() });
+    const savedId = await saveResult({ name: userData.name, email: userData.email, role: userData.role, dominant, secondary, dominantDisplay, tieType, topTied, pct, date: new Date().toISOString() });
+    const resultUrl = savedId
+      ? `${window.location.origin}/result.html?id=${savedId}`
+      : null;
 
     // Show result screen
     showScreen('screen-result');
@@ -1250,7 +1253,7 @@ function showResults() {
     document.getElementById('progressPct').textContent = '100%';
 
     // Auto-send email
-    autoSendEmail(dominant, secondary, pct, style);
+    autoSendEmail(dominant, secondary, pct, style, resultUrl);
 
   }, 2000);
 }
@@ -1262,33 +1265,21 @@ function getKeyByName(name) {
 // ────────────────────────────────────────────────
 // Email
 // ────────────────────────────────────────────────
-function autoSendEmail(dominant, secondary, pct, style) {
+function autoSendEmail(dominant, secondary, pct, style, resultUrl) {
   if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
     showEmailStatus('📧 結果已產生（Email 功能需完成 EmailJS 設定後啟用）', 'info');
     return;
   }
-  sendEmailInternal(dominant, secondary, pct, style);
+  sendEmailInternal(dominant, secondary, pct, style, resultUrl);
 }
 
-function sendEmailInternal(dominant, secondary, pct, style) {
-  const secStyle = styleDB[secondary];
+function sendEmailInternal(dominant, secondary, pct, style, resultUrl) {
   const params = {
-    to_name:          userData.name,
-    to_email:         userData.email,
-    user_role:        userData.role || '未填寫',
-    style_name:       style.name,
-    style_en:         style.en,
-    style_stars:      style.stars,
-    style_tagline:    style.tagline,
-    secondary_name:   secStyle.name,
-    secondary_en:     secStyle.en,
-    score_A: pct.A + '%',
-    score_C: pct.C + '%',
-    score_S: pct.S + '%',
-    score_P: pct.P + '%',
-    strengths:        style.strengths.join('、'),
-    blind_spots:      style.blindSpots.join('、'),
-    course_url:       window.location.origin + '/index.html#cta',
+    to_name:    userData.name,
+    to_email:   userData.email,
+    style_name: style.name,
+    result_url: resultUrl || (window.location.origin + '/index.html'),
+    course_url: window.location.origin + '/index.html#cta',
   };
   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
     .then(() => {
@@ -1318,10 +1309,10 @@ async function saveResult(result) {
     sessionStorage.setItem('acsp_results', JSON.stringify(existing.slice(0, 100)));
   } catch(e) {}
 
-  // Supabase insert
+  // Supabase insert — return the auto-generated id for result link
   try {
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-    await sb.from('acsp_results').insert({
+    const { data: inserted, error } = await sb.from('acsp_results').insert({
       name:             result.name,
       email:            result.email,
       role:             result.role || '',
@@ -1335,10 +1326,12 @@ async function saveResult(result) {
       pct_s:            result.pct?.S ?? 0,
       pct_p:            result.pct?.P ?? 0,
       source:           '前台測驗',
-    });
+    }).select('id').single();
+    if (!error && inserted?.id) return inserted.id;
   } catch(e) {
     console.warn('Supabase saveResult failed:', e);
   }
+  return null;
 }
 
 // ────────────────────────────────────────────────

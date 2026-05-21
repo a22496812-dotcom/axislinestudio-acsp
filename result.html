@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ACSP 測驗結果｜軸心線工作室</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:       #1a1814;
+      --card-bg:  #f5f0e8;
+      --gold:     #B09A72;
+      --gold-lt:  #D4B896;
+      --text:     #2C2417;
+      --text-mid: #6B5D4A;
+      --text-soft:#9C8E7A;
+      --green:    #4A9B6F;
+      --blue:     #4A72B0;
+      --amber:    #C08A3A;
+      --red:      #C04A4A;
+      --border:   #E5DDD0;
+    }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 24px 16px 60px;
+    }
+
+    /* ── Loading / Error ── */
+    #page-loading, #page-error {
+      color: rgba(255,255,255,0.6);
+      font-size: 1rem;
+      text-align: center;
+      padding: 80px 20px;
+    }
+    #page-error { color: #e06060; }
+    #page-error a { color: var(--gold); text-decoration: none; }
+
+    /* ── Result Card ── */
+    .result-card {
+      width: 100%;
+      max-width: 600px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+      background: var(--card-bg);
+      display: none;
+    }
+    .result-card.visible { display: block; }
+
+    /* ── Hero ── */
+    .result-hero {
+      background: linear-gradient(160deg, #2C2417 0%, #1a1814 100%);
+      padding: 44px 32px 36px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .result-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(176,154,114,0.18) 0%, transparent 70%);
+    }
+    .result-hero-inner { position: relative; z-index: 1; }
+    .result-badge {
+      display: inline-block;
+      border: 1px solid rgba(176,154,114,0.4);
+      color: var(--gold-lt);
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      padding: 5px 16px;
+      border-radius: 20px;
+      margin-bottom: 18px;
+    }
+    .result-user-name {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 14px;
+      font-weight: 400;
+    }
+    .result-stars { color: var(--gold); font-size: 1.4rem; letter-spacing: 6px; margin-bottom: 12px; }
+    .result-type-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 8px;
+    }
+    .result-type-name {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+    .result-type-en {
+      font-size: 0.8rem;
+      letter-spacing: 0.25em;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+    .result-tagline {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.75;
+      max-width: 380px;
+      margin: 0 auto;
+    }
+    .secondary-wrap {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+    }
+    .secondary-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 6px;
+    }
+    .secondary-name {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.85);
+      font-weight: 500;
+    }
+    .secondary-en {
+      font-size: 0.78rem;
+      letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.4);
+      margin-top: 2px;
+    }
+
+    /* ── Body ── */
+    .result-body { padding: 36px 40px; }
+    .section-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      color: var(--text-soft);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      margin-top: 32px;
+    }
+    .section-label:first-child { margin-top: 0; }
+
+    /* Score bars */
+    .score-bars { display: flex; flex-direction: column; gap: 14px; margin-bottom: 36px; }
+    .score-row-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .score-name {
+      font-size: 0.85rem;
+      color: var(--text);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .score-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .score-pct { font-size: 0.82rem; color: var(--text-soft); font-weight: 500; }
+    .score-bar-outer {
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .score-bar-inner {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.8s ease;
+    }
+
+    /* Traits */
+    .traits-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+    .trait-chip {
+      background: rgba(176,154,114,0.12);
+      border: 1px solid rgba(176,154,114,0.3);
+      color: var(--text-mid);
+      font-size: 0.82rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+    .trait-chip::before { content: '✓ '; color: var(--gold); font-size: 0.75rem; }
+
+    /* Insight boxes */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .insight-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid var(--border);
+    }
+    .insight-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .insight-title.strength { color: var(--green); }
+    .insight-title.blind    { color: var(--amber); }
+    .insight-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .insight-list li {
+      font-size: 0.82rem;
+      color: var(--text-mid);
+      line-height: 1.5;
+      padding-left: 12px;
+      position: relative;
+    }
+    .insight-list li::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-size: 1.2rem;
+      line-height: 1.1;
+    }
+
+    /* Compat */
+    .compat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    .compat-card {
+      border-radius: 10px;
+      padding: 16px 12px;
+      text-align: center;
+      background: #fff;
+      border: 1px solid var(--border);
+    }
+    .compat-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .compat-label.best      { color: var(--green); }
+    .compat-label.good      { color: var(--blue); }
+    .compat-label.challenge { color: var(--red); }
+    .compat-type {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1rem;
+      color: var(--text);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .compat-desc { font-size: 0.72rem; color: var(--text-soft); line-height: 1.5; }
+
+    /* CTA */
+    .result-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .btn-action {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: 'Noto Sans TC', sans-serif;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+      transition: opacity 0.2s;
+    }
+    .btn-action:hover { opacity: 0.85; }
+    .btn-action.dark {
+      background: var(--text);
+      color: var(--gold-lt);
+    }
+    .btn-action.outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-mid);
+    }
+
+    @media (max-width: 540px) {
+      .result-hero { padding: 36px 20px; }
+      .result-body { padding: 24px 20px; }
+      .result-type-name { font-size: 2.2rem; }
+      .two-col { grid-template-columns: 1fr; }
+      .compat-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="page-loading">⏳ 載入測驗結果中…</div>
+
+  <div id="page-error" style="display:none;">
+    <p>😕 找不到這份測驗結果</p>
+    <p style="margin-top:12px;font-size:0.9rem;">連結可能已失效，或測驗記錄不存在。</p>
+    <p style="margin-top:20px;"><a href="quiz.html">👉 重新參加測驗</a></p>
+  </div>
+
+  <div class="result-card" id="result-card">
+    <div class="result-hero">
+      <div class="result-hero-inner">
+        <div class="result-badge">ACSP 測驗結果</div>
+        <div class="result-user-name" id="resultUserName"></div>
+        <div class="result-stars" id="resultStars">★</div>
+        <div class="result-type-label" id="resultTypeLabel">主風格（最高分）</div>
+        <div class="result-type-name" id="resultTypeName">—</div>
+        <div class="result-type-en" id="resultTypeEn">—</div>
+        <div class="result-tagline" id="resultTagline">—</div>
+        <div class="secondary-wrap" id="secondaryWrap">
+          <div class="secondary-label" id="secondaryLabel">第二語言（第二高分）</div>
+          <div class="secondary-name" id="secondaryName">—</div>
+          <div class="secondary-en" id="secondaryEn">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-body">
+      <div class="section-label">四型分佈分析</div>
+      <div class="score-bars" id="scoreBars"></div>
+
+      <div class="section-label">你的溝通特質</div>
+      <div class="traits-grid" id="traitsGrid"></div>
+
+      <div class="two-col">
+        <div class="insight-box">
+          <div class="insight-title strength">💪 溝通優勢</div>
+          <ul class="insight-list" id="strengthList"></ul>
+        </div>
+        <div class="insight-box">
+          <div class="insight-title blind">⚠️ 潛在盲點</div>
+          <ul class="insight-list" id="blindList"></ul>
+        </div>
+      </div>
+
+      <div class="section-label">與其他風格的互動</div>
+      <div class="compat-grid" id="compatGrid"></div>
+
+      <div class="result-actions">
+        <a class="btn-action dark" href="index.html#cta">🎓 立即報名完整課程</a>
+        <a class="btn-action outline" href="quiz.html">↩ 重新測驗</a>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ── Style Database ──
+const styleDB = {
+  A: {
+    name: "分析型", en: "ANALYZER", stars: "★",
+    color: "#B09A72",
+    tagline: "你重視正確，以邏輯與精確為溝通核心，是任何團隊不可或缺的思考引擎。",
+    traits: ["思維縝密", "重視細節", "邏輯清晰", "謹慎決策", "客觀理性", "重視數據"],
+    strengths: ["善於拆解複雜問題", "提供有依據的分析", "確保資訊準確完整", "把混亂的事情講得清楚"],
+    blindSpots: ["有時過度謹慎，遲遲不行動", "難以快速做決定", "在需要情感連結的場合顯得距離感", "可能過度追求完美"],
+    compat: { best: "支持型", good: "控制型", challenge: "推廣型" }
+  },
+  C: {
+    name: "控制型", en: "CONTROLLER", stars: "★★",
+    color: "#4A72B0",
+    tagline: "你重視效率，以果斷與行動力驅動目標達成，天生具備帶領者的氣場。",
+    traits: ["果決自信", "目標明確", "效率優先", "勇於挑戰", "直接溝通", "結果導向"],
+    strengths: ["快速做出決策", "推動團隊達成目標", "在壓力下保持冷靜", "清楚表達方向與期望"],
+    blindSpots: ["有時顯得過於強勢", "不易傾聽他人意見", "在情感議題上缺乏耐心", "可能忽視細節與感受"],
+    compat: { best: "分析型", good: "推廣型", challenge: "支持型" }
+  },
+  S: {
+    name: "支持型", en: "SUPPORTER", stars: "★★★",
+    color: "#4A9B6F",
+    tagline: "你重視和諧，以真誠與溫暖建立深度信任，是讓人感到安心的人際穩定器。",
+    traits: ["善於傾聽", "真誠溫暖", "重視和諧", "耐心細膩", "值得信賴", "忠誠穩定"],
+    strengths: ["建立深度信任關係", "善於化解人際衝突", "讓團隊成員感到被關心", "維持穩定的合作氣氛"],
+    blindSpots: ["有時避免說出真實想法", "過度配合讓自己有壓力", "在需要直接表達的場合退縮", "改變時需要較長的適應期"],
+    compat: { best: "推廣型", good: "分析型", challenge: "控制型" }
+  },
+  P: {
+    name: "推廣型", en: "PROMOTER", stars: "★★★★",
+    color: "#C08A3A",
+    tagline: "你重視能量與互動，以熱情與感染力影響他人，是天生的溝通者與故事傳遞者。",
+    traits: ["熱情感染", "善於表達", "富有創意", "影響力強", "樂觀積極", "善於建立連結"],
+    strengths: ["快速建立信任與好感", "激發他人的動力與熱情", "說故事能力極強", "在陌生場合也能自在溝通"],
+    blindSpots: ["有時話多而流於表面", "不易維持長期的穩定執行", "可能對細節和數據缺乏耐心", "情緒起伏影響表現"],
+    compat: { best: "分析型", good: "支持型", challenge: "控制型" }
+  }
+};
+
+function getKeyByName(name) {
+  return Object.keys(styleDB).find(k => styleDB[k].name === name) || 'A';
+}
+
+async function loadResult() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+
+  if (!id) {
+    showError();
+    return;
+  }
+
+  try {
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    const { data, error } = await sb
+      .from('acsp_results')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error || !data) {
+      showError();
+      return;
+    }
+
+    renderResult(data);
+  } catch(e) {
+    console.error(e);
+    showError();
+  }
+}
+
+function showError() {
+  document.getElementById('page-loading').style.display = 'none';
+  document.getElementById('page-error').style.display = 'block';
+}
+
+function renderResult(data) {
+  const dominant  = data.dominant || 'A';
+  const secondary = data.secondary || '';
+  const tieType   = data.tie_type || 'none';
+  const topTied   = (() => { try { return JSON.parse(data.top_tied); } catch(e) { return [dominant]; } })();
+  const secondaryTied = [];
+
+  const pct = { A: data.pct_a || 0, C: data.pct_c || 0, S: data.pct_s || 0, P: data.pct_p || 0 };
+  const style = styleDB[dominant];
+  const secStyle = secondary ? styleDB[secondary] : null;
+
+  // User name
+  document.getElementById('resultUserName').textContent = `${data.name} 的測驗結果`;
+
+  // Hero: depends on tie type
+  if (tieType === 'none') {
+    document.getElementById('resultStars').textContent = style.stars;
+    document.getElementById('resultTypeName').textContent = style.name;
+    document.getElementById('resultTypeEn').textContent = style.en;
+    document.getElementById('resultTagline').textContent = style.tagline;
+    document.getElementById('secondaryLabel').textContent = '第二語言（第二高分）';
+    document.getElementById('secondaryName').textContent = secStyle ? secStyle.name : '—';
+    document.getElementById('secondaryEn').textContent = secStyle ? secStyle.en : '—';
+  } else if (tieType === 'double') {
+    const styleB = styleDB[topTied[1]];
+    document.getElementById('resultStars').textContent = '★★ ＆ ★★';
+    document.getElementById('resultTypeName').textContent = `${style.name} ＆ ${styleB.name}`;
+    document.getElementById('resultTypeEn').textContent = `${style.en}  ·  ${styleB.en}`;
+    document.getElementById('resultTagline').textContent = '你在兩種風格中展現同等強度，這是罕見的雙核心彈性！';
+    document.getElementById('secondaryLabel').textContent = '建議';
+    document.getElementById('secondaryName').textContent = '可再做一次測驗，選出更直覺的答案';
+    document.getElementById('secondaryEn').textContent = '或與老師討論你的雙主風格組合';
+  } else if (tieType === 'triple') {
+    document.getElementById('resultStars').textContent = '★★★';
+    document.getElementById('resultTypeName').textContent = topTied.map(k => styleDB[k].name).join(' ＆ ');
+    document.getElementById('resultTypeEn').textContent = topTied.map(k => styleDB[k].en).join('  ·  ');
+    document.getElementById('resultTagline').textContent = '你的溝通極具彈性，能靈活切換三種模式，屬於罕見的多面溝通者。';
+    document.getElementById('secondaryLabel').textContent = '建議';
+    document.getElementById('secondaryName').textContent = '建議重新作答，選出最直覺、最「像你」的選項';
+    document.getElementById('secondaryEn').textContent = '或預約講師進行個人風格諮詢';
+  } else {
+    document.getElementById('resultStars').textContent = '★ ★ ★ ★';
+    document.getElementById('resultTypeName').textContent = '四型均衡型';
+    document.getElementById('resultTypeEn').textContent = 'BALANCED ALL-TYPE';
+    document.getElementById('resultTagline').textContent = '你在四種溝通風格中表現完全均衡，是極為少見的全方位溝通者。';
+    document.getElementById('secondaryLabel').textContent = '建議';
+    document.getElementById('secondaryName').textContent = '建議重新作答，選出最直覺的答案';
+    document.getElementById('secondaryEn').textContent = '四型同分可能表示選項時過度思考';
+  }
+
+  // Score bars
+  const order = [
+    { key:'A', label:'分析型 (A)', color:'#B09A72' },
+    { key:'C', label:'控制型 (C)', color:'#4A72B0' },
+    { key:'S', label:'支持型 (S)', color:'#4A9B6F' },
+    { key:'P', label:'推廣型 (P)', color:'#C08A3A' },
+  ];
+  document.getElementById('scoreBars').innerHTML = order.map(s => {
+    const isTopTied = topTied.includes(s.key);
+    const isSec     = s.key === secondary && tieType === 'none';
+    let badge = '';
+    if (tieType === 'none' && dominant === s.key)
+      badge = `<span style="font-size:0.7rem;background:${s.color};color:#fff;padding:1px 6px;border-radius:3px;margin-left:4px;">主風格</span>`;
+    else if (tieType !== 'none' && isTopTied)
+      badge = `<span style="font-size:0.7rem;background:${s.color};color:#fff;padding:1px 6px;border-radius:3px;margin-left:4px;">同分</span>`;
+    else if (isSec)
+      badge = `<span style="font-size:0.7rem;background:rgba(0,0,0,0.12);color:#666;padding:1px 6px;border-radius:3px;margin-left:4px;">第二語言</span>`;
+    return `
+      <div class="score-row">
+        <div class="score-row-top">
+          <div class="score-name">
+            <span class="score-dot" style="background:${s.color}"></span>
+            ${s.label}${badge}
+          </div>
+          <div class="score-pct">${pct[s.key]}%</div>
+        </div>
+        <div class="score-bar-outer">
+          <div class="score-bar-inner" style="width:${pct[s.key]}%;background:${s.color}"></div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Traits
+  document.getElementById('traitsGrid').innerHTML =
+    style.traits.map(t => `<div class="trait-chip">${t}</div>`).join('');
+
+  // Strengths & Blind spots
+  document.getElementById('strengthList').innerHTML =
+    style.strengths.map(s => `<li>${s}</li>`).join('');
+  document.getElementById('blindList').innerHTML =
+    style.blindSpots.map(s => `<li>${s}</li>`).join('');
+
+  // Compat
+  const compatData = [
+    { type: styleDB[getKeyByName(style.compat.best)],      rel: 'best',      label: '最佳拍檔', desc: '溝通自然流暢，互補性極強' },
+    { type: styleDB[getKeyByName(style.compat.good)],      rel: 'good',      label: '合作夥伴', desc: '有共識，偶爾需要調適' },
+    { type: styleDB[getKeyByName(style.compat.challenge)], rel: 'challenge', label: '成長挑戰', desc: '需要更多理解與包容' },
+  ];
+  document.getElementById('compatGrid').innerHTML = compatData.map(c => `
+    <div class="compat-card ${c.rel}">
+      <div class="compat-label ${c.rel}">${c.label}</div>
+      <div class="compat-type">${c.type.name}</div>
+      <div class="compat-desc">${c.desc}</div>
+    </div>`).join('');
+
+  // Show card
+  document.getElementById('page-loading').style.display = 'none';
+  document.getElementById('result-card').classList.add('visible');
+}
+
+loadResult();
+</script>
+</body>
+</html>
