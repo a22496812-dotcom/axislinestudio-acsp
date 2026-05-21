@@ -486,25 +486,6 @@
         <div class="intro-body" id="dyn-description"></div>
         <div class="event-info" id="dyn-event-info" style="display:none;">
         </div>
-
-        <div class="event-info">
-          <div class="event-info-row">
-            <span class="event-info-label">📅 時間</span>
-            <span class="event-info-value">2026/6/7（日）14:00 – 18:00</span>
-          </div>
-          <div class="event-info-row">
-            <span class="event-info-label">📍 地點</span>
-            <span class="event-info-value">台北市民權西路20號2樓（捷運民權西路站步行約1分鐘）</span>
-          </div>
-          <div class="event-info-row">
-            <span class="event-info-label">👥 人數</span>
-            <span class="event-info-value">限量 20 位，額滿截止報名</span>
-          </div>
-          <div class="event-info-row">
-            <span class="event-info-label">⏱ 時數</span>
-            <span class="event-info-value">4 小時（含午茶休息）</span>
-          </div>
-        </div>
       </section>
 
       <!-- 課程要點（動態） -->
@@ -727,16 +708,10 @@ async function init() {
     }
   };
 
-  // — Sidebar meta rows —
-  const metaRows = [];
-  if (c.date) metaRows.push(`<div class="guarantee-row">📅 ${formatDate(c.date)}</div>`);
-  if (c.date) metaRows.push(`<div class="guarantee-row">⏰ ${formatTime(c.date)}</div>`);
-  if (c.location) metaRows.push(`<div class="guarantee-row">📍 ${c.location}</div>`);
-  if (c.seats) metaRows.push(`<div class="guarantee-row">👥 限量 ${c.seats} 位</div>`);
-  if (c.duration) metaRows.push(`<div class="guarantee-row">📋 時數約 ${c.duration}</div>`);
-  document.getElementById('dyn-sidebar-meta').innerHTML = metaRows.join('');
+  // — Sidebar meta rows（只顯示不在 event-info 的補充資訊）—
+  document.getElementById('dyn-sidebar-meta').innerHTML = '';
 
-  // — Duration label —
+  // — Duration label in sidebar —
   if (c.duration) {
     document.getElementById('dyn-meta-duration').innerHTML = `<span>📋</span><span>課程時數約 ${c.duration}</span>`;
   }

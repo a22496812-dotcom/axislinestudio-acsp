@@ -1511,11 +1511,11 @@
             </div>
             <div class="form-group" id="field-duration">
               <label class="form-label">課程時數</label>
-              <input class="form-input" placeholder="例：4 小時" />
+              <input id="cm-duration-basic" class="form-input" placeholder="例：4 小時" readonly tabindex="-1" style="background:var(--bg-soft);color:var(--text-soft);font-size:0.82rem;" />
             </div>
             <div class="form-group" id="field-seats">
               <label class="form-label">名額上限</label>
-              <input id="cm-seats" class="form-input" type="number" placeholder="例：20" />
+              <input id="cm-seats-basic" class="form-input" type="number" placeholder="例：20" readonly tabindex="-1" style="background:var(--bg-soft);color:var(--text-soft);font-size:0.82rem;" />
             </div>
             <div class="form-group" id="field-location">
               <label class="form-label">上課地點</label>
@@ -1944,8 +1944,10 @@
       document.getElementById('cm-location').value   = c.location || '';
       document.getElementById('cm-date').value       = c.date || '';
       document.getElementById('cm-desc').value       = c.desc || '';
-      document.getElementById('cm-duration').value   = c.duration || '';
-      document.getElementById('cm-seats').value      = c.seats || '';
+      document.getElementById('cm-duration').value       = c.duration || '';
+      document.getElementById('cm-seats').value          = c.seats || '';
+      document.getElementById('cm-duration-basic').value = c.duration || '';
+      document.getElementById('cm-seats-basic').value    = c.seats || '';
       document.getElementById('cm-highlights').value = c.highlights || '';
       document.getElementById('cm-modules').value    = c.modules || '';
       document.getElementById('cm-audience').value   = c.audience || '';
