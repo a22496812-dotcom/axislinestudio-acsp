@@ -975,11 +975,14 @@
       .footer-top { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 768px) {
-      .course-slide { min-width: 100% !important; }
+      .course-slide { width: 100% !important; flex-shrink: 0 !important; }
       .nav-links { display: none; }
       .nav-hamburger { display: flex; }
       .nav-logo img { width: 32px !important; height: 32px !important; }
       .nav-logo-text { font-size: 0.88rem !important; white-space: nowrap !important; }
+      /* 手機版：登入/註冊按鈕收進漢堡選單 */
+      .btn-nav-login { display: none !important; }
+      .btn-nav-register { display: none !important; }
       .hero-deco { display: none; }
       .styles-grid { grid-template-columns: 1fr; }
       .forwhom-grid { grid-template-columns: 1fr; }
@@ -1040,10 +1043,15 @@
   <div class="mobile-menu" id="mobileMenu">
     <a href="#acsp" onclick="toggleMenu()">關於 ACSP</a>
     <a href="courses.html" onclick="toggleMenu()">服務內容</a>
+    <a href="articles.html" onclick="toggleMenu()">知識文章</a>
     <a href="#instructor" onclick="toggleMenu()">講師介紹</a>
     <a href="#about" onclick="toggleMenu()">關於我們</a>
     <a href="#faq" onclick="toggleMenu()">常見問題</a>
     <a href="#cta" onclick="toggleMenu()" style="color:var(--gold);">立即報名</a>
+    <!-- 登入狀態由 JS 控制 -->
+    <a href="login.html" id="mobile-login-link" onclick="toggleMenu()">登入</a>
+    <a href="login.html?tab=register" id="mobile-register-link" onclick="toggleMenu()" style="color:var(--gold);">註冊</a>
+    <a href="#" id="mobile-signout-link" style="display:none;color:#e07070;" onclick="navSignOut()">登出</a>
   </div>
 
   <!-- ── Hero ── -->
@@ -1136,11 +1144,11 @@
       const name = c.title || c.name || '';
       return `
         <a class="course-slide" href="${link}"
-           style="min-width:100%;flex-shrink:0;display:block;overflow:hidden;cursor:pointer;background:#1a1815;text-decoration:none;transition:opacity 0.2s;"
+           style="width:100%;flex-shrink:0;display:block;overflow:hidden;cursor:pointer;background:#1a1815;text-decoration:none;transition:opacity 0.2s;"
            onmouseover="this.style.opacity=0.92" onmouseout="this.style.opacity=1">
           <img src="${img}" alt="${name}"
                onerror="this.src='${FALLBACK_IMG}'"
-               style="width:100%;height:auto;display:block;aspect-ratio:1112/520;object-fit:cover;" />
+               style="width:100%;height:auto;display:block;" />
         </a>`;
     }
 
@@ -1440,7 +1448,7 @@
 
           <!-- CTA -->
           <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
-            <a href="course.html#enroll" class="btn btn-gold">預約諮詢 →</a>
+            <a href="https://forms.gle/FDk7jNi9ee1UE6m27" target="_blank" rel="noopener noreferrer" class="btn btn-gold">預約諮詢 →</a>
             <a href="mailto:axislinestudio@gmail.com" style="font-size:0.85rem;color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(176,154,114,0.4);">✉ Email 預約時間</a>
           </div>
         </div>
@@ -1823,16 +1831,22 @@
     // ── Navbar Auth State ──
     (async function initNavAuth() {
       const _sbNav = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-      const loginBtn   = document.getElementById('btn-nav-login');
-      const registerBtn= document.getElementById('btn-nav-register');
-      const userWrap   = document.getElementById('nav-user-wrap');
-      const userAvatar = document.getElementById('nav-user-avatar');
-      const userName   = document.getElementById('nav-user-name');
+      const loginBtn        = document.getElementById('btn-nav-login');
+      const registerBtn     = document.getElementById('btn-nav-register');
+      const userWrap        = document.getElementById('nav-user-wrap');
+      const userAvatar      = document.getElementById('nav-user-avatar');
+      const userName        = document.getElementById('nav-user-name');
+      const mobileLogin     = document.getElementById('mobile-login-link');
+      const mobileRegister  = document.getElementById('mobile-register-link');
+      const mobileSignout   = document.getElementById('mobile-signout-link');
 
       function setLoggedIn(user) {
         loginBtn.style.display    = 'none';
         registerBtn.style.display = 'none';
         userWrap.style.display    = 'block';
+        if (mobileLogin)    mobileLogin.style.display    = 'none';
+        if (mobileRegister) mobileRegister.style.display = 'none';
+        if (mobileSignout)  mobileSignout.style.display  = '';
         const display = user.user_metadata?.name || user.email || '';
         const initial = display.charAt(0).toUpperCase() || '我';
         userAvatar.textContent = initial;
@@ -1842,6 +1856,9 @@
         loginBtn.style.display    = '';
         registerBtn.style.display = '';
         userWrap.style.display    = 'none';
+        if (mobileLogin)    mobileLogin.style.display    = '';
+        if (mobileRegister) mobileRegister.style.display = '';
+        if (mobileSignout)  mobileSignout.style.display  = 'none';
       }
 
       const { data: { session } } = await _sbNav.auth.getSession();
@@ -1864,4 +1881,8 @@
     async function navSignOut() {
       const _sbNav = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
       await _sbNav.auth.signOut();
-      location.re
+      location.reload();
+    }
+  </script>
+</body>
+</html>
