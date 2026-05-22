@@ -175,6 +175,57 @@
     .nav-links a:hover { color: var(--white); }
     .nav-links a:hover::after { width: 100%; }
     .nav-cta { margin-left: 12px; padding: 10px 24px; font-size: 0.85rem; }
+
+    /* ── Navbar Auth ── */
+    .nav-auth { display: flex; align-items: center; gap: 8px; margin-left: 12px; }
+    .btn-nav-login {
+      padding: 8px 16px; font-size: 0.82rem;
+      color: rgba(255,255,255,0.75); background: transparent;
+      border: 1px solid rgba(255,255,255,0.25); border-radius: 4px;
+      cursor: pointer; text-decoration: none; transition: all 0.2s;
+    }
+    .btn-nav-login:hover { color: #fff; border-color: rgba(255,255,255,0.6); }
+    .btn-nav-register {
+      padding: 8px 16px; font-size: 0.82rem;
+      color: #fff; background: var(--gold);
+      border: none; border-radius: 4px;
+      cursor: pointer; text-decoration: none; transition: background 0.2s;
+    }
+    .btn-nav-register:hover { background: #9a855c; }
+    .nav-user-wrap { position: relative; }
+    .nav-user-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--gold); color: #fff;
+      font-size: 0.9rem; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; border: 2px solid rgba(255,255,255,0.2);
+      transition: border-color 0.2s;
+      user-select: none;
+    }
+    .nav-user-avatar:hover { border-color: var(--gold); }
+    .nav-user-dropdown {
+      display: none; position: absolute; top: calc(100% + 10px); right: 0;
+      background: #1e1c1a; border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px; min-width: 160px; overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .nav-user-dropdown.open { display: block; }
+    .nav-user-name {
+      padding: 12px 16px;
+      font-size: 0.8rem; color: rgba(255,255,255,0.5);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .nav-user-dropdown a, .nav-user-dropdown button {
+      display: block; width: 100%; text-align: left;
+      padding: 11px 16px; font-size: 0.85rem;
+      color: rgba(255,255,255,0.8); background: none;
+      border: none; cursor: pointer; text-decoration: none;
+      transition: background 0.15s;
+    }
+    .nav-user-dropdown a:hover, .nav-user-dropdown button:hover {
+      background: rgba(255,255,255,0.07); color: #fff;
+    }
+    .nav-user-dropdown .signout-btn { color: #e07070; }
     .nav-hamburger {
       display: none;
       flex-direction: column;
@@ -966,6 +1017,18 @@
         <li><a href="#faq">常見問題</a></li>
       </ul>
       <a href="quiz.html" class="btn btn-gold nav-cta">免費測驗</a>
+      <div class="nav-auth" id="nav-auth">
+        <!-- JS 控制顯示 -->
+        <a href="login.html" class="btn-nav-login" id="btn-nav-login">登入</a>
+        <a href="login.html?tab=register" class="btn-nav-register" id="btn-nav-register">註冊</a>
+        <div class="nav-user-wrap" id="nav-user-wrap" style="display:none;">
+          <div class="nav-user-avatar" id="nav-user-avatar" onclick="toggleUserDropdown()">?</div>
+          <div class="nav-user-dropdown" id="nav-user-dropdown">
+            <div class="nav-user-name" id="nav-user-name">載入中...</div>
+            <button class="signout-btn" onclick="navSignOut()">登出</button>
+          </div>
+        </div>
+      </div>
       <div class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="選單">
         <span></span><span></span><span></span>
       </div>
@@ -1755,6 +1818,53 @@
         }
       });
     });
+
+    // ── Navbar Auth State ──
+    (async function initNavAuth() {
+      const _sbNav = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+      const loginBtn   = document.getElementById('btn-nav-login');
+      const registerBtn= document.getElementById('btn-nav-register');
+      const userWrap   = document.getElementById('nav-user-wrap');
+      const userAvatar = document.getElementById('nav-user-avatar');
+      const userName   = document.getElementById('nav-user-name');
+
+      function setLoggedIn(user) {
+        loginBtn.style.display    = 'none';
+        registerBtn.style.display = 'none';
+        userWrap.style.display    = 'block';
+        const display = user.user_metadata?.name || user.email || '';
+        const initial = display.charAt(0).toUpperCase() || '我';
+        userAvatar.textContent = initial;
+        userName.textContent   = display;
+      }
+      function setLoggedOut() {
+        loginBtn.style.display    = '';
+        registerBtn.style.display = '';
+        userWrap.style.display    = 'none';
+      }
+
+      const { data: { session } } = await _sbNav.auth.getSession();
+      if (session?.user) setLoggedIn(session.user); else setLoggedOut();
+
+      _sbNav.auth.onAuthStateChange((event, session) => {
+        if (session?.user) setLoggedIn(session.user); else setLoggedOut();
+      });
+    })();
+
+    function toggleUserDropdown() {
+      document.getElementById('nav-user-dropdown').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+      const wrap = document.getElementById('nav-user-wrap');
+      if (wrap && !wrap.contains(e.target)) {
+        document.getElementById('nav-user-dropdown')?.classList.remove('open');
+      }
+    });
+    async function navSignOut() {
+      const _sbNav = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+      await _sbNav.auth.signOut();
+      location.reload();
+    }
   </script>
 </body>
 </html>

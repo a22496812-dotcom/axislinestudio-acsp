@@ -121,6 +121,14 @@
       transition: border-color var(--tr), background var(--tr);
     }
     .field-input:focus { border-color: var(--gold); background: #fff; outline: none; }
+    .pw-wrap { position: relative; }
+    .pw-wrap .field-input { padding-right: 42px; }
+    .pw-toggle {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; padding: 4px;
+      color: var(--text-soft); line-height: 1;
+    }
+    .pw-toggle:hover { color: var(--text-mid); }
 
     .btn-primary {
       width: 100%; padding: 13px;
@@ -230,6 +238,34 @@
       </div>
     </div>
 
+    <!-- Reset password form (shown after clicking reset link) -->
+    <div id="form-reset-pw" style="display:none;">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-size:1rem;font-weight:500;color:var(--text);margin-bottom:6px;">設定新密碼</div>
+        <div style="font-size:0.82rem;color:var(--text-soft);">請輸入你的新密碼</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">新密碼（至少 6 位）</label>
+        <div class="pw-wrap">
+          <input type="password" id="new-password" class="field-input" placeholder="輸入新密碼"
+                 autocomplete="new-password"
+                 onkeydown="if(event.key==='Enter') doResetPw()" />
+          <button type="button" class="pw-toggle" onclick="togglePw('new-password',this)" tabindex="-1">👁</button>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">確認新密碼</label>
+        <div class="pw-wrap">
+          <input type="password" id="confirm-password" class="field-input" placeholder="再輸入一次"
+                 autocomplete="new-password"
+                 onkeydown="if(event.key==='Enter') doResetPw()" />
+          <button type="button" class="pw-toggle" onclick="togglePw('confirm-password',this)" tabindex="-1">👁</button>
+        </div>
+      </div>
+      <button class="btn-primary" id="btn-reset-pw" onclick="doResetPw()">確認更新密碼</button>
+      <div class="msg" id="reset-pw-msg"></div>
+    </div>
+
     <!-- Auth tabs -->
     <div id="auth-tabs" style="display:none;">
       <div class="tab-bar">
@@ -248,9 +284,12 @@
             密碼
             <span style="font-weight:400;color:var(--gold);cursor:pointer;font-size:0.78rem;" onclick="showForgot()">忘記密碼？</span>
           </label>
-          <input type="password" id="login-password" class="field-input" placeholder="輸入密碼"
-                 autocomplete="current-password"
-                 onkeydown="if(event.key==='Enter') doEmailLogin()" />
+          <div class="pw-wrap">
+            <input type="password" id="login-password" class="field-input" placeholder="輸入密碼"
+                   autocomplete="current-password"
+                   onkeydown="if(event.key==='Enter') doEmailLogin()" />
+            <button type="button" class="pw-toggle" onclick="togglePw('login-password',this)" tabindex="-1">👁</button>
+          </div>
         </div>
         <button class="btn-primary" id="btn-email-login" onclick="doEmailLogin()">登入</button>
         <div class="msg" id="login-msg"></div>
@@ -285,9 +324,12 @@
         </div>
         <div class="field-group">
           <label class="field-label">密碼（至少 6 位）</label>
-          <input type="password" id="reg-password" class="field-input" placeholder="設定密碼"
-                 autocomplete="new-password"
-                 onkeydown="if(event.key==='Enter') doRegister()" />
+          <div class="pw-wrap">
+            <input type="password" id="reg-password" class="field-input" placeholder="設定密碼"
+                   autocomplete="new-password"
+                   onkeydown="if(event.key==='Enter') doRegister()" />
+            <button type="button" class="pw-toggle" onclick="togglePw('reg-password',this)" tabindex="-1">👁</button>
+          </div>
         </div>
         <button class="btn-primary" id="btn-register" onclick="doRegister()">建立帳號</button>
         <div class="msg" id="reg-msg"></div>
@@ -442,14 +484,46 @@
     document.getElementById('auth-tabs').style.display = '';
   }
 
-  // ── Handle OAuth redirect ──
+  // ── Password visibility toggle ──
+  function togglePw(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.textContent = show ? '🙈' : '👁';
+  }
+
+  // ── Reset password (after clicking email link) ──
+  async function doResetPw() {
+    const pw  = document.getElementById('new-password').value;
+    const pw2 = document.getElementById('confirm-password').value;
+    if (pw.length < 6)  { showMsg('reset-pw-msg','error','密碼至少需要 6 個字元'); return; }
+    if (pw !== pw2)     { showMsg('reset-pw-msg','error','兩次密碼不一致'); return; }
+    const btn = document.getElementById('btn-reset-pw');
+    btn.disabled = true; btn.textContent = '更新中…';
+    const { error } = await sb.auth.updateUser({ password: pw });
+    btn.disabled = false; btn.textContent = '確認更新密碼';
+    if (error) {
+      showMsg('reset-pw-msg','error','更新失敗：' + error.message);
+    } else {
+      showMsg('reset-pw-msg','success','✅ 密碼已成功更新！2 秒後自動跳轉…');
+      setTimeout(goBack, 2000);
+    }
+  }
+
+  // ── Auth state change (handles email verification & password reset) ──
   sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN' && session) {
-      document.getElementById('auth-loading').style.display = 'none';
-      document.getElementById('auth-tabs').style.display = 'none';
+    document.getElementById('auth-loading').style.display = 'none';
+    if (event === 'PASSWORD_RECOVERY') {
+      // 使用者點了重設密碼連結
+      document.getElementById('auth-tabs').style.display     = 'none';
+      document.getElementById('logged-in-box').style.display = 'none';
+      document.getElementById('form-reset-pw').style.display = '';
+    } else if (event === 'SIGNED_IN' && session) {
+      document.getElementById('form-reset-pw').style.display = 'none';
+      document.getElementById('auth-tabs').style.display     = 'none';
       showLoggedIn(session.user);
-      // Auto-redirect after OAuth login
-      setTimeout(goBack, 1200);
+      // 只在不是 PASSWORD_RECOVERY 時自動跳轉
+      if (!window._inPasswordRecovery) setTimeout(goBack, 1200);
     }
   });
 

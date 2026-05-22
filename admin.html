@@ -807,6 +807,10 @@
       <div class="nav-item" onclick="navigate('reviews', this)">
         <span class="icon">💬</span> 學員評價
       </div>
+      <div class="nav-item" onclick="navigate('accounts', this)">
+        <span class="icon">🔑</span> 帳號管理
+        <span class="nav-badge" id="accountsBadge" style="display:none">新</span>
+      </div>
       <div class="nav-section-label">系統</div>
       <div class="nav-item" onclick="navigate('settings', this)">
         <span class="icon">⚙️</span> 系統設定
@@ -1064,6 +1068,47 @@
               <button class="page-btn">53</button>
               <button class="page-btn">›</button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Accounts ── -->
+      <div class="page" id="page-accounts">
+        <div class="card" style="margin-bottom:16px;padding:16px 20px;background:rgba(74,155,111,0.08);border:1px solid rgba(74,155,111,0.25);">
+          <div style="display:flex;align-items:center;gap:10px;font-size:0.85rem;color:var(--green);">
+            <span>💡</span>
+            <span>以下顯示透過前台 Email 註冊並完成測驗的帳號。若需管理所有已註冊帳號（含未完成測驗者），請前往
+              <a href="https://supabase.com/dashboard/project/pswhengehcrvchiuhwpr/auth/users" target="_blank" style="color:var(--green);font-weight:600;">Supabase 後台 → Authentication → Users</a>
+            </span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="filter-bar">
+              <input type="text" class="filter-input" id="accounts-search" placeholder="🔍 搜尋姓名或 Email…" oninput="filterAccounts()" />
+            </div>
+            <div class="filter-right">
+              <button class="btn btn-outline btn-sm" onclick="renderAccounts()">🔄 重新整理</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>姓名 / Email</th>
+                  <th>角色</th>
+                  <th>測驗結果</th>
+                  <th>最後活動</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="accounts-tbody">
+                <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-soft);">載入中…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <span id="accounts-count">載入中…</span>
           </div>
         </div>
       </div>
@@ -2031,6 +2076,71 @@
       if (countEl) countEl.textContent = `共 ${list.length} 名學員（已完成測驗）`;
     }
 
+    // ── Accounts Management ──
+    let _accountsData = [];
+    async function renderAccounts() {
+      const tbody = document.getElementById('accounts-tbody');
+      const countEl = document.getElementById('accounts-count');
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-soft);">載入中…</td></tr>';
+      try {
+        const { data, error } = await sb.from('acsp_results')
+          .select('name,email,role,dominant,dominant_display,created_at')
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        // 依 email 去重，保留最新的
+        const seen = new Map();
+        (data || []).forEach(r => {
+          if (!seen.has(r.email)) seen.set(r.email, r);
+        });
+        _accountsData = [...seen.values()];
+        renderAccountsTable(_accountsData);
+      } catch(e) {
+        console.error('renderAccounts:', e);
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--red);">載入失敗，請重新整理</td></tr>';
+      }
+    }
+    function renderAccountsTable(list) {
+      const tbody = document.getElementById('accounts-tbody');
+      const countEl = document.getElementById('accounts-count');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-soft);">尚無帳號資料</td></tr>';
+        if (countEl) countEl.textContent = '共 0 名帳號';
+        return;
+      }
+      const styleClassMap = { '分析型':'gold','控制型':'blue','支持型':'green','推廣型':'amber' };
+      tbody.innerHTML = list.map(u => {
+        const d = new Date(u.created_at);
+        const dateStr = isNaN(d) ? '—' : `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+        const dominant = u.dominant_display || u.dominant || '';
+        const cls = styleClassMap[u.dominant] || 'gold';
+        const initials = (u.name || u.email || '?').charAt(0).toUpperCase();
+        return `<tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:34px;height:34px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:600;flex-shrink:0;">${initials}</div>
+              <div><div class="td-name">${u.name || '—'}</div><div class="td-sub">${u.email}</div></div>
+            </div>
+          </td>
+          <td style="font-size:0.82rem;">${u.role || '—'}</td>
+          <td>${dominant ? `<span class="badge ${cls}">★ ${dominant}</span>` : '<span style="color:var(--text-soft)">未完成測驗</span>'}</td>
+          <td style="font-size:0.82rem;">${dateStr}</td>
+          <td>
+            <button class="btn btn-outline btn-sm" onclick="navigate('results', document.querySelector('[onclick*=results]'))">測驗紀錄</button>
+          </td>
+        </tr>`;
+      }).join('');
+      if (countEl) countEl.textContent = `共 ${list.length} 名已註冊帳號`;
+    }
+    function filterAccounts() {
+      const q = document.getElementById('accounts-search')?.value?.toLowerCase() || '';
+      if (!q) { renderAccountsTable(_accountsData); return; }
+      const filtered = _accountsData.filter(u =>
+        (u.name || '').toLowerCase().includes(q) ||
+        (u.email || '').toLowerCase().includes(q)
+      );
+      renderAccountsTable(filtered);
+    }
+
     // ── Chart ──
     function renderChart() {
       const data = [28, 35, 42, 38, 45, 52, 48, 55, 61, 58, 68, 47];
@@ -2049,7 +2159,7 @@
       const p = document.getElementById('page-' + page);
       if (p) p.classList.add('active');
       if (el) el.classList.add('active');
-      const titles = { dashboard:'總覽儀表板', courses:'課程管理', articles:'文章管理', coupons:'優惠券管理', students:'學員管理', results:'測驗結果', orders:'訂單管理', faq:'常見問題', reviews:'學員評價', banners:'Banner 管理', settings:'系統設定' };
+      const titles = { dashboard:'總覽儀表板', courses:'課程管理', articles:'文章管理', coupons:'優惠券管理', students:'學員管理', accounts:'帳號管理', results:'測驗結果', orders:'訂單管理', faq:'常見問題', reviews:'學員評價', banners:'Banner 管理', settings:'系統設定' };
       document.getElementById('topbar-title').textContent = titles[page] || page;
       if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
       // Re-fetch and re-render dynamic pages on every visit
@@ -2058,6 +2168,7 @@
       if (page === 'faq')      { faqData = await loadFaqs();          renderFaqTable(); }
       if (page === 'reviews')  { revData = await loadReviews();        renderRevTable(); }
       if (page === 'students') { await renderStudents(); }
+      if (page === 'accounts') { await renderAccounts(); }
       if (page === 'results')  { await initResultsPage(); }
     }
 
