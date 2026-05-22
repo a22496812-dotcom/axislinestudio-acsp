@@ -1658,7 +1658,7 @@
       <div class="modal-footer">
         <button class="btn btn-outline" onclick="closeCourseModal()">取消</button>
         <button class="btn btn-outline" onclick="saveCourse('草稿')">儲存草稿</button>
-        <button class="btn btn-gold" onclick="saveCourse('已上架')">新增課程</button>
+        <button class="btn btn-gold" id="cm-save-btn" onclick="saveCourse('已上架')">新增課程</button>
       </div>
     </div>
   </div>
@@ -1852,12 +1852,28 @@
   <script>
     // ── Supabase Client ──
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-    // ── Supabase Admin Client（service_role key — 從 localStorage 讀取）──
+    // ── Supabase Admin REST API（service_role key — 從 localStorage 讀取）──
     function getServiceKey() { return localStorage.getItem('acsp_service_key') || ''; }
-    function getSbAdmin() {
-      const k = getServiceKey();
-      if (!k) return null;
-      return supabase.createClient(SUPABASE_URL, k, { auth: { autoRefreshToken: false, persistSession: false } });
+
+    async function adminListUsers() {
+      const key = getServiceKey();
+      if (!key) return null;
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/admin/users?per_page=1000`, {
+        headers: { 'Authorization': `Bearer ${key}`, 'apikey': key }
+      });
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    }
+
+    async function adminDeleteUser(userId) {
+      const key = getServiceKey();
+      if (!key) throw new Error('未設定 Service Key');
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${key}`, 'apikey': key }
+      });
+      if (!res.ok) throw new Error(await res.text());
+      return true;
     }
 
     // ── Upload image to Supabase Storage ──
@@ -2029,6 +2045,7 @@
       document.getElementById('course-cover-input').value = '';
       document.getElementById('course-banner-input').value = '';
 
+      document.getElementById('cm-save-btn').textContent = '更新課程';
       switchCourseTab(document.querySelector('#course-modal .tab-item'), 'ctab-info');
       openModal('course-modal');
       document.getElementById('course-modal').dataset.editId = id;
@@ -2102,9 +2119,8 @@
       const countEl = document.getElementById('accounts-count');
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-soft);">載入中…</td></tr>';
 
-      const sbAdmin = getSbAdmin();
-      if (!sbAdmin) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-soft);">
+      if (!getServiceKey()) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text-soft);">
           ⚠️ 請先至「系統設定」填入 Supabase Service Key，才能顯示帳號列表。
         </td></tr>`;
         if (countEl) countEl.textContent = '';
@@ -2112,9 +2128,8 @@
       }
 
       try {
-        // 取得所有 auth 帳號
-        const { data: authData, error: authErr } = await sbAdmin.auth.admin.listUsers({ perPage: 1000 });
-        if (authErr) throw authErr;
+        // 取得所有 auth 帳號（REST API）
+        const authData = await adminListUsers();
         const authUsers = authData?.users || [];
 
         // 取得測驗結果（用來補充 name、style 資訊）
@@ -2194,16 +2209,14 @@
 
     async function deleteAccountById(userId, email) {
       if (!confirm(`確定要刪除帳號「${email}」嗎？\n\n此操作將刪除：\n・Auth 登入帳號\n・測驗紀錄\n\n刪除後無法復原。`)) return;
-      const sbAdmin = getSbAdmin();
-      if (!sbAdmin) {
+      if (!getServiceKey()) {
         alert('請先至系統設定填入 Service Key！');
         return;
       }
       try {
         showToast('刪除中…');
-        // 1. 刪除 auth 帳號
-        const { error: delErr } = await sbAdmin.auth.admin.deleteUser(userId);
-        if (delErr) throw delErr;
+        // 1. 刪除 auth 帳號（REST API）
+        await adminDeleteUser(userId);
         // 2. 刪除 acsp_results 測驗紀錄
         await sb.from('acsp_results').delete().eq('email', email);
         showToast(`✅ 帳號 ${email} 已刪除`);
@@ -3052,6 +3065,7 @@
     // ── Course modal: reset title on close ──
     function closeCourseModal() {
       document.querySelector('#course-modal .modal-title').textContent = '新增課程';
+      document.getElementById('cm-save-btn').textContent = '新增課程';
       delete document.getElementById('course-modal').dataset.editId;
       // Reset image previews and stored data
       ['course-cover-preview','course-banner-preview'].forEach(id => {

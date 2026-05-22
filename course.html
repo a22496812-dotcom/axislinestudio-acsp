@@ -699,8 +699,22 @@ async function init() {
     const { data: { session } } = await sb2.auth.getSession();
     if (session && session.user) {
       // Logged in — go to enroll URL
-      if (enrollUrl && enrollUrl !== '#') window.open(enrollUrl, '_blank');
-      else alert('報名連結尚未設定，請洽客服。');
+      if (enrollUrl && enrollUrl !== '#') {
+        window.open(enrollUrl, '_blank');
+      } else {
+        // 尚未設定報名連結 — 顯示提示框
+        const msg = document.createElement('div');
+        msg.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
+        msg.innerHTML = `<div style="background:#fff;border-radius:12px;padding:32px;max-width:360px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+          <div style="font-size:2rem;margin-bottom:12px;">📩</div>
+          <div style="font-size:1.1rem;font-weight:600;margin-bottom:8px;">感謝您的報名意願！</div>
+          <div style="font-size:0.88rem;color:#666;margin-bottom:20px;">此課程報名目前開放私訊洽詢，<br>請透過以下方式與我們聯繫：</div>
+          <a href="mailto:axislinestudio@gmail.com" style="display:block;background:#3E8A5A;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;margin-bottom:10px;font-size:0.9rem;">✉️ 寄信給我們</a>
+          <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:1px solid #ddd;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:0.85rem;color:#666;">關閉</button>
+        </div>`;
+        document.body.appendChild(msg);
+        msg.addEventListener('click', e => { if (e.target === msg) msg.remove(); });
+      }
     } else {
       // Not logged in — redirect to login
       const returnUrl = encodeURIComponent(location.pathname + location.search);
