@@ -695,13 +695,9 @@ async function init() {
   enrollBtn.href = '#';
   enrollBtn.onclick = async (e) => {
     e.preventDefault();
-    const sb2 = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-    const { data: { session } } = await sb2.auth.getSession();
-    if (session && session.user) {
-      // Logged in — go to enroll URL
-      if (enrollUrl && enrollUrl !== '#') {
-        window.open(enrollUrl, '_blank');
-      } else {
+    if (enrollUrl && enrollUrl !== '#') {
+      window.open(enrollUrl, '_blank');
+    } else {
         // 尚未設定報名連結 — 顯示提示框
         const msg = document.createElement('div');
         msg.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
@@ -721,11 +717,6 @@ async function init() {
         document.body.appendChild(msg);
         msg.addEventListener('click', e => { if (e.target === msg) msg.remove(); });
       }
-    } else {
-      // Not logged in — redirect to login
-      const returnUrl = encodeURIComponent(location.pathname + location.search);
-      location.href = `login.html?return=${returnUrl}`;
-    }
   };
 
   // — Sidebar meta rows（只顯示不在 event-info 的補充資訊）—
