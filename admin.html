@@ -1096,14 +1096,13 @@
               <thead>
                 <tr>
                   <th>姓名 / Email</th>
-                  <th>角色</th>
                   <th>測驗結果</th>
-                  <th>最後活動</th>
+                  <th>註冊時間</th>
                   <th>操作</th>
                 </tr>
               </thead>
               <tbody id="accounts-tbody">
-                <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-soft);">載入中…</td></tr>
+                <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-soft);">載入中…</td></tr>
               </tbody>
             </table>
           </div>
@@ -1358,6 +1357,19 @@
 
       <!-- ── Settings ── -->
       <div class="page" id="page-settings">
+        <!-- Service Key 設定 -->
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-header"><div class="card-title">🔑 Supabase 管理員金鑰（帳號刪除功能）</div></div>
+          <div class="card-body">
+            <div style="font-size:0.83rem;color:var(--text-mid);margin-bottom:12px;">填入 Supabase service_role key 後，即可從後台直接刪除帳號。此 key 僅儲存在你的瀏覽器，不會上傳至任何伺服器。</div>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <input class="form-input" id="service-key-input" type="password" placeholder="sb_secret_..." style="flex:1;" value="" />
+              <button class="btn btn-primary" onclick="saveServiceKey()">儲存</button>
+              <button class="btn btn-outline" onclick="clearServiceKey()">清除</button>
+            </div>
+            <div id="service-key-status" style="margin-top:8px;font-size:0.8rem;"></div>
+          </div>
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
           <div class="card">
             <div class="card-header"><div class="card-title">基本資料設定</div></div>
@@ -1840,6 +1852,13 @@
   <script>
     // ── Supabase Client ──
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    // ── Supabase Admin Client（service_role key — 從 localStorage 讀取）──
+    function getServiceKey() { return localStorage.getItem('acsp_service_key') || ''; }
+    function getSbAdmin() {
+      const k = getServiceKey();
+      if (!k) return null;
+      return supabase.createClient(SUPABASE_URL, k, { auth: { autoRefreshToken: false, persistSession: false } });
+    }
 
     // ── Upload image to Supabase Storage ──
     async function uploadImgToStorage(dataURL, storagePath) {
@@ -2082,21 +2101,48 @@
       const tbody = document.getElementById('accounts-tbody');
       const countEl = document.getElementById('accounts-count');
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-soft);">載入中…</td></tr>';
+
+      const sbAdmin = getSbAdmin();
+      if (!sbAdmin) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-soft);">
+          ⚠️ 請先至「系統設定」填入 Supabase Service Key，才能顯示帳號列表。
+        </td></tr>`;
+        if (countEl) countEl.textContent = '';
+        return;
+      }
+
       try {
-        const { data, error } = await sb.from('acsp_results')
-          .select('name,email,role,dominant,dominant_display,created_at')
+        // 取得所有 auth 帳號
+        const { data: authData, error: authErr } = await sbAdmin.auth.admin.listUsers({ perPage: 1000 });
+        if (authErr) throw authErr;
+        const authUsers = authData?.users || [];
+
+        // 取得測驗結果（用來補充 name、style 資訊）
+        const { data: results } = await sb.from('acsp_results')
+          .select('name,email,dominant,dominant_display,created_at')
           .order('created_at', { ascending: false });
-        if (error) throw error;
-        // 依 email 去重，保留最新的
-        const seen = new Map();
-        (data || []).forEach(r => {
-          if (!seen.has(r.email)) seen.set(r.email, r);
+        const resultMap = new Map();
+        (results || []).forEach(r => {
+          if (!resultMap.has(r.email)) resultMap.set(r.email, r);
         });
-        _accountsData = [...seen.values()];
+
+        // 合併資料
+        _accountsData = authUsers.map(u => {
+          const quiz = resultMap.get(u.email) || {};
+          return {
+            id: u.id,
+            email: u.email,
+            name: u.user_metadata?.name || quiz.name || '',
+            dominant: quiz.dominant || '',
+            dominant_display: quiz.dominant_display || '',
+            email_confirmed: !!u.email_confirmed_at,
+            created_at: u.created_at,
+          };
+        });
         renderAccountsTable(_accountsData);
       } catch(e) {
         console.error('renderAccounts:', e);
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--red);">載入失敗，請重新整理</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--red);">載入失敗：${e.message}</td></tr>`;
       }
     }
     function renderAccountsTable(list) {
@@ -2114,18 +2160,23 @@
         const dominant = u.dominant_display || u.dominant || '';
         const cls = styleClassMap[u.dominant] || 'gold';
         const initials = (u.name || u.email || '?').charAt(0).toUpperCase();
+        const verified = u.email_confirmed
+          ? '<span class="badge green" style="font-size:0.72rem;">✓ 已驗證</span>'
+          : '<span class="badge amber" style="font-size:0.72rem;">待驗證</span>';
         return `<tr>
           <td>
             <div style="display:flex;align-items:center;gap:10px;">
               <div style="width:34px;height:34px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:600;flex-shrink:0;">${initials}</div>
-              <div><div class="td-name">${u.name || '—'}</div><div class="td-sub">${u.email}</div></div>
+              <div>
+                <div class="td-name">${u.name || '—'} ${verified}</div>
+                <div class="td-sub">${u.email}</div>
+              </div>
             </div>
           </td>
-          <td style="font-size:0.82rem;">${u.role || '—'}</td>
-          <td>${dominant ? `<span class="badge ${cls}">★ ${dominant}</span>` : '<span style="color:var(--text-soft)">未完成測驗</span>'}</td>
+          <td>${dominant ? `<span class="badge ${cls}">★ ${dominant}</span>` : '<span style="color:var(--text-soft);font-size:0.82rem;">未完成測驗</span>'}</td>
           <td style="font-size:0.82rem;">${dateStr}</td>
-          <td>
-            <button class="btn btn-outline btn-sm" onclick="navigate('results', document.querySelector('[onclick*=results]'))">測驗紀錄</button>
+          <td style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn btn-sm" style="background:#e07070;color:#fff;border:none;cursor:pointer;border-radius:4px;padding:5px 12px;font-size:0.8rem;" onclick="deleteAccountById('${u.id}','${u.email}')">刪除帳號</button>
           </td>
         </tr>`;
       }).join('');
@@ -2139,6 +2190,29 @@
         (u.email || '').toLowerCase().includes(q)
       );
       renderAccountsTable(filtered);
+    }
+
+    async function deleteAccountById(userId, email) {
+      if (!confirm(`確定要刪除帳號「${email}」嗎？\n\n此操作將刪除：\n・Auth 登入帳號\n・測驗紀錄\n\n刪除後無法復原。`)) return;
+      const sbAdmin = getSbAdmin();
+      if (!sbAdmin) {
+        alert('請先至系統設定填入 Service Key！');
+        return;
+      }
+      try {
+        showToast('刪除中…');
+        // 1. 刪除 auth 帳號
+        const { error: delErr } = await sbAdmin.auth.admin.deleteUser(userId);
+        if (delErr) throw delErr;
+        // 2. 刪除 acsp_results 測驗紀錄
+        await sb.from('acsp_results').delete().eq('email', email);
+        showToast(`✅ 帳號 ${email} 已刪除`);
+        _accountsData = _accountsData.filter(u => u.id !== userId);
+        renderAccountsTable(_accountsData);
+      } catch(e) {
+        console.error('deleteAccountById error:', e);
+        showToast('❌ 刪除失敗：' + e.message, 'error');
+      }
     }
 
     // ── Chart ──
@@ -2170,6 +2244,32 @@
       if (page === 'students') { await renderStudents(); }
       if (page === 'accounts') { await renderAccounts(); }
       if (page === 'results')  { await initResultsPage(); }
+      if (page === 'settings') { initServiceKeyUI(); }
+    }
+
+    // ── Service Key 管理 ──
+    function saveServiceKey() {
+      const val = document.getElementById('service-key-input').value.trim();
+      if (!val) { clearServiceKey(); return; }
+      localStorage.setItem('acsp_service_key', val);
+      document.getElementById('service-key-status').innerHTML = '<span style="color:var(--green)">✅ 已儲存（僅存在此瀏覽器）</span>';
+      showToast('Service Key 已儲存 ✓');
+    }
+    function clearServiceKey() {
+      localStorage.removeItem('acsp_service_key');
+      document.getElementById('service-key-input').value = '';
+      document.getElementById('service-key-status').innerHTML = '<span style="color:var(--text-soft)">已清除</span>';
+    }
+    function initServiceKeyUI() {
+      const k = getServiceKey();
+      const statusEl = document.getElementById('service-key-status');
+      if (!statusEl) return;
+      if (k) {
+        document.getElementById('service-key-input').value = k;
+        statusEl.innerHTML = '<span style="color:var(--green)">✅ 已設定（儲存於此瀏覽器）</span>';
+      } else {
+        statusEl.innerHTML = '<span style="color:var(--amber)">⚠️ 尚未設定，帳號刪除功能無法使用</span>';
+      }
     }
 
     // ── Sidebar ──
