@@ -708,9 +708,15 @@ async function init() {
         msg.innerHTML = `<div style="background:#fff;border-radius:12px;padding:32px;max-width:360px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
           <div style="font-size:2rem;margin-bottom:12px;">📩</div>
           <div style="font-size:1.1rem;font-weight:600;margin-bottom:8px;">感謝您的報名意願！</div>
-          <div style="font-size:0.88rem;color:#666;margin-bottom:20px;">此課程報名目前開放私訊洽詢，<br>請透過以下方式與我們聯繫：</div>
-          <a href="mailto:axislinestudio@gmail.com" style="display:block;background:#3E8A5A;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;margin-bottom:10px;font-size:0.9rem;">✉️ 寄信給我們</a>
-          <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:1px solid #ddd;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:0.85rem;color:#666;">關閉</button>
+          <div style="font-size:0.88rem;color:#666;margin-bottom:20px;">此課程報名目前開放私訊洽詢，<br>請複製以下 Email 與我們聯繫：</div>
+          <div style="display:flex;align-items:center;gap:0;border:1px solid #ddd;border-radius:8px;overflow:hidden;margin-bottom:16px;">
+            <span style="flex:1;padding:10px 14px;font-size:0.9rem;color:#333;background:#f8f8f8;user-select:all;">axislinestudio@gmail.com</span>
+            <button id="copy-email-btn" onclick="navigator.clipboard.writeText('axislinestudio@gmail.com').then(()=>{this.innerHTML='✅';setTimeout(()=>{this.innerHTML='<svg width=16 height=16 viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=2><rect x=9 y=9 width=13 height=13 rx=2/><path d=\'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\'/></svg>'},2000)})"
+              style="padding:10px 14px;background:#3E8A5A;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+          <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:1px solid #ddd;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:0.85rem;color:#666;width:100%;">關閉</button>
         </div>`;
         document.body.appendChild(msg);
         msg.addEventListener('click', e => { if (e.target === msg) msg.remove(); });
