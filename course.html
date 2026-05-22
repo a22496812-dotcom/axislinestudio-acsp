@@ -717,10 +717,26 @@ async function init() {
         <div style="font-size:2rem;margin-bottom:12px;">📩</div>
         <div style="font-size:1.1rem;font-weight:600;margin-bottom:8px;">感謝您的報名意願！</div>
         <div style="font-size:0.88rem;color:#666;margin-bottom:20px;">此課程報名目前開放私訊洽詢，<br>請複製以下 Email 與我們聯繫：</div>
-        <div style="display:flex;align-items:center;border:1px solid #ddd;border-radius:8px;overflow:hidden;margin-bottom:16px;">
-          <span style="flex:1;padding:10px 14px;font-size:0.9rem;color:#333;background:#f8f8f8;user-select:all;">axislinestudio@gmail.com</span>
-          <button onclick="navigator.clipboard.writeText('axislinestudio@gmail.com').then(()=>{this.innerHTML='✅';setTimeout(()=>{this.innerHTML='📋'},2000)})"
-            style="padding:10px 14px;background:#3E8A5A;color:#fff;border:none;cursor:pointer;font-size:1rem;">📋</button>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;width:100%;max-width:23rem;margin:0 auto 16px;">
+          <input type="text" value="axislinestudio@gmail.com" readonly
+            style="background:#f5f0e8;border:1px solid #D0C9BC;color:#2B2825;font-size:0.85rem;border-radius:6px;padding:10px 12px;width:100%;box-shadow:0 1px 2px rgba(0,0,0,0.05);" />
+          <button id="copy-email-btn"
+            onclick="navigator.clipboard.writeText('axislinestudio@gmail.com').then(()=>{
+              document.getElementById('copy-default').style.display='none';
+              document.getElementById('copy-success').style.display='flex';
+              setTimeout(()=>{
+                document.getElementById('copy-default').style.display='';
+                document.getElementById('copy-success').style.display='none';
+              },2000)
+            })"
+            style="background:#B09A72;color:#fff;border:1px solid transparent;border-radius:6px;padding:10px 16px;font-size:0.85rem;font-weight:500;cursor:pointer;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.05);transition:background 0.2s;"
+            onmouseover="this.style.background='#9a855c'" onmouseout="this.style.background='#B09A72'">
+            <span id="copy-default">複製</span>
+            <span id="copy-success" style="display:none;align-items:center;gap:4px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 11.917 9.724 16.5 19 7.5"/></svg>
+              已複製
+            </span>
+          </button>
         </div>
         <button onclick="this.closest('div[style*=fixed]').remove()" style="background:none;border:1px solid #ddd;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:0.85rem;color:#666;width:100%;">關閉</button>
       </div>`;
