@@ -238,10 +238,13 @@
       line-height: 1.6;
       width: 100%;
     }
-    .option-btn:hover {
-      border-color: var(--gold);
-      background: rgba(176,154,114,0.08);
-      color: var(--text);
+    /* 只在真正有滑鼠的裝置才顯示 hover，避免手機點擊後殘留高亮 */
+    @media (hover: hover) and (pointer: fine) {
+      .option-btn:hover {
+        border-color: var(--gold);
+        background: rgba(176,154,114,0.08);
+        color: var(--text);
+      }
     }
     .option-btn.selected {
       border-color: var(--gold);
@@ -685,7 +688,7 @@
           <div class="email-status info" id="emailStatus" style="display:block;">
             📧 正在將結果寄送到你的信箱…
           </div>
-          <button class="btn-action dark" onclick="window.open('index.html#cta')">
+          <button class="btn-action dark" onclick="window.location.href='courses.html'">
             🎓 立即報名完整課程
           </button>
           <button class="btn-action outline" onclick="retakeQuiz()">
@@ -1279,7 +1282,7 @@ function sendEmailInternal(dominant, secondary, pct, style, resultUrl) {
     to_email:   userData.email,
     style_name: style.name,
     result_url: resultUrl || (window.location.origin + '/index.html'),
-    course_url: window.location.origin + '/index.html#cta',
+    course_url: window.location.origin + '/courses.html',
   };
   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
     .then(() => {
