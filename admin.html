@@ -1024,7 +1024,7 @@
               <select class="filter-select"><option>所有狀態</option><option>已上架</option><option>草稿</option></select>
             </div>
             <div class="filter-right">
-              <button class="btn btn-gold" onclick="openModal('course-modal')">＋ 新增課程</button>
+              <button class="btn btn-gold" onclick="openNewCourseModal()">＋ 新增課程</button>
             </div>
           </div>
           <div class="table-wrap">
@@ -1978,8 +1978,15 @@
           coverUrl  = existing ? existing.coverImg  : '';
           bannerUrl = existing ? existing.bannerImg : '';
         }
-        if (newCoverImg)  coverUrl  = await uploadImgToStorage(newCoverImg,  `courses/cover_${rowId}.jpg`);
-        if (newBannerImg) bannerUrl = await uploadImgToStorage(newBannerImg, `courses/banner_${rowId}.jpg`);
+        // ── 圖片上傳（失敗時保留原圖，不擋住資訊儲存）──
+        if (newCoverImg) {
+          try { coverUrl = await uploadImgToStorage(newCoverImg, `courses/cover_${rowId}.jpg`); }
+          catch(imgErr) { console.warn('封面圖上傳失敗:', imgErr); showToast('⚠️ 封面圖上傳失敗，其餘資訊仍會儲存', 'error'); }
+        }
+        if (newBannerImg) {
+          try { bannerUrl = await uploadImgToStorage(newBannerImg, `courses/banner_${rowId}.jpg`); }
+          catch(imgErr) { console.warn('Banner 上傳失敗:', imgErr); showToast('⚠️ Banner 上傳失敗，其餘資訊仍會儲存', 'error'); }
+        }
 
         const row = {
           id: rowId, name, sub: val('cm-sub') || '',
@@ -2007,8 +2014,16 @@
           ? `「${name}」已更新 ✓`
           : (statusVal === '已上架' ? `「${name}」已新增並上架 ✓` : `「${name}」已儲存為草稿`));
       } catch(e) {
-        console.error('saveCourse:', e);
-        showToast('儲存失敗：' + (e.message || String(e)), 'error');
+        console.error('saveCourse 失敗:', e);
+        const msg = e?.message || String(e);
+        // 常見錯誤給出更明確提示
+        if (msg.includes('row-level security') || msg.includes('policy')) {
+          showToast('❌ 儲存失敗：資料庫權限不足（RLS），請確認 Supabase 政策設定', 'error');
+        } else if (msg.includes('bucket') || msg.includes('storage')) {
+          showToast('❌ 儲存失敗：Storage 圖片桶設定有問題，請確認 acsp-images bucket', 'error');
+        } else {
+          showToast('❌ 儲存失敗：' + msg, 'error');
+        }
       }
     }
 
@@ -2032,6 +2047,12 @@
       document.getElementById('cm-modules').value    = c.modules || '';
       document.getElementById('cm-audience').value   = c.audience || '';
       document.getElementById('cm-enroll').value     = c.enrollUrl || '';
+      // ── 還原課程類型選單 ──
+      const typeSelect = document.getElementById('course-type-select');
+      if (typeSelect) {
+        typeSelect.value = c.type || '實體課程';
+        toggleCourseTypeFields();
+      }
       // Show existing cover / banner thumbnails
       const coverPrev = document.getElementById('course-cover-preview');
       if (c.coverImg) { coverPrev.src = c.coverImg; coverPrev.style.display = 'block'; }
@@ -2298,8 +2319,30 @@
       document.getElementById(id).classList.remove('open');
     }
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
-      overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) {
+          // course-modal 必須走 closeCourseModal() 才能清除 editId
+          if (overlay.id === 'course-modal') closeCourseModal();
+          else overlay.classList.remove('open');
+        }
+      });
     });
+
+    // ── 開啟「新增課程」modal（完整重置表單）──
+    function openNewCourseModal() {
+      closeCourseModal(); // 確保清除殘留的 editId 與按鈕文字
+      // 清空所有輸入欄位
+      ['cm-name','cm-sub','cm-price','cm-origprice','cm-desc',
+       'cm-location','cm-date','cm-duration','cm-seats',
+       'cm-duration-basic','cm-seats-basic',
+       'cm-highlights','cm-modules','cm-audience','cm-enroll'
+      ].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      const sel = document.getElementById('course-type-select');
+      if (sel) { sel.value = '實體課程'; toggleCourseTypeFields(); }
+      const statusEl = document.getElementById('cm-status');
+      if (statusEl) statusEl.value = '草稿';
+      openModal('course-modal');
+    }
 
     // ── Toast ──
     function showToast(msg, type = 'success') {
